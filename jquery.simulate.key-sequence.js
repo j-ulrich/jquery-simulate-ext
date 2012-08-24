@@ -1,0 +1,183 @@
+// insert characters in a textarea or text input field
+// special characters are enclosed in {}; use {{} for the { character itself
+// documentation: http://bililite.com/blog/2008/08/20/the-fnsendkeys-plugin/
+// Version: 2.0
+// Copyright (c) 2010 Daniel Wachsstock
+// MIT license:
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use,
+// copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following
+// conditions:
+
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+
+(function($){
+	"use strict";
+
+	$.extend($.simulate.prototype, {
+		simulateKeySequence: function() {
+			var target = this.target,
+				opts = this.options,
+				sequence = opts.sequence || "";
+			
+			var localkeys = $.extend({}, opts, $(target).data('simulate-keySequence')); // allow for element-specific key functions
+			// most elements to not keep track of their selection when they lose focus, so we have to do it for them
+			var rng = $.data (target, 'simulate-keySequence.selection');
+			if (!rng){
+				rng = bililiteRange(target).bounds('selection');
+				$.data(target, 'simulate-keySequence.selection', rng);
+				$(target).bind('mouseup.simulate-keySequence', function(){
+					// we have to update the saved range. The routines here update the bounds with each press, but actual keypresses and mouseclicks do not
+					$.data(target, 'simulate-keySequence.selection').bounds('selection');
+				}).bind('keyup.simulate-keySequence', function(evt){
+					// restore the selection if we got here with a tab (a click should select what was clicked on)
+					if (evt.which == 9){
+						// there's a flash of selection when we restore the focus, but I don't know how to avoid that.
+						$.data(target, 'simulate-keySequence.selection').select();
+					}else{
+						$.data(target, 'simulate-keySequence.selection').bounds('selection');
+					}	
+				});
+			}
+			target.focus();
+			if (typeof sequence === 'undefined') return; // no string, so we just set up the event handlers
+			sequence.replace(/\n/g, '{enter}'). // turn line feeds into explicit break insertions
+			  replace(/{[^}]*}|[^{]+/g, function(s){
+				(localkeys[s] || $.simulate.prototype.simulateKeySequence.defaults[s] || $.simulate.prototype.simulateKeySequence.defaults.simplechar)(rng, s, opts);
+			  });
+			$(target).trigger({type: 'simulate-keySequence', which: sequence});
+		}
+	});
+
+	$.extend($.simulate.prototype.simulateKeySequence.prototype, {
+			/**
+			 * Maps char codes to IE keycodes (covers IE and Webkit)
+			 */
+			IEKeyCodeTable: {
+				33: 49,		// ! -> 1
+				64: 50,		// @ -> 2
+				35: 51,		// # -> 3
+				36: 52,		// $ -> 4
+				37: 53,		// % -> 5
+				94: 54,		// ^ -> 6
+				38: 55,		// & -> 7
+				42: 56,		// * -> 8
+				40: 57,		// ( -> 9
+				41: 48,		// ) -> 0
+				
+				59: 186,	// ; -> 186
+				58: 186,	// : -> 186
+				61: 187,	// = -> 187
+				43: 187,	// + -> 187
+				44: 188,	// , -> 188
+				60: 188,	// < -> 188
+				45: 189,	// - -> 189
+				95: 189,	// _ -> 189
+				46: 190,	// . -> 190
+				62: 190,	// > -> 190
+				47: 191,	// / -> 191
+				63: 191,	// ? -> 191
+				96: 192,	// ` -> 192
+				126: 192,	// ~ -> 192
+				91: 219,	// [ -> 219
+				123: 219,	// { -> 219
+				92: 220,	// \ -> 220
+				124: 220,	// | -> 220
+				93: 221,	// ] -> 221
+				125: 221,	// } -> 221
+				39: 222,	// ' -> 222
+				34: 222		// " -> 222
+			},
+			
+			charToKeyCode: function(character) {
+				var specialKeyCodeTable = $.simulate.prototype.simulateKeySequence.prototype.IEKeyCodeTable;
+				var charCode = character.charCodeAt(0);
+		
+				if (charCode >= 64 && charCode <= 90 || charCode >= 48 && charCode <= 57) {
+					// A-Z and 0-9
+					return charCode;
+				}
+				else if (charCode >= 97 && charCode <= 122) {
+					// a-z -> A-Z
+					return character.toUpperCase().charCodeAt(0);
+				}
+				else if (specialKeyCodeTable[charCode] !== undefined) {
+					return specialKeyCodeTable[charCode];
+				}
+				else {
+					return charCode;
+				}
+			}
+	});
+
+// add the functions publicly so they can be overridden
+$.simulate.prototype.simulateKeySequence.defaults = {
+	simplechar: function (rng, s, opts){
+		var triggerKeyEvents = (opts.triggerKeyEvents === undefined)?true:opts.triggerKeyEvents;
+		rng.text(s, 'end');
+		if (triggerKeyEvents) {
+			for (var i =0; i < s.length; ++i){
+				var charCode = s.charCodeAt(i);
+				var keyCode = $.simulate.prototype.simulateKeySequence.prototype.charToKeyCode(s.charAt(i));
+				// a bit of cheating: rng._el is the element associated with rng.
+				$(rng._el).simulate('keydown', {keyCode: keyCode});
+				$(rng._el).simulate('keypress', {keyCode: charCode});
+				$(rng._el).simulate('keyup', {keyCode: keyCode});
+			}
+		}
+	},
+	'{{}': function (rng){
+		$.simulate.prototype.simulateKeySequence.defaults.simplechar (rng, '{')
+	},
+	'{enter}': function (rng, s, opts){
+		var triggerKeyEvents = (opts.triggerKeyEvents === undefined)?true:opts.triggerKeyEvents
+		rng.insertEOL();
+		var b = rng.bounds();
+		rng.select();
+		var x = '\n'.charCodeAt(0);
+		if (triggerKeyEvents === true) {
+			$(rng._el).simulate('keydown', {keyCode: x, which: x, charCode: x});
+			$(rng._el).simulate('keypress', {keyCode: x, which: x, charCode: x});
+			$(rng._el).simulate('keyup', {keyCode: x, which: x, charCode: x});
+		}
+	},
+	'{backspace}': function (rng){
+		var b = rng.bounds();
+		if (b[0] == b[1]) rng.bounds([b[0]-1, b[0]]); // no characters selected; it's just an insertion point. Remove the previous character
+		rng.text('', 'end'); // delete the characters and update the selection
+	},
+	'{del}': function (rng){
+		var b = rng.bounds();
+		if (b[0] == b[1]) rng.bounds([b[0], b[0]+1]); // no characters selected; it's just an insertion point. Remove the next character
+		rng.text('', 'end'); // delete the characters and update the selection
+	},
+	'{rightarrow}':  function (rng){
+		var b = rng.bounds();
+		if (b[0] == b[1]) ++b[1]; // no characters selected; it's just an insertion point. Move to the right
+		rng.bounds([b[1], b[1]]).select();
+	},
+	'{leftarrow}': function (rng){
+		var b = rng.bounds();
+		if (b[0] == b[1]) --b[0]; // no characters selected; it's just an insertion point. Move to the left
+		rng.bounds([b[0], b[0]]).select();
+	},
+	'{selectall}' : function (rng){
+		rng.bounds('all').select();
+	}
+};
+
+})(jQuery)

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>jquery-simulate-ext Demo</title>
+	<link rel="stylesheet" href="jquery-ui-1.8.22.custom.css" />
+	<script type="text/javascript" src="../libs/jquery-1.7.2.js"></script>
+	<script type="text/javascript" src="jquery-ui-1.8.22.custom.min.js"></script>
+	<script type="text/javascript" src="../libs/jquery.simulate.js"></script>
+	<script type="text/javascript" src="../libs/bililiteRange.js"></script>
+	<script type="text/javascript" src="../jquery.simulate.drag-n-drop.js"></script>
+	<script type="text/javascript" src="../jquery.simulate.key-sequence.js"></script>
+	<script type="text/javascript" src="../jquery.simulate.key-combo.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			eventLog = $('#eventLog'); // Global variable
+			eventLog.indentation = "";
+			eventLog.incIndentation = function() {
+				eventLog.indentation += "    ";
+			}
+			eventLog.decIndentation = function() {
+				if (eventLog.indentation.length <= 4)
+					eventLog.indentation = "";
+				else
+					eventLog.indentation = eventLog.indentation.substr(-4);
+			}
+			eventLog.append = function(str) {
+				eventLog.val(eventLog.val()+eventLog.indentation+str+"\n");
+			}
+			simulated = false; // Global variable
+			
+			
+			$('#slider').slider();
+			
+			$('#slider').bind('slidechange', function(event, ui) {
+				$('#currentSliderValue').val(ui.value);
+			});
+			
+			function logMouseMoveEvent(event) {
+				if (simulated) {
+					var indentLength = 10-event.type.length;
+					var indent = "";
+					for (var i=0; i < indentLength; i+=1) {
+						indent += " ";
+					}
+					eventLog.append(event.type+indent+"(x: "+event.pageX+", y: "+event.pageY+")");
+				}
+			}
+			
+			function logButtonEvent(event) {
+				var indentLength = 10-event.type.length;
+				var indent = "";
+				for (var i=0; i < indentLength; i+=1) {
+					indent += " ";
+				}
+				var modifiers = ['shift', 'alt', 'ctrl', 'meta'];
+				var activeMods = []
+				for (var mod in modifiers) {
+					if (event[modifiers[mod]+"Key"]) {
+						activeMods.push(modifiers[mod]);
+					}
+				}
+				var activeModStr = "";
+				if (activeMods.length > 0) {
+					activeModStr = ", modifiers: " + activeMods.join("+");
+				}
+
+				eventLog.append(event.type+indent+"(which: "+event.which+activeModStr+")");
+			}
+			
+			$(document).bind({
+				'keyup': logButtonEvent,
+				'keydown': logButtonEvent,
+				'keypress': logButtonEvent,
+				'mousedown': logButtonEvent,
+				'mouseup': logButtonEvent,
+				'mousemove': logMouseMoveEvent
+			});
+			$(document).bind('mousemove', function(event) {
+				$('#mousePos').text("("+event.pageX+","+event.pageY+")");
+			});
+			
+			initDemo();
+		});
+	</script>
+	<style type="text/css">
+		.container {
+			/* width: 30%; */
+			margin: 1em;
+			margin-bottom: 2em;
+			border-radius: 6px;
+			border: 1px solid black;
+			padding: 1em;
+		}
+		
+		.container input[type="text"] {
+			width: 100%;
+		}
+		
+		.container-left {
+			float: left;
+		}
+		
+		.container-right {
+			float: right;
+			margin-right: 10%;
+			/* border: 1px solid black; */
+		}
+		
+		.simulate-buttons {
+			margin: 0.5em;
+		}
+		
+		#slider {
+			margin: 1em;
+		}
+		
+		#currentSliderValue {
+			width: 5em;
+			text-align: right;
+		}
+		
+		#eventLog {
+			height: 35em;
+			width: 30em;
+		}
+		
+		#textInput {
+			background-color: #EEEEEE;
+		}
+	</style>
+</head>
+<body>
+	<div class="container-left">
+		<div class="container">
+			<input id="textInput" type="text" />
+			<div class="simulate-buttons">
+				<h4>Key-Combo Simulation:</h4>
+				<button id="combo-shifta">Key Combo "Shift+a"</button>
+				<button id="combo-Ad">Key Combo "A+d"</button>
+			</div>
+			<div class="simulate-buttons">
+				Custom Combo:<input id="customCombo" type="text" value="ctrl+alt+f"/><button id="combo-custom">Execute custom combo</button>
+			</div>
+			<div class="simulate-buttons">
+				<h4>Key-Sequence Simulation:</h4>
+				<button id="sequence-asdf">Key Sequence "asdf"</button>
+				<button id="sequence-foobar">Key Sequence "fooob{leftarrow}{backspace}{rightarrow}ar"</button>
+			</div>
+			<div class="simulate-buttons">
+				Custom Sequence:<input id="customSequence" type="text" value="test me!"/><button id="sequence-custom">Execute custom sequence</button>
+			</div>
+		</div>
+		<div class="container">
+			<div id="slider"></div>
+			<div>Current slider value: <input id="currentSliderValue" type="text" value="0" readonly="readonly" /></div>
+			<div class="simulate-buttons">
+				<h4>Drag-n-Drop Simulation:</h4>
+				Press 'd' to simulate a drop while dragging.<br/>
+				<button id="drag-50r">Drag 50px right</button>
+				<button id="dnd-50l">Drag'n'Drop 50px left</button>
+				<button id="dnd-50r">Drag'n'Drop 50px right</button>
+			</div>
+		</div>
+	</div>
+	<div class="container-left container">
+		<div style="margin-bottom: 0.5em;">
+			Event Log:<br/>
+			<textarea id="eventLog" readonly="readonly"></textarea><br/>
+			<small><b>Note:</b> Non-simulated mousemove events are omitted to avoid spamming</small>
+		</div>
+		<div>
+		MouseMove Position: <span id="mousePos"></span>
+		</div>
+	</div>
+	<script type="text/javascript">
+	function simulateWrapper(target, type, options) {
+		eventLog.append("####### Simulating "+type+" #######");
+		eventLog.incIndentation();
+		simulated = true;
+		$(target).simulate(type, options);
+		simulated = false;
+		eventLog.decIndentation();
+		eventLog.append("################################");
+		
+	}
+
+	function initDemo() {
+		// Bind 'd' to simulate a drop
+		$(document).bind('keyup', function(event) {
+			if (event.which === 68) {
+				eventLog.append("'d' pressed!");
+				simulateWrapper(handle, 'drop');
+			}
+		});
+	
+		$('#combo-shifta').bind('click', function() {
+			simulateWrapper('#textInput', 'key-combo', {combo: "shift+a"});
+		});
+		$('#combo-Ad').bind('click', function() {
+			simulateWrapper('#textInput', 'key-combo', {combo: "A+d"});
+		});
+		$('#combo-custom').bind('click', function() {
+			var combo = $('#customCombo').val();
+			simulateWrapper('#textInput', 'key-combo', {combo: combo});
+		});
+		$('#sequence-asdf').bind('click', function() {
+			simulateWrapper('#textInput', 'key-sequence', {sequence: "asdf"});
+		});
+		$('#sequence-foobar').bind('click', function() {
+			simulateWrapper('#textInput', 'key-sequence', {sequence: "fooob{leftarrow}{backspace}{rightarrow}ar"});
+		});
+		$('#sequence-custom').bind('click', function() {
+			var sequence = $('#customSequence').val();
+			simulateWrapper('#textInput', 'key-sequence', {sequence: sequence});
+		});
+	
+		var handle = $('#slider .ui-slider-handle');
+		$('#drag-50r').bind('click', function() {
+			simulateWrapper(handle, 'drag', {dx: 50});
+		});
+		$('#dnd-50l').bind('click', function() {
+			simulateWrapper(handle, 'drag-n-drop', {dx: -50});
+		});
+		$('#dnd-50r').bind('click', function() {
+			simulateWrapper(handle, 'drag-n-drop', {dx: 50});
+		});
+	}
+	</script>
+</body>
+</html>
