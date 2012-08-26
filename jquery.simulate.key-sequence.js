@@ -1,3 +1,17 @@
+/*jslint white: true vars: true browser: true todo: true */
+/*jshint camelcase:true, plusplus:true, forin:true, noarg:true, noempty:true, eqeqeq:true, bitwise:true, strict:true, undef:true, unused:true, curly:true, browser:true, devel:true, maxerr:100, white:false, onevar:false */
+/*global jQuery:false $:false */
+
+/* jQuery Simulate Key-Sequence Plugin 1.0
+ * http://github.com/j-ulrich/jquery-simulate-ext
+ * 
+ * Copyright (c) 2012 Jochen Ulrich
+ * Licensed under the MIT license (MIT-LICENSE.txt).
+ * 
+ * The plugin is an extension and modification of the jQuery sendkeys plugin by Daniel Wachsstock.
+ * Therefore, the original copyright notice and license follow below.
+ */
+
 // insert characters in a textarea or text input field
 // special characters are enclosed in {}; use {{} for the { character itself
 // documentation: http://bililite.com/blog/2008/08/20/the-fnsendkeys-plugin/
@@ -12,10 +26,10 @@
 // copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following
 // conditions:
-
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 // OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND

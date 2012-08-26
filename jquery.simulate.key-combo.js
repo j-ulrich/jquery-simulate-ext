@@ -2,6 +2,13 @@
 /*jshint camelcase:true, plusplus:true, forin:true, noarg:true, noempty:true, eqeqeq:true, bitwise:true, strict:true, undef:true, unused:true, curly:true, browser:true, devel:true, maxerr:100, white:false, onevar:false */
 /*global jQuery:false $:false */
 
+/* jQuery Simulate Key-Combo Plugin 1.0
+ * http://github.com/j-ulrich/jquery-simulate-ext
+ * 
+ * Copyright (c) 2012 Jochen Ulrich
+ * Licensed under the MIT license (MIT-LICENSE.txt).
+ */
+
 /**
  * 
  * For details about key events, key codes, char codes etc. see http://unixpapa.com/js/key.html
