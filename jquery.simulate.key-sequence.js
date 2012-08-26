@@ -162,11 +162,10 @@ $.simulate.prototype.simulateKeySequence.defaults = {
 		rng.insertEOL();
 		var b = rng.bounds();
 		rng.select();
-		var x = '\n'.charCodeAt(0);
 		if (triggerKeyEvents === true) {
-			$(rng._el).simulate('keydown', {keyCode: x, which: x, charCode: x});
-			$(rng._el).simulate('keypress', {keyCode: x, which: x, charCode: x});
-			$(rng._el).simulate('keyup', {keyCode: x, which: x, charCode: x});
+			$(rng._el).simulate('keydown', {keyCode: 13});
+			$(rng._el).simulate('keypress', {keyCode: 13});
+			$(rng._el).simulate('keyup', {keyCode: 13});
 		}
 	},
 	'{backspace}': function (rng){

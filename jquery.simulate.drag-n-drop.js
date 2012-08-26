@@ -12,16 +12,21 @@
 
 ;(function($, undefined) {
 	
-	// Taken from jquery.simulate.js
+	// Based on the findCenter function from jquery.simulate.js
 	function findCenter( elem ) {
 		var offset,
-			document = $( elem.ownerDocument );
+			jDocument = $( elem.ownerDocument );
 		elem = $( elem );
-		offset = elem.offset();
-		
+		if (elem[0] === document) {
+			offset = {left: 0, top: 0}; 
+		}
+		else {
+			offset = elem.offset();
+		}
+			
 		return {
-			x: offset.left + elem.outerWidth() / 2 - document.scrollLeft(),
-			y: offset.top + elem.outerHeight() / 2 - document.scrollTop()
+			x: offset.left + elem.outerWidth() / 2 - jDocument.scrollLeft(),
+			y: offset.top + elem.outerHeight() / 2 - jDocument.scrollTop()
 		};
 	}
 
@@ -64,7 +69,7 @@
 
 			if (dx !== 0 || dy !== 0) {
 				coord = { clientX: x + dx, clientY: y + dy };
-				this.simulateEvent( document, "mousemove", coord );
+				this.simulateEvent( target, "mousemove", coord );
 			}
 		},
 		
@@ -96,7 +101,7 @@
 			}
 			else {
 				// Else we assume the drop should happen on target, so we move there
-				this.simulateEvent( document, "mousemove", coord );
+				this.simulateEvent( target, "mousemove", coord );
 			}
 			
 			this.simulateEvent( target, "mouseup", coord );
