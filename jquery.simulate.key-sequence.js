@@ -46,6 +46,7 @@
 		simulateKeySequence: function() {
 			var target = this.target,
 				opts = this.options,
+				opts.delay = parseInt(opts.delay),
 				sequence = opts.sequence || "";
 			
 			opts.triggerKeyEvents = (opts.triggerKeyEvents === undefined)?true:opts.triggerKeyEvents;

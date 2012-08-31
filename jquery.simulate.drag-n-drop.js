@@ -45,13 +45,13 @@
 		var stepWidth, stepCount, stepVector;
 		
 		if (interpolOptions.stepWidth) {
-			stepWidth = interpolOptions.stepWidth;
+			stepWidth = parseInt(interpolOptions.stepWidth);
 			stepCount = Math.floor(dragDistance / stepWidth)-1;
 			var stepScale = stepWidth / dragDistance;
 			stepVector = {x: drag.x*stepScale, y: drag.y*stepScale };
 		}
 		else {
-			stepCount = interpolOptions.stepCount;
+			stepCount = parseInt(interpolOptions.stepCount);
 			stepWidth = dragDistance / (stepCount+1);
 			stepVector = {x: drag.x/(stepCount+1), y: drag.y/(stepCount+1)};
 		}
@@ -63,7 +63,7 @@
 			coords.y += stepVector.y;
 			var effectiveCoords = {x: coords.x, y: coords.y};
 			if (interpolOptions.shaky) {
-				var amplitude = (typeof interpolOptions.shaky === "number")? interpolOptions.shaky : 3;
+				var amplitude = parseInt(interpolOptions.shaky) || 3;
 				effectiveCoords.x += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
 				effectiveCoords.y += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
 			}
@@ -99,7 +99,7 @@
 			dragFinished(target, options);
 		}
 		else {
-			var stepDelay = interpolOptions.stepDelay || Math.round(interpolOptions.duration / (stepCount+1));
+			var stepDelay = parseInt(interpolOptions.stepDelay) || Math.round(parseInt(interpolOptions.duration) / (stepCount+1));
 			var i = 0;
 			var now = Date.now || function() { return new Date().getTime() },
 				lastTime = now();
@@ -144,7 +144,7 @@
 
 			if (dx !== 0 || dy !== 0) {
 				coord = { clientX: x + dx, clientY: y + dy };
-				if (options.interpolation) {
+				if ( options.interpolation && (options.interpolation.stepCount || options.interpolation.stepWidth) ) {
 					interpolatedEvents.apply(this, [target, {x: x, y: y}, {x: dx, y: dy}, options]);
 				}
 				else {
