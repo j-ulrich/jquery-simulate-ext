@@ -11,6 +11,7 @@
 
 
 ;(function($, undefined) {
+	"use strict";
 	
 	// Based on the findCenter function from jquery.simulate.js
 	function findCenter( elem ) {
@@ -29,17 +30,80 @@
 			y: offset.top + elem.outerHeight() / 2 - jDocument.scrollTop()
 		};
 	}
+	
+	function interpolatedEvents(target, start, drag, options) {
+		var self = this;
+		var dragDistance = Math.sqrt(Math.pow(drag.x,2) + Math.pow(drag.y,2)); // sqrt(a^2 + b^2)
+		var stepLength, stepCount, stepVector;
+		
+		if (options.stepLength) {
+			stepLength = options.stepLength;
+			stepCount = Math.floor(dragDistance / stepLength)-1;
+			var stepScale = stepLength / dragDistance;
+			stepVector = {x: drag.x*stepScale, y: drag.y*stepScale };
+		}
+		else {
+			stepCount = options.stepCount;
+			stepLength = Math.round(dragDistance / (stepCount+1));
+			stepVector = {x: Math.round(drag.x/(stepCount+1)), y: Math.round(drag.y/(stepCount+1))};
+		}
+		
+		var coords = $.extend({},start);
+		
+		function interpolationStep() {
+			coords.x += stepVector.x;
+			coords.y += stepVector.y;
+			var effectiveCoords = {x: coords.x, y: coords.y};
+			if (options.shaky) {
+				var amplitude = (typeof options.shaky === "number")? options.shaky : 3;
+				effectiveCoords.x += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
+				effectiveCoords.y += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
+			}
+			self.simulateEvent( target, "mousemove", {clientX: effectiveCoords.x, clientY: effectiveCoords.y});	
+		}
+		
+		
+		function stepAndSleep() {
+			var timeElapsed = now() - lastTime; // Work-around for Firefox "bug": setTimeout can fire before the timeout
+			if (timeElapsed >= stepDelay) {
+				if (i < stepCount) {
+					interpolationStep();
+					i += 1;
+					setTimeout(stepAndSleep, stepDelay);
+				}
+				else {
+					self.simulateEvent( target, "mousemove", {clientX: start.x+drag.x, clientY: start.y+drag.y});
+				}
+			}
+			else {
+				setTimeout(stepAndSleep, stepDelay - timeElapsed);
+			}
+
+		}
+
+		if (!options.stepDelay && !options.duration) {
+			// Trigger as fast as possible
+			for (var i=0; i < stepCount; i+=1) {
+				interpolationStep();
+			}
+			self.simulateEvent( target, "mousemove", {clientX: start.x+drag.x, clientY: start.y+drag.y});
+		}
+		else {
+			var stepDelay = options.stepDelay || Math.round(options.duration / (stepCount+1));
+			var i = 0;
+			var now = Date.now || function() { return new Date().getTime() },
+				lastTime = now();
+
+			setTimeout(stepAndSleep, stepDelay);
+		}
+		
+	}
 
 	$.extend( $.simulate.prototype, {
 		
-		
-		/* TODO: Implement interpolation (option: number of points between start & target) and shaky drag (option: intensity of the shake)
-		 * Alternative option for interpolation: maximal length of distance without interpolation point (-> this makes it
-		 * independent of the move distance)
-		 */
 		simulateDrag: function() {
 			var target = this.target,
-				options = this.options,
+				options = this.options || {},
 				center = findCenter( target ),
 				x = Math.floor( center.x ),
 				y = Math.floor( center.y ), 
@@ -69,7 +133,12 @@
 
 			if (dx !== 0 || dy !== 0) {
 				coord = { clientX: x + dx, clientY: y + dy };
-				this.simulateEvent( target, "mousemove", coord );
+				if (options.interpolation) {
+					interpolatedEvents.apply(this, [target, {x: x, y: y}, {x: dx, y: dy}, options.interpolation]);
+				}
+				else {
+					this.simulateEvent( target, "mousemove", coord );
+				}
 			}
 		},
 		
@@ -87,7 +156,7 @@
 		simulateDrop: function() {
 			var target = this.target,
 				activeDrag = $.simulate.activeDrag,
-				options = this.options,
+				options = this.options || {},
 				center = findCenter( target ),
 				x = Math.floor( center.x ),
 				y = Math.floor( center.y ),
@@ -111,7 +180,7 @@
 		
 		simulateDragNDrop: function() {
 			var target = this.target,
-				options = this.options,
+				options = this.options || {},
 				dropTarget = options.dropTarget || target,
 				dx = (options.dropTarget)? 0 : (options.dx || 0),
 				dy = (options.dropTarget)? 0 : (options.dy || 0),
