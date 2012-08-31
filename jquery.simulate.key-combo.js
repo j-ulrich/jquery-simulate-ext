@@ -16,8 +16,16 @@
 
 (function($,undefined) {
 	"use strict";
-	
+
+	var ModifierKeyCodes = {
+		SHIFT:		16,
+		CONTROL:	17,
+		ALT:		18,
+		COMMAND:	91
+	};
+
 	$.extend( $.simulate.prototype, {
+		
 		
 		/**
 		 * Simulates simultaneous key presses
@@ -68,10 +76,10 @@
 					case "shift":
 					case "meta":
 						switch (keyLowered) {
-						case "ctrl":	keyCode = $.ui.keyCode.CONTROL; break;
-						case "alt":		keyCode = $.ui.keyCode.ALT; break;
-						case "shift":	keyCode = $.ui.keyCode.SHIFT; break;
-						case "meta":	keyCode = $.ui.keyCode.COMMAND; break;
+						case "ctrl":	keyCode = ModifierKeyCodes.CONTROL; break;
+						case "alt":		keyCode = ModifierKeyCodes.ALT; break;
+						case "shift":	keyCode = ModifierKeyCodes.SHIFT; break;
+						case "meta":	keyCode = ModifierKeyCodes.COMMAND; break;
 						}
 						eventOptions[keyLowered+"Key"] = true;
 						holdKeys.unshift(keyCode);
@@ -86,13 +94,19 @@
 							keyCode = $.simulate.prototype.simulateKeySequence.prototype.charToKeyCode(key);
 							holdKeys.unshift(keyCode);
 							eventOptions.keyCode = keyCode;
+							eventOptions.which = keyCode;
+							eventOptions.charCode = undefined;
 							target.simulate("keydown", eventOptions);
-							if (eventOptions.shiftKey) {
+							if (eventOptions.shiftKey || eventOptions.ctrlKey || eventOptions.altKey || eventOptions.metaKey) {
 								key = key.toUpperCase();
 							}
 							eventOptions.keyCode = key.charCodeAt(0);
+							eventOptions.charCode = eventOptions.keyCode;
+							eventOptions.which = eventOptions.keyCode;
 							target.simulate("keypress", eventOptions);
-							target.simulate('key-sequence', {sequence: key, triggerKeyEvents: false});
+							if (!eventOptions.ctrlKey && !eventOptions.altKey && !eventOptions.metaKey) {
+								target.simulate('key-sequence', {sequence: key, triggerKeyEvents: false});
+							}
 						}
 						break;
 					}
@@ -106,19 +120,21 @@
 			}
 			
 			// Release keys
+			eventOptions.charCode = undefined;
 			for (i=0; i < holdKeys.length; i+=1) {
 				eventOptions.keyCode = holdKeys[i];
+				eventOptions.which = holdKeys[i];
 				switch (eventOptions.keyCode) {
-				case $.ui.keyCode.ALT:
+				case ModifierKeyCodes.ALT:
 					eventOptions.altKey = false;
 					break;
-				case $.ui.keyCode.SHIFT:
+				case ModifierKeyCodes.SHIFT:
 					eventOptions.shiftKey = false;
 					break;
-				case $.ui.keyCode.CONTROL:
+				case ModifierKeyCodes.CONTROL:
 					eventOptions.ctrlKey = false;
 					break;
-				case $.ui.keyCode.COMMAND:
+				case ModifierKeyCodes.COMMAND:
 					eventOptions.metaKey = false;
 					break;
 				default:
