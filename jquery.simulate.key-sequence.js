@@ -48,6 +48,8 @@
 				opts = this.options,
 				sequence = opts.sequence || "";
 			
+			opts.triggerKeyEvents = (opts.triggerKeyEvents === undefined)?true:opts.triggerKeyEvents;
+			
 			var localkeys = $.extend({}, opts, $(target).data('simulate-keySequence')); // allow for element-specific key functions
 			// most elements to not keep track of their selection when they lose focus, so we have to do it for them
 			var rng = $.data (target, 'simulate-keySequence.selection');
@@ -69,10 +71,38 @@
 			}
 			target.focus();
 			if (typeof sequence === 'undefined') return; // no string, so we just set up the event handlers
-			sequence.replace(/\n/g, '{enter}'). // turn line feeds into explicit break insertions
-			  replace(/{[^}]*}|[^{]+/g, function(s){
-				(localkeys[s] || $.simulate.prototype.simulateKeySequence.defaults[s] || $.simulate.prototype.simulateKeySequence.defaults.simplechar)(rng, s, opts);
-			  });
+			sequence = sequence.replace(/\n/g, '{enter}'); // turn line feeds into explicit break insertions
+			
+			function processNextToken() {
+				var timeElapsed = now() - lastTime; // Work-around for Firefox "bug": setTimeout can fire before the timeout
+				if (timeElapsed >= opts.delay) {
+					var match = tokenRegExp.exec(sequence);
+					if ( match !== null ) {
+						var s = match[0];
+						(localkeys[s] || $.simulate.prototype.simulateKeySequence.defaults[s] || $.simulate.prototype.simulateKeySequence.defaults.simplechar)(rng, s, opts);
+						setTimeout(processNextToken, opts.delay);
+					}
+					lastTime = now();
+				}
+				else {
+					setTimeout(processNextToken, opts.delay - timeElapsed);
+				}
+			}
+
+			if (!opts.delay) {
+				// Run as fast as possible
+				sequence.replace(/{[^}]*}|[^{]+/g, function(s){
+					(localkeys[s] || $.simulate.prototype.simulateKeySequence.defaults[s] || $.simulate.prototype.simulateKeySequence.defaults.simplechar)(rng, s, opts);
+				});				
+			}
+			else {
+				var tokenRegExp = /{[^}]*}|[^{]/g; // This matches curly bracket expressions or single characters
+				var now = Date.now || function() { return new Date().getTime() },
+					lastTime = now();
+				
+				processNextToken();
+			}
+			
 			$(target).trigger({type: 'simulate-keySequence', which: sequence});
 		}
 	});
@@ -141,52 +171,66 @@
 // add the functions publicly so they can be overridden
 $.simulate.prototype.simulateKeySequence.defaults = {
 	simplechar: function (rng, s, opts){
-		var triggerKeyEvents = (opts.triggerKeyEvents === undefined)?true:opts.triggerKeyEvents;
 		rng.text(s, 'end');
-		if (triggerKeyEvents) {
+		if (opts.triggerKeyEvents) {
 			for (var i =0; i < s.length; ++i){
 				var charCode = s.charCodeAt(i);
 				var keyCode = $.simulate.prototype.simulateKeySequence.prototype.charToKeyCode(s.charAt(i));
 				// a bit of cheating: rng._el is the element associated with rng.
 				$(rng._el).simulate('keydown', {keyCode: keyCode});
-				$(rng._el).simulate('keypress', {keyCode: charCode});
+				$(rng._el).simulate('keypress', {keyCode: charCode, which: charCode, charCode: charCode});
 				$(rng._el).simulate('keyup', {keyCode: keyCode});
 			}
 		}
 	},
-	'{{}': function (rng){
-		$.simulate.prototype.simulateKeySequence.defaults.simplechar (rng, '{')
+	'{{}': function (rng, s, opts){
+		$.simulate.prototype.simulateKeySequence.defaults.simplechar (rng, '{', opts)
 	},
 	'{enter}': function (rng, s, opts){
-		var triggerKeyEvents = (opts.triggerKeyEvents === undefined)?true:opts.triggerKeyEvents
 		rng.insertEOL();
 		var b = rng.bounds();
 		rng.select();
-		if (triggerKeyEvents === true) {
+		if (opts.triggerKeyEvents === true) {
 			$(rng._el).simulate('keydown', {keyCode: 13});
-			$(rng._el).simulate('keypress', {keyCode: 13});
+			$(rng._el).simulate('keypress', {keyCode: 13, which: 13, charCode: 13});
 			$(rng._el).simulate('keyup', {keyCode: 13});
 		}
 	},
-	'{backspace}': function (rng){
+	'{backspace}': function (rng, s, opts){
 		var b = rng.bounds();
 		if (b[0] == b[1]) rng.bounds([b[0]-1, b[0]]); // no characters selected; it's just an insertion point. Remove the previous character
 		rng.text('', 'end'); // delete the characters and update the selection
+		if (opts.triggerKeyEvents === true) {
+			$(rng._el).simulate('keydown', {keyCode: 8});
+			$(rng._el).simulate('keyup', {keyCode: 8});
+		}
 	},
-	'{del}': function (rng){
+	'{del}': function (rng, s, opts){
 		var b = rng.bounds();
 		if (b[0] == b[1]) rng.bounds([b[0], b[0]+1]); // no characters selected; it's just an insertion point. Remove the next character
 		rng.text('', 'end'); // delete the characters and update the selection
+		if (opts.triggerKeyEvents === true) {
+			$(rng._el).simulate('keydown', {keyCode: 46});
+			$(rng._el).simulate('keyup', {keyCode: 46});
+		}
 	},
-	'{rightarrow}':  function (rng){
+	'{rightarrow}':  function (rng, s, opts){
 		var b = rng.bounds();
 		if (b[0] == b[1]) ++b[1]; // no characters selected; it's just an insertion point. Move to the right
 		rng.bounds([b[1], b[1]]).select();
+		if (opts.triggerKeyEvents === true) {
+			$(rng._el).simulate('keydown', {keyCode: 39});
+			$(rng._el).simulate('keyup', {keyCode: 39});
+		}
 	},
-	'{leftarrow}': function (rng){
+	'{leftarrow}': function (rng, s, opts){
 		var b = rng.bounds();
 		if (b[0] == b[1]) --b[0]; // no characters selected; it's just an insertion point. Move to the left
 		rng.bounds([b[0], b[0]]).select();
+		if (opts.triggerKeyEvents === true) {
+			$(rng._el).simulate('keydown', {keyCode: 37});
+			$(rng._el).simulate('keyup', {keyCode: 37});
+		}
 	},
 	'{selectall}' : function (rng){
 		rng.bounds('all').select();
