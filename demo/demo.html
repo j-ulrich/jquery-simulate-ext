@@ -6,8 +6,8 @@
 	<link rel="stylesheet" href="jquery-ui-1.8.22.custom.css" />
 	<script type="text/javascript" src="../libs/jquery-1.7.2.js"></script>
 	<script type="text/javascript" src="jquery-ui-1.8.22.custom.min.js"></script>
-	<script type="text/javascript" src="../libs/jquery.simulate.js"></script>
 	<script type="text/javascript" src="../libs/bililiteRange.js"></script>
+	<script type="text/javascript" src="../libs/jquery.simulate.js"></script>
 	<script type="text/javascript" src="../jquery.simulate.drag-n-drop.js"></script>
 	<script type="text/javascript" src="../jquery.simulate.key-sequence.js"></script>
 	<script type="text/javascript" src="../jquery.simulate.key-combo.js"></script>
@@ -24,10 +24,13 @@
 				else
 					eventLog.indentation = eventLog.indentation.substr(-4);
 			}
-			eventLog.append = function(str) {
-				eventLog.val(eventLog.val()+eventLog.indentation+str+"\n");
+			eventLog.append = function(str, indent) {
+				if (indent === true || indent === undefined)
+					eventLog.val(eventLog.val()+eventLog.indentation+str+"\n");
+				else
+					eventLog.val(eventLog.val()+str+"\n");
 			}
-			simulated = false; // Global variable
+			logMouseMove = false; // Global variable
 			
 			
 			$('#slider').slider();
@@ -37,7 +40,7 @@
 			});
 			
 			function logMouseMoveEvent(event) {
-				if (simulated) {
+				if (logMouseMove) {
 					var indentLength = 10-event.type.length;
 					var indent = "";
 					for (var i=0; i < indentLength; i+=1) {
@@ -69,25 +72,34 @@
 			}
 			
 			$(document).bind({
-				'keyup': logButtonEvent,
-				'keydown': logButtonEvent,
-				'keypress': logButtonEvent,
-				'mousedown': logButtonEvent,
-				'mouseup': logButtonEvent,
+				'keyup keydown keypress mousedown mouseup': logButtonEvent,
 				'mousemove': logMouseMoveEvent
 			});
 			$(document).bind('mousemove', function(event) {
 				$('#mousePos').text("("+event.pageX+","+event.pageY+")");
 			});
 			
+			$('#clear-log').click(function() {
+				$('#eventLog').val("");
+			});
+			
 			initDemo();
 		});
 	</script>
 	<style type="text/css">
+		body {
+			font-family: sans-serif;
+		}
+		
+		h5 {
+			font-size: 14px;
+			margin-bottom: 0.5em;
+		}
+		
 		.container {
 			/* width: 30%; */
 			margin: 1em;
-			margin-bottom: 2em;
+			margin-top: 0.5em;
 			border-radius: 6px;
 			border: 1px solid black;
 			padding: 1em;
@@ -122,7 +134,7 @@
 		
 		#eventLog {
 			height: 35em;
-			width: 30em;
+			width: 100%;
 		}
 		
 		#textInput {
@@ -148,6 +160,9 @@
 				<button id="sequence-foobar">Key Sequence "fooob{leftarrow}{backspace}{rightarrow}ar"</button>
 			</div>
 			<div class="simulate-buttons">
+				Delay: <input id="sequence-delay" type="number" min="0"> ms
+			</div>
+			<div class="simulate-buttons">
 				Custom Sequence:<input id="customSequence" type="text" value="test me!"/><button id="sequence-custom">Execute custom sequence</button>
 			</div>
 		</div>
@@ -156,18 +171,38 @@
 			<div>Current slider value: <input id="currentSliderValue" type="text" value="0" readonly="readonly" /></div>
 			<div class="simulate-buttons">
 				<h4>Drag-n-Drop Simulation:</h4>
-				Press 'd' to simulate a drop while dragging.<br/>
+				<p>Press 'd' to simulate a drop while dragging.<br/>
+				<b>Note:</b> Avoid moving the mouse during drag simulation.</p>
 				<button id="drag-50r">Drag 50px right</button>
 				<button id="dnd-50l">Drag'n'Drop 50px left</button>
 				<button id="dnd-50r">Drag'n'Drop 50px right</button>
+			</div>
+			<div class="simulate-buttons">
+				<button id="drag-350r">Drag 350px right</button>
+				<button id="dnd-350l">Drag'n'Drop 350px left</button>
+				<button id="dnd-350r">Drag'n'Drop 350px right</button>
+			</div>
+			<div class="simulate-buttons">
+				<h5>Interpolation:</h5>
+				<select id="drag-interpolation-type">
+					<option value="stepCount">Step Count</option>
+					<option value="stepWidth">Step Width</option>
+				</select>: <input id="drag-interpolation" type="number" min="0"> <br/>
+				<select id="drag-delay-type">
+					<option value="stepDelay">Delay</option>
+					<option value="duration">Duration</option>
+				</select>: <input id="drag-delay" type="number" min="0"> ms<br/>
+				Shaky: <input id="drag-shaky" type="text" style="width: 10em;"> pixels
 			</div>
 		</div>
 	</div>
 	<div class="container-left container">
 		<div style="margin-bottom: 0.5em;">
-			Event Log:<br/>
+			Event Log:
+			<button id="clear-log" style="float: right;">Clear Log</button>
+			<div style="clear: both;"></div>
 			<textarea id="eventLog" readonly="readonly"></textarea><br/>
-			<small><b>Note:</b> Non-simulated mousemove events are omitted to avoid spamming</small>
+			<small><b>Note:</b> mousemove events are logged only during drag simulation to avoid spamming</small>
 		</div>
 		<div>
 		MouseMove Position: <span id="mousePos"></span>
@@ -175,16 +210,56 @@
 	</div>
 	<script type="text/javascript">
 	function simulateWrapper(target, type, options) {
+		
+		switch (type) {
+		case "key-sequence":
+			options.delay = $('#sequence-delay').val();
+			break;
+		case "drag":
+		case "drag-n-drop":
+			logMouseMove = true;
+			var interpolationType = $('#drag-interpolation-type').val(),
+				delayType = $('#drag-delay-type').val();
+			options.interpolation = {
+				shaky: $('#drag-shaky').val()
+			};
+			options.interpolation[interpolationType] = $('#drag-interpolation').val();
+			options.interpolation[delayType] = $('#drag-delay').val();
+			break;
+		}
+	
 		eventLog.append("####### Simulating "+type+" #######");
 		eventLog.incIndentation();
-		simulated = true;
-		$(target).simulate(type, options);
-		simulated = false;
-		eventLog.decIndentation();
-		eventLog.append("################################");
 		
-	}
+		function simulationEnd() {
+			logMouseMove = false;
+			eventLog.decIndentation();
+			eventLog.append("################################");
+		}
+		
+		$(document).off("simulate-keySequence simulate-drag");
+		
+		switch (type) {
+		case "key-sequence":
+			$(document).on("simulate-keySequence", simulationEnd);
+			break;
+		case "drag":
+			$(document).on("simulate-drag", simulationEnd);
+			break;
+		case "drag-n-drop":
+			$(document).on("simulate-drag", function() {
+				$(document).one("mouseup", simulationEnd);
+			});
+			break;
+		case "drop":
+			$(document).one("mouseup", simulationEnd);
+			break;
+		}
 
+		$(target).simulate(type, options);
+	}
+	
+	
 	function initDemo() {
 		// Bind 'd' to simulate a drop
 		$(document).bind('keyup', function(event) {
@@ -224,6 +299,15 @@
 		});
 		$('#dnd-50r').bind('click', function() {
 			simulateWrapper(handle, 'drag-n-drop', {dx: 50});
+		});
+		$('#drag-350r').bind('click', function() {
+			simulateWrapper(handle, 'drag', {dx: 350});
+		});
+		$('#dnd-350l').bind('click', function() {
+			simulateWrapper(handle, 'drag-n-drop', {dx: -350});
+		});
+		$('#dnd-350r').bind('click', function() {
+			simulateWrapper(handle, 'drag-n-drop', {dx: 350});
 		});
 	}
 	</script>
