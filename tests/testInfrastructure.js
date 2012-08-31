@@ -36,10 +36,12 @@
 		
 		testSetup: function() {
 			tests.expectedEvents = [];
+			$(document).on("keyup keydown keypress mousedown mouseup mousemove", '#qunit-fixture', tests.assertExpectedEvent);
 		},
 		
 		testTearDown: function() {
 			var event;
+			$(document).off("keyup keydown keypress mousedown mouseup mousemove", '#qunit-fixture');
 			while ( (event = tests.expectedEvents.shift()) !== undefined) {
 				if (event.type) {
 					ok(false, "Missing event: "+event.type);
@@ -51,15 +53,6 @@
 			$(document).simulate("drop");
 		}
 	};
-	
-	$(document).on({
-		keyup: tests.assertExpectedEvent,
-		keydown: tests.assertExpectedEvent,
-		keypress: tests.assertExpectedEvent,
-		mousedown: tests.assertExpectedEvent,
-		mouseup: tests.assertExpectedEvent,
-		mousemove: tests.assertExpectedEvent
-	}, '#qunit-fixture');
 	
 	
 }(jQuery));

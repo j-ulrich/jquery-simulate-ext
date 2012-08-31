@@ -73,6 +73,15 @@
 			if (typeof sequence === 'undefined') return; // no string, so we just set up the event handlers
 			sequence = sequence.replace(/\n/g, '{enter}'); // turn line feeds into explicit break insertions
 			
+			function sequenceFinished() {
+				$(target).trigger({type: 'simulate-keySequence', sequence: sequence});
+				if ($.isFunction(opts.callback)) {
+					opts.callback.apply(target, [{
+						sequence: sequence
+					}]);
+				}
+			}
+			
 			function processNextToken() {
 				var timeElapsed = now() - lastTime; // Work-around for Firefox "bug": setTimeout can fire before the timeout
 				if (timeElapsed >= opts.delay) {
@@ -82,6 +91,9 @@
 						(localkeys[s] || $.simulate.prototype.simulateKeySequence.defaults[s] || $.simulate.prototype.simulateKeySequence.defaults.simplechar)(rng, s, opts);
 						setTimeout(processNextToken, opts.delay);
 					}
+					else {
+						sequenceFinished();
+					}
 					lastTime = now();
 				}
 				else {
@@ -89,11 +101,12 @@
 				}
 			}
 
-			if (!opts.delay) {
+			if (!opts.delay || opts.delay <= 0) {
 				// Run as fast as possible
 				sequence.replace(/{[^}]*}|[^{]+/g, function(s){
 					(localkeys[s] || $.simulate.prototype.simulateKeySequence.defaults[s] || $.simulate.prototype.simulateKeySequence.defaults.simplechar)(rng, s, opts);
-				});				
+				});
+				sequenceFinished();
 			}
 			else {
 				var tokenRegExp = /{[^}]*}|[^{]/g; // This matches curly bracket expressions or single characters
@@ -103,7 +116,6 @@
 				processNextToken();
 			}
 			
-			$(target).trigger({type: 'simulate-keySequence', which: sequence});
 		}
 	});
 

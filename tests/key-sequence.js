@@ -123,8 +123,6 @@ $(document).ready(function() {
 		
 		setTimeout(function() {
 			start();
-			// Rebind "normal" assertExpectedEvent function
-			$(document).off("mousemove", "#qunit-fixture", assertExpectedEventDelay).on("mousemove", "#qunit-fixture", tests.assertExpectedEvent);
 		},(testSequence.length+2)*keyDelay);
 
 	});
