@@ -45,10 +45,10 @@
 	$.extend($.simulate.prototype, {
 		simulateKeySequence: function() {
 			var target = this.target,
-				opts = this.options,
-				opts.delay = parseInt(opts.delay),
+				opts = this.options || {},
 				sequence = opts.sequence || "";
-			
+				
+			opts.delay = parseInt(opts.delay);
 			opts.triggerKeyEvents = (opts.triggerKeyEvents === undefined)?true:opts.triggerKeyEvents;
 			
 			var localkeys = $.extend({}, opts, $(target).data('simulate-keySequence')); // allow for element-specific key functions

@@ -7,12 +7,12 @@
 
 $(document).ready(function() {
 	
-	
 	module("drag-n-drop", {
 		setup: function() {
 			tests.testSetup();
 			$(document).on("simulate-drag simulate-drop", '#qunit-fixture', tests.assertExpectedEvent);
 		},
+		
 		teardown: function() {
 			$(document).off("simulate-drag simulate-drop", '#qunit-fixture');
 			tests.testTearDown();
@@ -33,6 +33,24 @@ $(document).ready(function() {
 		];
 		
 		testElement.simulate("drag", {dx: dragX, dy: dragY});
+	});
+
+	test("drag callback", function() {
+		var testElement = $('#dragArea');
+		var dragX = 50,
+			dragY = 10;
+		var expectedX = Math.round(testElement.offset().left+testElement.width()/2)+dragX,
+			expectedY = Math.round(testElement.offset().top+testElement.height()/2)+dragY;
+		tests.expectedEvents = [
+			{type: "mousedown"},
+			{type: "mousemove", pageX: expectedX, pageY: expectedY},
+			{type: "simulate-drag"},
+			{type: "callback"}
+		];
+		
+		testElement.simulate("drag", {dx: dragX, dy: dragY, callback: function() {
+			tests.assertExpectedEvent({type: "callback"});
+		}});
 	});
 
 	test("drag-onTarget", function() {
@@ -66,6 +84,24 @@ $(document).ready(function() {
 		testElement.simulate("drop");
 	});
 	
+	test("drop callback", function() {
+		var testElement = $('#dropArea');
+		
+		var expectedX = Math.round(testElement.offset().left+testElement.width()/2),
+			expectedY = Math.round(testElement.offset().top+testElement.height()/2);
+		
+		tests.expectedEvents = [
+			{type: "mousemove", pageX: expectedX, pageY: expectedY}, // A drop without an active drag moves the mouse onto the target before dropping
+			{type: "mouseup"},
+			{type: "simulate-drop"},
+			{type: "callback"}
+		];
+		
+		testElement.simulate("drop", {callback: function() {
+			tests.assertExpectedEvent({type: "callback"});
+		}});
+	});
+	
 	test("drag-n-drop", function() {
 		var testElement = $('#dragArea');
 		
@@ -84,6 +120,29 @@ $(document).ready(function() {
 		
 		testElement.simulate("drag-n-drop", {dx: dragX, dy: dragY});
 	});
+	
+	test("drag-n-drop callback", function() {
+		var testElement = $('#dragArea');
+		
+		var dragX = 50,
+			dragY = 10;
+		var expectedX = Math.round(testElement.offset().left+testElement.width()/2)+dragX,
+			expectedY = Math.round(testElement.offset().top+testElement.height()/2)+dragY;
+
+		tests.expectedEvents = [
+			{type: "mousedown"},
+			{type: "mousemove", pageX: expectedX, pageY: expectedY},
+			{type: "simulate-drag"},
+			{type: "mouseup", pageX: expectedX, pageY: expectedY},
+			{type: "simulate-drop"},
+			{type: "callback"}
+		];
+		
+		testElement.simulate("drag-n-drop", {dx: dragX, dy: dragY, callback: function() {
+			tests.assertExpectedEvent({type: "callback"});
+		}});
+	});
+
 	
 	test("move-before-drop", function() {
 		var dragElement = $('#dragArea'),

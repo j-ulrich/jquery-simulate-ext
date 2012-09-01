@@ -10,8 +10,11 @@ $(document).ready(function() {
 	module("key-sequence", {
 		setup: function() {
 			tests.testSetup();
+			$(document).on("simulate-keySequence", '#qunit-fixture', tests.assertExpectedEvent);
 		},
+		
 		teardown: function() {
+			$(document).off("simulate-keySequence", '#qunit-fixture');
 			tests.testTearDown();
 		}
 	});
@@ -27,7 +30,8 @@ $(document).ready(function() {
 			/* B */ {type: "keydown", keyCode: 66}, {type: "keypress", which: "B".charCodeAt(0)}, {type: "keyup", keyCode: 66},
 			/* a */ {type: "keydown", keyCode: 65}, {type: "keypress", which: "a".charCodeAt(0)}, {type: "keyup", keyCode: 65},
 			/* R */ {type: "keydown", keyCode: 82}, {type: "keypress", which: "R".charCodeAt(0)}, {type: "keyup", keyCode: 82},
-			/* 1 */ {type: "keydown", keyCode: 49}, {type: "keypress", which: "1".charCodeAt(0)}, {type: "keyup", keyCode: 49}
+			/* 1 */ {type: "keydown", keyCode: 49}, {type: "keypress", which: "1".charCodeAt(0)}, {type: "keyup", keyCode: 49},
+			{type: "simulate-keySequence"}
 		];
 		
 		var testSequence = "fO0BaR1";
@@ -35,11 +39,32 @@ $(document).ready(function() {
 		
 		strictEqual(testElement.val(), testSequence, "Verify result of sequence");
 	});
+	
+	test("sequence callback", function() {
+		var testElement = $('#textInput');
+		
+		tests.expectedEvents = [
+			/* t */ {type: "keydown", keyCode: 84}, {type: "keypress", which: "t".charCodeAt(0)}, {type: "keyup", keyCode: 84},
+			/* e */ {type: "keydown", keyCode: 69}, {type: "keypress", which: "e".charCodeAt(0)}, {type: "keyup", keyCode: 69},
+			/* s */ {type: "keydown", keyCode: 83}, {type: "keypress", which: "s".charCodeAt(0)}, {type: "keyup", keyCode: 83},
+			/* t */ {type: "keydown", keyCode: 84}, {type: "keypress", which: "t".charCodeAt(0)}, {type: "keyup", keyCode: 84},
+			{type: "simulate-keySequence"},
+			{type: "callback"}
+		];
+		
+		var testSequence = "test";
+		testElement.simulate("key-sequence", {sequence: testSequence, callback: function() {
+			tests.assertExpectedEvent({type: "callback"});
+		}});
+		
+	});
+
 
 	test("no events", function() {
 		var testElement = $('#textInput');
 		
 		tests.expectedEvents = [
+			{type: "simulate-keySequence"}
 		];
 		
 		var testSequence = "fO0BaR1";
@@ -59,8 +84,9 @@ $(document).ready(function() {
 			/* ; */ {type: "keydown", keyCode: 186}, {type: "keypress", which: ";".charCodeAt(0)}, {type: "keyup", keyCode: 186},
 			/* : */ {type: "keydown", keyCode: 186}, {type: "keypress", which: ":".charCodeAt(0)}, {type: "keyup", keyCode: 186},
 			/* + */ {type: "keydown", keyCode: 187}, {type: "keypress", which: "+".charCodeAt(0)}, {type: "keyup", keyCode: 187},
-			/* ! */ {type: "keydown", keyCode: 49}, {type: "keypress", which: "!".charCodeAt(0)}, {type: "keyup", keyCode: 49},
-			/* ? */ {type: "keydown", keyCode: 191}, {type: "keypress", which: "?".charCodeAt(0)}, {type: "keyup", keyCode: 191}
+			/* ! */ {type: "keydown", keyCode:  49}, {type: "keypress", which: "!".charCodeAt(0)}, {type: "keyup", keyCode: 49},
+			/* ? */ {type: "keydown", keyCode: 191}, {type: "keypress", which: "?".charCodeAt(0)}, {type: "keyup", keyCode: 191},
+			{type: "simulate-keySequence"}
 		];
 		
 		testElement.simulate("key-sequence", {sequence: "_-.,;:+!?"});
@@ -78,7 +104,8 @@ $(document).ready(function() {
 			/* { */ {type: "keydown", keyCode: 219}, {type: "keypress", which: "{".charCodeAt(0)}, {type: "keyup", keyCode: 219},
 			/* b */ {type: "keydown", keyCode: 66}, {type: "keypress", which: "b".charCodeAt(0)}, {type: "keyup", keyCode: 66},
 			/* {rightarrow} */ {type: "keydown", keyCode: 39}, {type: "keyup", keyCode: 39},
-			/* {backspace} */ {type: "keydown", keyCode: 8}, {type: "keyup", keyCode: 8}
+			/* {backspace} */ {type: "keydown", keyCode: 8}, {type: "keyup", keyCode: 8},
+			{type: "simulate-keySequence"}
 		];
 		
 		testElement.simulate("key-sequence", {sequence: "as{selectall}{del}f{leftarrow}{{}b{rightarrow}{backspace}"});
@@ -93,7 +120,8 @@ $(document).ready(function() {
 			/* t */ {type: "keydown", keyCode: 84}, {type: "keypress", which: "t".charCodeAt(0)}, {type: "keyup", keyCode: 84},
 			/* e */ {type: "keydown", keyCode: 69}, {type: "keypress", which: "e".charCodeAt(0)}, {type: "keyup", keyCode: 69},
 			/* s */ {type: "keydown", keyCode: 83}, {type: "keypress", which: "s".charCodeAt(0)}, {type: "keyup", keyCode: 83},
-			/* t */ {type: "keydown", keyCode: 84}, {type: "keypress", which: "t".charCodeAt(0)}, {type: "keyup", keyCode: 84}
+			/* t */ {type: "keydown", keyCode: 84}, {type: "keypress", which: "t".charCodeAt(0)}, {type: "keyup", keyCode: 84},
+			{type: "simulate-keySequence"}
 		];
 		
 		var keyDelay = 100,

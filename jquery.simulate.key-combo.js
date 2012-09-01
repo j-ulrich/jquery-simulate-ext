@@ -46,7 +46,7 @@
 		 */
 		simulateKeyCombo: function() {
 			var target = $(this.target),
-				options = this.options,
+				options = this.options || {},
 				eventOptions = $.extend({},options),
 				combo = options.combo || "",
 				comboSplit = combo.split(/(\+)/),
