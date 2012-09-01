@@ -104,7 +104,7 @@
 							eventOptions.charCode = eventOptions.keyCode;
 							eventOptions.which = eventOptions.keyCode;
 							target.simulate("keypress", eventOptions);
-							if (!eventOptions.ctrlKey && !eventOptions.altKey && !eventOptions.metaKey) {
+							if (options.eventsOnly !== true && !eventOptions.ctrlKey && !eventOptions.altKey && !eventOptions.metaKey) {
 								target.simulate('key-sequence', {sequence: key, triggerKeyEvents: false});
 							}
 						}

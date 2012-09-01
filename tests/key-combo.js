@@ -37,6 +37,25 @@ $(document).ready(function() {
 		strictEqual(testElement.val(), "aSdF", "Verify result of sequence");
 	});
 
+	test("events only", function() {
+		var testElement = $('#textInput');
+		
+		tests.expectedEvents = [
+			/* a */ {type: "keydown", keyCode: 65}, {type: "keypress", which: "a".charCodeAt(0)},
+			/* S */ {type: "keydown", keyCode: 83}, {type: "keypress", which: "S".charCodeAt(0)},
+			/* d */ {type: "keydown", keyCode: 68}, {type: "keypress", which: "d".charCodeAt(0)},
+			/* F */ {type: "keydown", keyCode: 70}, {type: "keypress", which: "F".charCodeAt(0)},
+			/* F */ {type: "keyup", keyCode: 70},
+			/* d */ {type: "keyup", keyCode: 68},
+			/* S */ {type: "keyup", keyCode: 83},
+			/* a */ {type: "keyup", keyCode: 65}
+		];
+		
+		testElement.simulate("key-combo", {combo: "a+S+d+F", eventsOnly: true});
+		
+		strictEqual(testElement.val(), "", "Verify result of sequence");
+	});
+
 	test("modifiers", function() {
 		var testElement = $('#textInput');
 		
