@@ -45,11 +45,15 @@
 	$.extend($.simulate.prototype, {
 		simulateKeySequence: function() {
 			var target = this.target,
-				opts = this.options || {},
-				sequence = opts.sequence || "";
+				opts = $.extend({
+					sequence: "",
+					triggerKeyEvents: true,
+					delay: 0,
+					callback: undefined
+				}, this.options),
+				sequence = opts.sequence;
 				
 			opts.delay = parseInt(opts.delay);
-			opts.triggerKeyEvents = (opts.triggerKeyEvents === undefined)?true:opts.triggerKeyEvents;
 			
 			var localkeys = $.extend({}, opts, $(target).data('simulate-keySequence')); // allow for element-specific key functions
 			// most elements to not keep track of their selection when they lose focus, so we have to do it for them

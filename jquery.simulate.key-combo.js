@@ -46,14 +46,18 @@
 		 */
 		simulateKeyCombo: function() {
 			var target = $(this.target),
-				options = this.options || {},
-				eventOptions = $.extend({},options),
-				combo = options.combo || "",
+				options = $.extend({
+					combo: "",
+					eventsOnly: false
+				}, this.options),
+				eventOptions = {},
+				combo = options.combo,
 				comboSplit = combo.split(/(\+)/),
 				plusExpected = false,
 				holdKeys = [],
 				i;
 			
+				
 			// Remove empty parts
 			comboSplit = $.grep(comboSplit, function(part) {
 				return (part !== "");

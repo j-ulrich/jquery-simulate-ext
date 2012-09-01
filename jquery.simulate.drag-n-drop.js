@@ -113,7 +113,19 @@
 		
 		simulateDrag: function() {
 			var target = this.target,
-				options = this.options || {},
+				options = $.extend({
+					dx: 0,
+					dy: 0,
+					dragTarget: undefined,
+					interpolation: {
+						stepWidth: 0,
+						stepCount: 0,
+						stepDelay: 0,
+						duration: 0,
+						shaky: 0
+					},
+					callback: undefined
+				},	this.options),
 				start = findCenter( target ),
 				end = (options.dragTarget)? findCenter(options.dragTarget) : undefined,
 				x = Math.round( start.x ),
@@ -171,7 +183,9 @@
 		simulateDrop: function() {
 			var target = this.target,
 				activeDrag = $.simulate.activeDrag,
-				options = this.options || {},
+				options = $.extend({
+					callback: undefined
+				}, this.options),
 				center = findCenter( target ),
 				x = Math.round( center.x ),
 				y = Math.round( center.y ),
@@ -199,7 +213,10 @@
 		
 		simulateDragNDrop: function() {
 			var target = this.target,
-				options = this.options || {},
+				options = $.extend({
+					dragTarget: undefined,
+					dropTarget: undefined
+				}, this.options),
 				dropTarget = options.dropTarget || target;
 /*
 				dx = (options.dropTarget)? 0 : (options.dx || 0),
