@@ -6,6 +6,8 @@
 	<link rel="stylesheet" href="jquery-ui-1.8.22.custom.css" />
 	<script type="text/javascript" src="../libs/jquery-1.7.2.js"></script>
 	<script type="text/javascript" src="jquery-ui-1.8.22.custom.min.js"></script>
+	<script type="text/javascript" src="raphael-min.js"></script>
+	<script type="text/javascript" src="raphael.sketchpad.js"></script>
 	<script type="text/javascript" src="../libs/bililiteRange.js"></script>
 	<script type="text/javascript" src="../libs/jquery.simulate.js"></script>
 	<script type="text/javascript" src="../jquery.simulate.drag-n-drop.js"></script>
@@ -93,6 +95,17 @@
 				$('#drag-interpolation-unit').text(unit);
 			}).change();
 			
+			var sketchpad = Raphael.sketchpad("drawing-area", {
+				height: 400,
+				width: "100%",
+				editing: true
+			});
+			
+			sketchpad.pen().width(1);
+			$('#clear-area').click(function() {
+				sketchpad.clear();
+			});
+			
 			initDemo();
 		});
 	</script>
@@ -129,6 +142,11 @@
 			/* border: 1px solid black; */
 		}
 		
+		.container-right-fixed {
+			position: fixed;
+			left: 40%;
+		}
+		
 		.simulate-buttons {
 			margin: 0.5em;
 		}
@@ -149,6 +167,11 @@
 		
 		#textInput {
 			background-color: #EEEEEE;
+		}
+		
+		#drawing-area {
+			background-color: #EEEEEE;
+			border: 1px solid black;
 		}
 	</style>
 </head>
@@ -177,25 +200,41 @@
 			</div>
 		</div>
 		<div class="container">
-			<div id="slider"></div>
-			<div>Current slider value: <input id="currentSliderValue" type="text" value="0" readonly="readonly" /></div>
-			<div class="simulate-buttons">
-				<h4>Drag-n-Drop Simulation:</h4>
-				<p>Press 'd' to simulate a drop while dragging.</p>
-				<button id="drag-50r">Drag 50px right</button>
-				<button id="dnd-50l">Drag'n'Drop 50px left</button>
-				<button id="dnd-50r">Drag'n'Drop 50px right</button>
+			<div class="container">
+				<div id="slider"></div>
+				<div>Current slider value: <input id="currentSliderValue" type="text" value="0" readonly="readonly" /></div>
+				<div class="simulate-buttons">
+					<h4>Slider Drag-n-Drop Simulation:</h4>
+					<p>Press 'd' to simulate a drop while dragging.</p>
+					<button id="drag-50r">Drag 50px right</button>
+					<button id="dnd-50l">Drag'n'Drop 50px left</button>
+					<button id="dnd-50r">Drag'n'Drop 50px right</button>
+				</div>
+				<div class="simulate-buttons">
+					<button id="drag-350r">Drag 350px right</button>
+					<button id="dnd-350l">Drag'n'Drop 350px left</button>
+					<button id="dnd-350r">Drag'n'Drop 350px right</button>
+				</div>
 			</div>
-			<div class="simulate-buttons">
-				<button id="drag-350r">Drag 350px right</button>
-				<button id="dnd-350l">Drag'n'Drop 350px left</button>
-				<button id="dnd-350r">Drag'n'Drop 350px right</button>
+			<div class="container">
+				<button id="clear-area" style="float: right; margin-bottom: 0.5em;">Clear Area</button>
+				<div style="clear: both;"></div>
+				<div id="drawing-area"></div>
+				<div class="simulate-buttons">
+					<h4>Drawing Drag-n-Drop Simulation:</h4>
+					<button id="drawing-dnd-100r">Draw 100px right</button>
+					<button id="drawing-dnd-100u">Draw 100px up</button>
+					<button id="drawing-dnd-100bl">Draw 100px bottom-left</button>
+				</div>
+				<div class="simulate-buttons">
+					dx: <input id="drawing-dx" type="number" />, dy: <input id="drawing-dy" type="number" /><button id="drawing-custom">Execute custom draw</button>
+				</div>
 			</div>
 			<div class="container container-right" style="width: 11em; padding: 0.5em;">
 				<b>Note:</b><br/>Avoid moving the mouse during interpolated drag/drag'n'drop simulations.
 			</div>
 			<div class="simulate-buttons">
-				<h5>Interpolation:</h5>
+				<h4>Interpolation:</h4>
 				<select id="drag-interpolation-type">
 					<option value="stepCount">Step Count</option>
 					<option value="stepWidth">Step Width</option>
@@ -203,15 +242,15 @@
 				<select id="drag-delay-type">
 					<option value="stepDelay">Step Delay</option>
 					<option value="duration">Duration</option>
-				</select>: <input id="drag-delay" type="number" min="0"> ms<br/>
-				Shaky: <input id="drag-shaky" type="text" style="width: 10em;"> pixels
+				</select>: <input id="drag-delay" type="number" min="0" /> ms<br/>
+				Shaky: <input id="drag-shaky" type="text" style="width: 10em;" /> pixels
 			</div>
 		</div>
 	</div>
-	<div class="container-left container">
+	<div class="container container-right-fixed">
 		<div style="margin-bottom: 0.5em;">
 			Event Log:
-			<button id="clear-log" style="float: right;">Clear Log</button>
+			<button id="clear-log" style="float: right; margin-bottom: 0.5em;">Clear Log</button>
 			<div style="clear: both;"></div>
 			<textarea id="eventLog" readonly="readonly"></textarea><br/>
 			<small><b>Note:</b> mousemove events are logged only during drag simulation to avoid spamming</small>
@@ -232,8 +271,9 @@
 			logMouseMove = true;
 			var interpolationType = $('#drag-interpolation-type').val(),
 				delayType = $('#drag-delay-type').val();
+			var shakyValue = $('#drag-shaky').val();
 			options.interpolation = {
-				shaky: $('#drag-shaky').val()
+				shaky: (shakyValue.toLowerCase() === "true")? true : parseInt(shakyValue)
 			};
 			options.interpolation[interpolationType] = $('#drag-interpolation').val();
 			options.interpolation[delayType] = $('#drag-delay').val();
@@ -321,6 +361,23 @@
 		$('#dnd-350r').bind('click', function() {
 			simulateWrapper(handle, 'drag-n-drop', {dx: 350});
 		});
+		
+		var drawingArea = $('#drawing-area');
+		$('#drawing-dnd-100r').bind('click', function() {
+			simulateWrapper(drawingArea, 'drag-n-drop', {dx: 100});
+		});
+		$('#drawing-dnd-100u').bind('click', function() {
+			simulateWrapper(drawingArea, 'drag-n-drop', {dy: -100});
+		});
+		$('#drawing-dnd-100bl').bind('click', function() {
+			simulateWrapper(drawingArea, 'drag-n-drop', {dx: -71, dy: 71});
+		});
+		$('#drawing-custom').bind('click', function() {
+			var dx = parseInt($('#drawing-dx').val()),
+				dy = parseInt($('#drawing-dy').val());
+			simulateWrapper(drawingArea, 'drag-n-drop', {dx: dx, dy: dy});
+		});
+		
 	}
 	</script>
 </body>
