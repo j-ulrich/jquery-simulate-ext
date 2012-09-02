@@ -83,6 +83,16 @@
 				$('#eventLog').val("");
 			});
 			
+			$('#drag-interpolation-type').change(function() {
+				var unit;
+				switch ($(this).val()) {
+					case "stepCount": unit = "steps"; break;
+					case "stepWidth": unit = "pixels"; break;
+					default: unit = ""; break;
+				}
+				$('#drag-interpolation-unit').text(unit);
+			}).change();
+			
 			initDemo();
 		});
 	</script>
@@ -171,8 +181,7 @@
 			<div>Current slider value: <input id="currentSliderValue" type="text" value="0" readonly="readonly" /></div>
 			<div class="simulate-buttons">
 				<h4>Drag-n-Drop Simulation:</h4>
-				<p>Press 'd' to simulate a drop while dragging.<br/>
-				<b>Note:</b> Avoid moving the mouse during drag simulation.</p>
+				<p>Press 'd' to simulate a drop while dragging.</p>
 				<button id="drag-50r">Drag 50px right</button>
 				<button id="dnd-50l">Drag'n'Drop 50px left</button>
 				<button id="dnd-50r">Drag'n'Drop 50px right</button>
@@ -182,14 +191,17 @@
 				<button id="dnd-350l">Drag'n'Drop 350px left</button>
 				<button id="dnd-350r">Drag'n'Drop 350px right</button>
 			</div>
+			<div class="container container-right" style="width: 11em; padding: 0.5em;">
+				<b>Note:</b><br/>Avoid moving the mouse during interpolated drag/drag'n'drop simulations.
+			</div>
 			<div class="simulate-buttons">
 				<h5>Interpolation:</h5>
 				<select id="drag-interpolation-type">
 					<option value="stepCount">Step Count</option>
 					<option value="stepWidth">Step Width</option>
-				</select>: <input id="drag-interpolation" type="number" min="0"> <br/>
+				</select>: <input id="drag-interpolation" type="number" min="0"> <span id="drag-interpolation-unit"></span><br/>
 				<select id="drag-delay-type">
-					<option value="stepDelay">Delay</option>
+					<option value="stepDelay">Step Delay</option>
 					<option value="duration">Duration</option>
 				</select>: <input id="drag-delay" type="number" min="0"> ms<br/>
 				Shaky: <input id="drag-shaky" type="text" style="width: 10em;"> pixels
@@ -237,7 +249,7 @@
 			eventLog.append("################################");
 		}
 		
-		$(document).off("simulate-keySequence simulate-drag");
+		$(document).off("simulate-keySequence simulate-drag simulate-drop");
 		
 		switch (type) {
 		case "key-sequence":
@@ -247,12 +259,8 @@
 			$(document).on("simulate-drag", simulationEnd);
 			break;
 		case "drag-n-drop":
-			$(document).on("simulate-drag", function() {
-				$(document).one("mouseup", simulationEnd);
-			});
-			break;
 		case "drop":
-			$(document).one("mouseup", simulationEnd);
+			$(document).on("simulate-drop", simulationEnd);
 			break;
 		}
 
