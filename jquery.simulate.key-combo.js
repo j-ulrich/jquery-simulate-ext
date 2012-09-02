@@ -101,7 +101,7 @@
 							eventOptions.which = keyCode;
 							eventOptions.charCode = undefined;
 							target.simulate("keydown", eventOptions);
-							if (eventOptions.shiftKey || eventOptions.ctrlKey || eventOptions.altKey || eventOptions.metaKey) {
+							if (eventOptions.shiftKey) {
 								key = key.toUpperCase();
 							}
 							eventOptions.keyCode = key.charCodeAt(0);

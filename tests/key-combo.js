@@ -93,6 +93,21 @@ $(document).ready(function() {
 		strictEqual(testElement.val(), "A", "Verify result of sequence");
 	});
 
+	test("modifier without shift", function() {
+		var testElement = $('#textInput');
+		
+		tests.expectedEvents = [
+			/* ctrl */	{type: "keydown", keyCode: 17, ctrlKey: true, shiftKey: false, altKey: false, metaKey: false},
+			/* a */		{type: "keydown", keyCode: 65, ctrlKey: true, shiftKey: false, altKey: false, metaKey: false}, {type: "keypress", which: "a".charCodeAt(0), ctrlKey: true, shiftKey: false, altKey: false, metaKey: false},
+			/* a */		{type: "keyup", keyCode: 65, ctrlKey: true, shiftKey: false, altKey: false, metaKey: false},
+			/* ctrl */	{type: "keyup", keyCode: 17, ctrlKey: false, shiftKey: false, altKey: false, metaKey: false},
+		];
+		
+		testElement.simulate("key-combo", {combo: "ctrl+a"});
+		
+		strictEqual(testElement.val(), "", "Verify result of sequence");
+	});
+
 	test("special character combo", function() {
 		var testElement = $('#textInput');
 		
