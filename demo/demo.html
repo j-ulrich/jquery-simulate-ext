@@ -257,6 +257,10 @@
 		}
 
 		$(target).simulate(type, options);
+		
+		if (type === "key-combo") {
+			simulationEnd();
+		}
 	}
 	
 	
