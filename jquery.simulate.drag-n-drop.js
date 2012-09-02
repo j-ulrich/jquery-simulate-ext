@@ -62,8 +62,8 @@
 			coords.x += stepVector.x;
 			coords.y += stepVector.y;
 			var effectiveCoords = {x: coords.x, y: coords.y};
-			if (interpolOptions.shaky) {
-				var amplitude = parseInt(interpolOptions.shaky) || 3;
+			if (interpolOptions.shaky && (interpolOptions.shaky === true || !isNaN(parseInt(interpolOptions.shaky)) )) {
+				var amplitude = (interpolOptions.shaky === true)? 3 : parseInt(interpolOptions.shaky);
 				effectiveCoords.x += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
 				effectiveCoords.y += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
 			}
