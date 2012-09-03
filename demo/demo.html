@@ -289,18 +289,17 @@
 			eventLog.append("################################");
 		}
 		
-		$(document).off("simulate-keySequence simulate-drag simulate-drop");
-		
 		switch (type) {
 		case "key-sequence":
-			$(document).on("simulate-keySequence", simulationEnd);
+			
+			$(document).one("simulate-keySequence", simulationEnd);
 			break;
 		case "drag":
-			$(document).on("simulate-drag", simulationEnd);
+			$(document).one("simulate-drag", simulationEnd);
 			break;
 		case "drag-n-drop":
 		case "drop":
-			$(document).on("simulate-drop", simulationEnd);
+			$(document).one("simulate-drop", simulationEnd);
 			break;
 		}
 
