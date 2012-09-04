@@ -120,6 +120,27 @@ $(document).ready(function() {
 		strictEqual(testElement.val(), "{b", "Verify result of sequence (this is known to fail in IE < 10.0)");
 	});
 	
+	test("line break", function() {
+		var testElement = $('#textInput');
+		
+		var testSequence = "foo{enter}bar";
+		
+		tests.expectedEvents = [
+			/* f */ {type: "keydown", keyCode: 70}, {type: "keypress", which: "f".charCodeAt(0)}, {type: "keyup", keyCode: 70},
+			/* o */ {type: "keydown", keyCode: 79}, {type: "keypress", which: "o".charCodeAt(0)}, {type: "keyup", keyCode: 79},
+			/* o */ {type: "keydown", keyCode: 79}, {type: "keypress", which: "o".charCodeAt(0)}, {type: "keyup", keyCode: 79},
+			/* {enter} */ {type: "keydown", keyCode: 13}, {type: "keypress", which: 13}, {type: "keyup", keyCode: 13},
+			/* b */ {type: "keydown", keyCode: 66}, {type: "keypress", which: "b".charCodeAt(0)}, {type: "keyup", keyCode: 66},
+			/* a */ {type: "keydown", keyCode: 65}, {type: "keypress", which: "a".charCodeAt(0)}, {type: "keyup", keyCode: 65},
+			/* r */ {type: "keydown", keyCode: 82}, {type: "keypress", which: "r".charCodeAt(0)}, {type: "keyup", keyCode: 82},
+			{type: "simulate-keySequence", sequence: testSequence}
+		];
+		
+		testElement.simulate("key-sequence", {sequence: testSequence});
+		
+		strictEqual(testElement.val(), "foo\nbar", "Verify result of sequence");
+	});
+	
 	test("delay", function() {
 		var testElement = $('#textInput');
 		

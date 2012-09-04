@@ -22,12 +22,17 @@ $(document).ready(function() {
 	//####### Test Functions #######
 	test("drag", function() {
 		var testElement = $('#dragArea');
+		
 		var dragX = 50,
 			dragY = 10;
+		
+		var elementX = Math.round(testElement.offset().left+testElement.width()/2),
+			elementY = Math.round(testElement.offset().top+testElement.height()/2);
+		
 		var expectedX = Math.round(testElement.offset().left+testElement.width()/2)+dragX,
 			expectedY = Math.round(testElement.offset().top+testElement.height()/2)+dragY;
 		tests.expectedEvents = [
-			{type: "mousedown"},
+			{type: "mousedown", pageX: elementX, pageY: elementY},
 			{type: "mousemove", pageX: expectedX, pageY: expectedY},
 			{type: "simulate-drag"}
 		];
@@ -53,7 +58,7 @@ $(document).ready(function() {
 		}});
 	});
 
-	test("drag-onTarget", function() {
+	test("drag on target", function() {
 		var testElement = $('#dragArea'),
 			dropElement = $('#dropArea');
 
@@ -77,7 +82,7 @@ $(document).ready(function() {
 		
 		tests.expectedEvents = [
 			{type: "mousemove", pageX: expectedX, pageY: expectedY}, // A drop without an active drag moves the mouse onto the target before dropping
-			{type: "mouseup"},
+			{type: "mouseup", pageX: expectedX, pageY: expectedY},
 			{type: "simulate-drop"}
 		];
 		
@@ -143,8 +148,105 @@ $(document).ready(function() {
 		}});
 	});
 
+	test("multiple drags, then drop", function() {
+		var testElement = $('#dragArea');
+		
+		var drag = [ {x: 50, y: 10}, {x: 7, y: -30}, {x: -20, y: -5}];
+		
+		var expectedX = Math.round(testElement.offset().left+testElement.width()/2),
+			expectedY = Math.round(testElement.offset().top+testElement.height()/2);
+		
+		tests.expectedEvents = [{type: "mousedown"}];
+		for (var i=0; i < drag.length; i+=1) {
+			expectedX += drag[i].x;
+			expectedY += drag[i].y;
+			tests.expectedEvents.push({type: "mousemove", pageX: expectedX, pageY: expectedY},
+				{type: "simulate-drag"});
+		}
+		tests.expectedEvents.push({type: "mouseup", pageX: expectedX, pageY: expectedY}, {type: "simulate-drop"});
+			
+		
+		for (var i=0; i < drag.length; i+=1) {
+			testElement.simulate("drag", {dx: drag[i].x, dy: drag[i].y});
+		}
+		testElement.simulate("drop");
+	});
 	
-	test("move-before-drop", function() {
+	test("drag on target, then drop", function() {
+		var testElement = $('#dragArea'),
+			dropElement = $('#dropArea');
+
+		var expectedX = Math.round(dropElement.offset().left+dropElement.width()/2),
+			expectedY = Math.round(dropElement.offset().top+dropElement.height()/2);
+		
+		tests.expectedEvents = [
+			{type: "mousedown"},
+			{type: "mousemove", pageX: expectedX, pageY: expectedY},
+			{type: "simulate-drag"},
+			{type: "mouseup", pageX: expectedX, pageY: expectedY},
+			{type: "simulate-drop"}
+		];
+		
+		testElement.simulate("drag", {dragTarget: dropElement});
+		testElement.simulate("drop");
+	});
+
+	test("drag, then drop on different target", function() {
+		var dragElement = $('#dragArea'),
+			dropElement = $('#dropArea');
+		
+		var dx = 10,
+			dy = 20;
+
+		var endOfDragX = Math.round(dragElement.offset().left+dragElement.width()/2)+dx,
+			endOfDragY = Math.round(dragElement.offset().top+dragElement.height()/2)+dy,
+			dropX = Math.round(dropElement.offset().left+dropElement.width()/2),
+			dropY = Math.round(dropElement.offset().top+dropElement.height()/2);
+		
+		tests.expectedEvents = [
+			{type: "mousedown"},
+			{type: "mousemove", pageX: endOfDragX, pageY: endOfDragY},
+			{type: "simulate-drag"},
+			{type: "mousemove", pageX: dropX, pageY: dropY},
+			{type: "mouseup", pageX: dropX, pageY: dropY},
+			{type: "simulate-drop"}
+		];
+		
+		dragElement.simulate("drag", {dx: dx, dy: dy});
+		dropElement.simulate("drop");
+	});
+
+	test("drop before another drag", function() {
+		var dragElement1 = $('#dragArea'),
+			dragElement2 = $('#dropArea');
+		
+		var drag1X = 10,
+			drag1Y = 5,
+			drag2X = 50,
+			drag2Y = 10;
+		
+		var expected1X = Math.round(dragElement1.offset().left+dragElement1.width()/2)+drag1X,
+			expected1Y = Math.round(dragElement1.offset().top+dragElement1.height()/2)+drag1Y,
+			expected2X = Math.round(dragElement2.offset().left+dragElement2.width()/2)+drag2X,
+			expected2Y = Math.round(dragElement2.offset().top+dragElement2.height()/2)+drag2Y;
+		
+		tests.expectedEvents = [
+			{type: "mousedown"},
+			{type: "mousemove", pageX: expected1X, pageY: expected1Y},
+			{type: "simulate-drag"},
+			{type: "mouseup", pageX: expected1X, pageY: expected1Y},
+			{type: "simulate-drop"},
+			{type: "mousedown"},
+			{type: "mousemove", pageX: expected2X, pageY: expected2Y},
+			{type: "simulate-drag"},
+		];
+		
+		dragElement1.simulate("drag", {dx: drag1X, dy: drag1Y});
+		dragElement2.simulate("drag", {dx: drag2X, dy: drag2Y});
+	});
+
+	
+	test("move before drop", function() {
 		var dragElement = $('#dragArea'),
 			dropElement = $('#dropArea');
 		
@@ -162,8 +264,29 @@ $(document).ready(function() {
 		dragElement.simulate("drag");
 		dropElement.simulate("drop");
 	});
-	
-	test("drag-n-drop-onTarget", function() {
+
+	test("document drop", function() {
+		var dragElement = $('#dragArea');
+		
+		var dx = 17,
+			dy = 102;
+		
+		var expectedX = Math.round(dragElement.offset().left+dragElement.width()/2)+dx,
+			expectedY = Math.round(dragElement.offset().top+dragElement.height()/2)+dy;
+		
+		tests.expectedEvents = [
+			{type: "mousedown"},
+			{type: "mousemove", pageX: expectedX, pageY: expectedY},
+			{type: "simulate-drag"},
+			{type: "mouseup", pageX: expectedX, pageY: expectedY},
+			{type: "simulate-drop"}
+		];
+		
+		dragElement.simulate("drag", {dx: dx, dy: dy});
+		$(document).simulate("drop");
+	});
+
+	test("drag-n-drop on target", function() {
 		var dragElement = $('#dragArea'),
 			dropElement = $('#dropArea');
 		
@@ -174,14 +297,60 @@ $(document).ready(function() {
 			{type: "mousedown"},
 			{type: "mousemove", pageX: expectedX, pageY: expectedY},
 			{type: "simulate-drag"},
-			{type: "mouseup"},
+			{type: "mouseup", pageX: expectedX, pageY: expectedY},
 			{type: "simulate-drop"}
 		];
 		
 		dragElement.simulate("drag-n-drop", {dropTarget: dropElement});
 	});
 
-	test("interpolated-drag", function() {
+	test("drag-n-drop with drag and drop target", function() {
+		var dragElement = $('#dragArea'),
+			dropElement = $('#dropArea');
+		
+		var dx = 10,
+			dy = -132;
+		
+		var dragX = Math.round(dragElement.offset().left+dragElement.width()/2)+dx,
+			dragY = Math.round(dragElement.offset().top+dragElement.height()/2)+dy,
+			dropX = Math.round(dropElement.offset().left+dropElement.width()/2),
+			dropY = Math.round(dropElement.offset().top+dropElement.height()/2);
+		
+		tests.expectedEvents = [
+			{type: "mousedown"},
+			{type: "mousemove", pageX: dragX, pageY: dragY},
+			{type: "simulate-drag"},
+			{type: "mousemove", pageX: dropX, pageY: dropY},
+			{type: "mouseup", pageX: dropX, pageY: dropY},
+			{type: "simulate-drop"}
+		];
+		
+		dragElement.simulate("drag-n-drop", {dx: dx, dy: dy, dropTarget: dropElement});
+	});
+
+	test("drag-n-drop with drag target and drop target", function() {
+		var dragElement = $('#dragArea'),
+			dragTarget = $('#dropArea'),
+			dropElement = $('#dropArea2');
+		
+		var dragX = Math.round(dragTarget.offset().left+dragTarget.width()/2),
+			dragY = Math.round(dragTarget.offset().top+dragTarget.height()/2),
+			dropX = Math.round(dropElement.offset().left+dropElement.width()/2),
+			dropY = Math.round(dropElement.offset().top+dropElement.height()/2);
+		
+		tests.expectedEvents = [
+			{type: "mousedown"},
+			{type: "mousemove", pageX: dragX, pageY: dragY},
+			{type: "simulate-drag"},
+			{type: "mousemove", pageX: dropX, pageY: dropY},
+			{type: "mouseup", pageX: dropX, pageY: dropY},
+			{type: "simulate-drop"}
+		];
+		
+		dragElement.simulate("drag-n-drop", {dragTarget: dragTarget, dropTarget: dropElement});
+	});
+
+	test("interpolated drag", function() {
 		var dragElement = $('#dragArea');
 		
 		var dragStartX = Math.round(dragElement.offset().left+dragElement.width()/2),
@@ -203,7 +372,7 @@ $(document).ready(function() {
 		dragElement.simulate("drag", {dx: dragX, dy: dragY, interpolation: {stepCount: stepCount}});
 	});
 
-	test("interpolated-drag-width", function() {
+	test("interpolated drag using stepWidth", function() {
 		var dragElement = $('#dragArea');
 		
 		var dragStartX = Math.round(dragElement.offset().left+dragElement.width()/2),
@@ -222,7 +391,7 @@ $(document).ready(function() {
 		dragElement.simulate("drag", {dx: dragWidth, interpolation: {stepWidth: stepWidth}});
 	});
 
-	test("interpolated-drag-count", function() {
+	test("interpolated drag using stepCount", function() {
 		var dragElement = $('#dragArea');
 		
 		var dragStartX = Math.round(dragElement.offset().left+dragElement.width()/2),
@@ -241,7 +410,7 @@ $(document).ready(function() {
 		dragElement.simulate("drag", {dx: dragWidth, interpolation: {stepCount: stepCount}});
 	});
 
-	test("interpolated-shaky-drag", function() {
+	test("interpolated, shaky drag", function() {
 		var dragElement = $('#dragArea');
 		var actualYPositions = [];
 		
@@ -299,7 +468,7 @@ $(document).ready(function() {
 	});
 
 	
-	test("interpolated-delayed-drag", function() {
+	test("interpolated, delayed drag", function() {
 		var dragElement = $('#dragArea');
 		
 		var stepDelay = 100,
@@ -347,7 +516,7 @@ $(document).ready(function() {
 		},(stepCount+2)*stepDelay);
 	});
 
-	test("interpolated-delayed-drag-duration", function() {
+	test("interpolated, delayed drag using duration", function() {
 		var dragElement = $('#dragArea');
 		
 		var stepDelay = 100,
@@ -395,7 +564,7 @@ $(document).ready(function() {
 		},(stepCount+2)*stepDelay);
 	});
 
-	test("interpolated-delayed-drag-n-drop", function() {
+	test("interpolated, delayed drag-n-drop", function() {
 		var dragElement = $('#dragArea');
 		
 		var stepDelay = 100,
@@ -447,7 +616,7 @@ $(document).ready(function() {
 		},(stepCount+2)*stepDelay);
 	});
 
-	test("interpolated-delayed-drag-n-drop-onTarget", function() {
+	test("interpolated, delayed drag-n-drop on target", function() {
 		var dragElement = $('#dragArea'),
 			dropTarget = $('#dropArea');
 		

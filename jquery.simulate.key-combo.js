@@ -57,7 +57,11 @@
 				holdKeys = [],
 				i;
 			
+			if (combo.length === 0) {
+				return;
+			}
 				
+			
 			// Remove empty parts
 			comboSplit = $.grep(comboSplit, function(part) {
 				return (part !== "");

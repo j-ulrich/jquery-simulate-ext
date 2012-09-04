@@ -70,7 +70,7 @@
 					activeModStr = ", modifiers: " + activeMods.join("+");
 				}
 
-				eventLog.append(event.type+indent+"(which: "+event.which+activeModStr+")");
+				eventLog.append(event.type+indent+"(which: "+event.which/*+", target: "+event.target+", keyCode: "+event.keyCode+", charCode: "+event.charCode*/+activeModStr+")");
 			}
 			
 			$(document).bind({
@@ -144,7 +144,7 @@
 		
 		.container-right-fixed {
 			position: fixed;
-			left: 40%;
+			left: 50%;
 		}
 		
 		.simulate-buttons {
@@ -167,6 +167,8 @@
 		
 		#textInput {
 			background-color: #EEEEEE;
+			width: 100%;
+			height: 4em;
 		}
 		
 		#drawing-area {
@@ -178,7 +180,7 @@
 <body>
 	<div class="container-left">
 		<div class="container">
-			<input id="textInput" type="text" />
+			<textarea id="textInput"></textarea>
 			<div class="simulate-buttons">
 				<h4>Key-Combo Simulation:</h4>
 				<button id="combo-shifta">Key Combo "Shift+a"</button>
@@ -187,7 +189,7 @@
 			<div class="simulate-buttons">
 				Custom Combo:<input id="customCombo" type="text" value="ctrl+alt+f"/><button id="combo-custom">Execute custom combo</button>
 			</div>
-			<div class="simulate-buttons">
+			<div class="simulate-buttons" style="margin-top: 2em;">
 				<h4>Key-Sequence Simulation:</h4>
 				<button id="sequence-asdf">Key Sequence "asdf"</button>
 				<button id="sequence-foobar">Key Sequence "fooob{leftarrow}{backspace}{rightarrow}ar"</button>
@@ -200,11 +202,27 @@
 			</div>
 		</div>
 		<div class="container">
+			<h4>Drag'n'Drop Simulation:</h4>
+			<div class="container container-right" style="width: 11em; padding: 0.5em;">
+				<b>Note:</b><br/>Avoid moving the mouse during interpolated drag'n'drop simulations.
+			</div>
+			<div class="simulate-buttons" style="margin-bottom: 2em;">
+				<h5>Interpolation:</h5>
+				<select id="drag-interpolation-type">
+					<option value="stepCount">Step Count</option>
+					<option value="stepWidth">Step Width</option>
+				</select>: <input id="drag-interpolation" type="number" min="0"> <span id="drag-interpolation-unit"></span><br/>
+				<select id="drag-delay-type">
+					<option value="stepDelay">Step Delay</option>
+					<option value="duration">Duration</option>
+				</select>: <input id="drag-delay" type="number" min="0" /> ms<br/>
+				Shaky: <input id="drag-shaky" type="text" style="width: 10em;" /> pixels
+			</div>
 			<div class="container">
+				<h4>Slider:</h4>
 				<div id="slider"></div>
 				<div>Current slider value: <input id="currentSliderValue" type="text" value="0" readonly="readonly" /></div>
 				<div class="simulate-buttons">
-					<h4>Slider Drag-n-Drop Simulation:</h4>
 					<p>Press 'd' to simulate a drop while dragging.</p>
 					<button id="drag-50r">Drag 50px right</button>
 					<button id="dnd-50l">Drag'n'Drop 50px left</button>
@@ -217,11 +235,11 @@
 				</div>
 			</div>
 			<div class="container">
+				<h4>Drawing:</h4>
 				<button id="clear-area" style="float: right; margin-bottom: 0.5em;">Clear Area</button>
 				<div style="clear: both;"></div>
 				<div id="drawing-area"></div>
 				<div class="simulate-buttons">
-					<h4>Drawing Drag-n-Drop Simulation:</h4>
 					<button id="drawing-dnd-100r">Draw 100px right</button>
 					<button id="drawing-dnd-100u">Draw 100px up</button>
 					<button id="drawing-dnd-100bl">Draw 100px bottom-left</button>
@@ -229,21 +247,6 @@
 				<div class="simulate-buttons">
 					dx: <input id="drawing-dx" type="number" />, dy: <input id="drawing-dy" type="number" /><button id="drawing-custom">Execute custom draw</button>
 				</div>
-			</div>
-			<div class="container container-right" style="width: 11em; padding: 0.5em;">
-				<b>Note:</b><br/>Avoid moving the mouse during interpolated drag/drag'n'drop simulations.
-			</div>
-			<div class="simulate-buttons">
-				<h4>Interpolation:</h4>
-				<select id="drag-interpolation-type">
-					<option value="stepCount">Step Count</option>
-					<option value="stepWidth">Step Width</option>
-				</select>: <input id="drag-interpolation" type="number" min="0"> <span id="drag-interpolation-unit"></span><br/>
-				<select id="drag-delay-type">
-					<option value="stepDelay">Step Delay</option>
-					<option value="duration">Duration</option>
-				</select>: <input id="drag-delay" type="number" min="0" /> ms<br/>
-				Shaky: <input id="drag-shaky" type="text" style="width: 10em;" /> pixels
 			</div>
 		</div>
 	</div>

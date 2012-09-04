@@ -9,10 +9,39 @@
  * Licensed under the MIT license (MIT-LICENSE.txt).
  */
 
+/* TODO: Implement startOffset & endOffset options
+ * The offsets define the position relative to the center or upper left corner of an element
+ * where the drag/drop should start/end.
+ * 
+ * The structure could be like this:
+ * {
+ * 	base: "center", // Either "center" or "upperleft"
+ * 	x: 0,
+ * 	y: 0
+ * }
+ */
 
 ;(function($, undefined) {
 	"use strict";
 	
+	// Overwrite the $.fn.simulate function
+	$.fn.simulate = function( type, options ) {
+		switch (type) {
+		case "drag":
+		case "drop":
+		case "drag-n-drop":
+			var ele = this.first();
+			new $.simulate( ele[0], type, options);
+			return ele;
+			break;
+		default:
+			return this.each(function() {
+				new $.simulate( this, type, options );
+			});
+			break;
+		}
+	};
+
 	// Based on the findCenter function from jquery.simulate.js
 	function findCenter( elem ) {
 		var offset,
@@ -31,14 +60,14 @@
 		};
 	}
 	
-	function dragFinished(target, options) {
-		$(target).trigger({type: "simulate-drag"});
+	function dragFinished(ele, options) {
+		$(ele).trigger({type: "simulate-drag"});
 		if ($.isFunction(options.callback)) {
-			options.callback.apply(target);
+			options.callback.apply(ele);
 		}
 	}
 	
-	function interpolatedEvents(target, start, drag, options) {
+	function interpolatedEvents(ele, start, drag, options) {
 		var self = this;
 		var interpolOptions = options.interpolation;
 		var dragDistance = Math.sqrt(Math.pow(drag.x,2) + Math.pow(drag.y,2)); // sqrt(a^2 + b^2)
@@ -67,7 +96,7 @@
 				effectiveCoords.x += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
 				effectiveCoords.y += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
 			}
-			self.simulateEvent( target, "mousemove", {clientX: Math.round(effectiveCoords.x), clientY: Math.round(effectiveCoords.y)});	
+			self.simulateEvent( ele, "mousemove", {clientX: Math.round(effectiveCoords.x), clientY: Math.round(effectiveCoords.y)});	
 		}
 		
 		
@@ -80,8 +109,8 @@
 					setTimeout(stepAndSleep, stepDelay);
 				}
 				else {
-					self.simulateEvent( target, "mousemove", {clientX: start.x+drag.x, clientY: start.y+drag.y});
-					dragFinished(target, options);
+					self.simulateEvent( ele, "mousemove", {clientX: start.x+drag.x, clientY: start.y+drag.y});
+					dragFinished(ele, options);
 				}
 			}
 			else {
@@ -95,8 +124,8 @@
 			for (var i=0; i < stepCount; i+=1) {
 				interpolationStep();
 			}
-			self.simulateEvent( target, "mousemove", {clientX: start.x+drag.x, clientY: start.y+drag.y});
-			dragFinished(target, options);
+			self.simulateEvent( ele, "mousemove", {clientX: start.x+drag.x, clientY: start.y+drag.y});
+			dragFinished(ele, options);
 		}
 		else {
 			var stepDelay = parseInt(interpolOptions.stepDelay) || Math.round(parseInt(interpolOptions.duration) / (stepCount+1));
@@ -109,10 +138,18 @@
 		
 	}
 
+	$.simulate.activeDrag = function() {
+		if (!$.simulate._activeDrag) {
+			return undefined;
+		}
+		return $.extend(true,{},$.simulate._activeDrag);
+	};
+	
 	$.extend( $.simulate.prototype, {
 		
+	
 		simulateDrag: function() {
-			var target = this.target,
+			var ele = this.target,
 				options = $.extend({
 					dx: 0,
 					dy: 0,
@@ -125,47 +162,64 @@
 						shaky: 0
 					},
 					callback: undefined
-				},	this.options),
-				start = findCenter( target ),
-				end = (options.dragTarget)? findCenter(options.dragTarget) : undefined,
+				},	this.options);
+			
+			var start,
+				continueDrag = ($.simulate._activeDrag && $.simulate._activeDrag.dragElement === ele);
+			
+			if (continueDrag) {
+				start = $.simulate._activeDrag.dragStart;
+			}
+			else {
+				start = findCenter( ele );
+			}
+				
+			var end = (options.dragTarget)? findCenter(options.dragTarget) : undefined,
 				x = Math.round( start.x ),
 				y = Math.round( start.y ), 
 				dx = Math.round( options.dx || ((end)? (end.x - start.x) : 0) ),
 				dy = Math.round( options.dy || ((end)? (end.y - start.y) : 0) ),
 				coord = { clientX: x, clientY: y };
 				
-			if ($.simulate.activeDrag && $.simulate.activeDrag.dragElement === target) {
+			if (continueDrag) {
 				// We just continue to move the dragged element
-				$.simulate.activeDrag.dragDistance.x += dx;
-				$.simulate.activeDrag.dragDistance.y += dy;				
+				$.simulate._activeDrag.dragDistance.x += dx;
+				$.simulate._activeDrag.dragDistance.y += dy;	
+				coord = { clientX: x + $.simulate._activeDrag.dragDistance.x , clientY: y + $.simulate._activeDrag.dragDistance.y };
 			}
 			else {
+				if ($.simulate._activeDrag) {
+					// Drop before starting a new drag
+					$($.simulate._activeDrag.dragElement).simulate( "drop" );
+				}
+				
 				// We start a new drag
-				this.simulateEvent( target, "mousedown", coord );
+				this.simulateEvent( ele, "mousedown", coord );
 				$.extend($.simulate, {
-					activeDrag: {
-						dragElement: target,
+					_activeDrag: {
+						dragElement: ele,
 						dragStart: { x: x, y: y },
 						dragDistance: { x: dx, y: dy }
 					}
 				});
-				$(target).add(document).one('mouseup', function() {
-					$.simulate.activeDrag = undefined;
+				$(ele).add(document).one('mouseup', function() {
+					$.simulate._activeDrag = undefined;
 				});
+				coord = { clientX: x + dx, clientY: y + dy };
 			}
 
 			if (dx !== 0 || dy !== 0) {
-				coord = { clientX: x + dx, clientY: y + dy };
+				
 				if ( options.interpolation && (options.interpolation.stepCount || options.interpolation.stepWidth) ) {
-					interpolatedEvents.apply(this, [target, {x: x, y: y}, {x: dx, y: dy}, options]);
+					interpolatedEvents.apply(this, [ele, {x: x, y: y}, {x: dx, y: dy}, options]);
 				}
 				else {
-					this.simulateEvent( target, "mousemove", coord );
-					dragFinished(target, options);
+					this.simulateEvent( ele, "mousemove", coord );
+					dragFinished(ele, options);
 				}
 			}
 			else {
-				dragFinished(target, options);
+				dragFinished(ele, options);
 			}
 		},
 		
@@ -176,22 +230,24 @@
 		 * 1.) If there is an active drag with a distance dx != 0 and dy != 0, the drop occurs
 		 * at the end position of that drag.
 		 * 2.) If there is no active drag or the distance of the active drag is 0 (i.e. dx == 0 and
-		 * dy == 0), then the drop occurs at the center of the target given to the drop. In this case,
-		 * the mouse is moved onto the center of the target before the drop is simulated.
+		 * dy == 0), then the drop occurs at the center of the element given to the drop. In this case,
+		 * the mouse is moved onto the center of the element before the drop is simulated.
 		 * In both cases, an active drag will be ended.
 		 */
 		simulateDrop: function() {
-			var target = this.target,
-				activeDrag = $.simulate.activeDrag,
+			var ele = this.target,
+				activeDrag = $.simulate._activeDrag,
 				options = $.extend({
+					clickToDrop: false,
 					callback: undefined
 				}, this.options),
-				center = findCenter( target ),
+				center = findCenter( ele ),
 				x = Math.round( center.x ),
 				y = Math.round( center.y ),
-				coord = { clientX: x, clientY: y };
+				coord = { clientX: x, clientY: y },
+				eventTarget = (activeDrag)? activeDrag.dragElement : ele;
 			
-			if (activeDrag && (activeDrag.dragDistance.x !== 0 || activeDrag.dragDistance.y !== 0)) {
+			if (activeDrag && (activeDrag.dragElement === ele || ele === document)) {
 				// We already moved the mouse during the drag so we just simulate the drop on the end position
 				x = activeDrag.dragStart.x + activeDrag.dragDistance.x;
 				y = activeDrag.dragStart.y + activeDrag.dragDistance.y;
@@ -199,25 +255,28 @@
 			}
 			else {
 				// Else we assume the drop should happen on target, so we move there
-				this.simulateEvent( target, "mousemove", coord );
+				this.simulateEvent( eventTarget, "mousemove", coord );
 			}
 			
-			this.simulateEvent( target, "mouseup", coord );
-			this.simulateEvent( target, "click", coord );
-			$.simulate.activeDrag = undefined;
-			$(target).trigger({type: "simulate-drop"});
+			this.simulateEvent( eventTarget, "mouseup", coord );
+			if (options.clickToDrop) {
+				this.simulateEvent( eventTarget, "click", coord );
+			}
+			$.simulate._activeDrag = undefined;
+			$(eventTarget).trigger({type: "simulate-drop"});
 			if ($.isFunction(options.callback)) {
-				options.callback.apply(target);
+				options.callback.apply(eventTarget);
 			}
 		},
 		
 		simulateDragNDrop: function() {
-			var target = this.target,
+			var ele = this.target,
 				options = $.extend({
 					dragTarget: undefined,
 					dropTarget: undefined
 				}, this.options),
-				dropTarget = options.dropTarget || target;
+				// If there is a dragTarget or dx/dy, then we drag there and simulate an independent drop on dropTarget or ele
+				dropEle = ((options.dragTarget || options.dx || options.dy)? options.dropTarget : ele) || ele;
 /*
 				dx = (options.dropTarget)? 0 : (options.dx || 0),
 				dy = (options.dropTarget)? 0 : (options.dy || 0),
@@ -225,10 +284,10 @@
 			
 			$.extend(options, dragDistance);
 */			
-			$(target).simulate( "drag", $.extend({},options,{
-				dragTarget: options.dragTarget || options.dropTarget,
+			$(ele).simulate( "drag", $.extend({},options,{
+				dragTarget: options.dragTarget || options.dropTarget, // If there is no dragTarget, we drag onto the dropTarget directly
 				callback: function() {
-					$(dropTarget).simulate( "drop", options );
+					$(dropEle).simulate( "drop", options );
 				}
 			}));
 			
