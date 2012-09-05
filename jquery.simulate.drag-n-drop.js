@@ -24,7 +24,9 @@
 ;(function($, undefined) {
 	"use strict";
 	
-	// Overwrite the $.fn.simulate function
+	/* Overwrite the $.fn.simulate function
+	 * to reduce the jQuery set to the first element
+	 */
 	$.fn.simulate = function( type, options ) {
 		switch (type) {
 		case "drag":
@@ -41,6 +43,19 @@
 			break;
 		}
 	};
+	
+	/* Overwrite the $.simulate.prototype.mouseEvent function
+	 * to convert pageX/Y to clientX/Y
+	 */
+	var originalMouseEvent = $.simulate.prototype.mouseEvent;
+	$.simulate.prototype.mouseEvent = function(type, options) {
+		if (options.pageX || options.pageY) {
+			var doc = $(document);
+			options.clientX = (options.pageX || 0) - doc.scrollLeft();
+			options.clientY = (options.pageY || 0) - doc.scrollTop();
+		}
+		return originalMouseEvent.apply(this, [type, options]);
+	};
 
 	// Based on the findCenter function from jquery.simulate.js
 	function findCenter( elem ) {
@@ -55,8 +70,8 @@
 		}
 			
 		return {
-			x: offset.left + elem.outerWidth() / 2 - jDocument.scrollLeft(),
-			y: offset.top + elem.outerHeight() / 2 - jDocument.scrollTop()
+			x: offset.left + elem.outerWidth() / 2 /*- jDocument.scrollLeft()*/,
+			y: offset.top + elem.outerHeight() / 2 /*- jDocument.scrollTop()*/
 		};
 	}
 	
@@ -92,11 +107,11 @@
 			coords.y += stepVector.y;
 			var effectiveCoords = {x: coords.x, y: coords.y};
 			if (interpolOptions.shaky && (interpolOptions.shaky === true || !isNaN(parseInt(interpolOptions.shaky)) )) {
-				var amplitude = (interpolOptions.shaky === true)? 3 : parseInt(interpolOptions.shaky);
+				var amplitude = (interpolOptions.shaky === true)? 1 : parseInt(interpolOptions.shaky);
 				effectiveCoords.x += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
 				effectiveCoords.y += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
 			}
-			self.simulateEvent( ele, "mousemove", {clientX: Math.round(effectiveCoords.x), clientY: Math.round(effectiveCoords.y)});	
+			self.simulateEvent( ele, "mousemove", {pageX: Math.round(effectiveCoords.x), pageY: Math.round(effectiveCoords.y)});	
 		}
 		
 		
@@ -109,7 +124,7 @@
 					setTimeout(stepAndSleep, stepDelay);
 				}
 				else {
-					self.simulateEvent( ele, "mousemove", {clientX: start.x+drag.x, clientY: start.y+drag.y});
+					self.simulateEvent( ele, "mousemove", {pageX: start.x+drag.x, pageY: start.y+drag.y});
 					dragFinished(ele, options);
 				}
 			}
@@ -119,16 +134,16 @@
 
 		}
 
-		if ( (!interpolOptions.stepDelay && !interpolOptions.duration) || (interpolOptions.stepDelay <= 0) || (interpolOptions.duration <= 0) ) {
+		if ( (!interpolOptions.stepDelay && !interpolOptions.duration) || ((interpolOptions.stepDelay <= 0) && (interpolOptions.duration <= 0)) ) {
 			// Trigger as fast as possible
 			for (var i=0; i < stepCount; i+=1) {
 				interpolationStep();
 			}
-			self.simulateEvent( ele, "mousemove", {clientX: start.x+drag.x, clientY: start.y+drag.y});
+			self.simulateEvent( ele, "mousemove", {pageX: start.x+drag.x, pageY: start.y+drag.y});
 			dragFinished(ele, options);
 		}
 		else {
-			var stepDelay = parseInt(interpolOptions.stepDelay) || Math.round(parseInt(interpolOptions.duration) / (stepCount+1));
+			var stepDelay = parseInt(interpolOptions.stepDelay) || Math.ceil(parseInt(interpolOptions.duration) / (stepCount+1));
 			var i = 0;
 			var now = Date.now || function() { return new Date().getTime() },
 				lastTime = now();
@@ -154,12 +169,13 @@
 					dx: 0,
 					dy: 0,
 					dragTarget: undefined,
+					clickToDrag: false,
 					interpolation: {
 						stepWidth: 0,
 						stepCount: 0,
 						stepDelay: 0,
 						duration: 0,
-						shaky: 0
+						shaky: false
 					},
 					callback: undefined
 				},	this.options);
@@ -174,18 +190,27 @@
 				start = findCenter( ele );
 			}
 				
-			var end = (options.dragTarget)? findCenter(options.dragTarget) : undefined,
-				x = Math.round( start.x ),
-				y = Math.round( start.y ), 
-				dx = Math.round( options.dx || ((end)? (end.x - start.x) : 0) ),
-				dy = Math.round( options.dy || ((end)? (end.y - start.y) : 0) ),
-				coord = { clientX: x, clientY: y };
+			var x = Math.round( start.x ),
+				y = Math.round( start.y ),
+				coord = { pageX: x, pageY: y },
+				dx,
+				dy;
+				
+			if (options.dragTarget) {
+				var end = findCenter(options.dragTarget);
+				dx = Math.round(end.x - start.x);
+				dy = Math.round(end.y - start.y);
+			}
+			else {
+				dx = options.dx || 0;
+				dy = options.dy || 0;
+			}
 				
 			if (continueDrag) {
 				// We just continue to move the dragged element
 				$.simulate._activeDrag.dragDistance.x += dx;
 				$.simulate._activeDrag.dragDistance.y += dy;	
-				coord = { clientX: x + $.simulate._activeDrag.dragDistance.x , clientY: y + $.simulate._activeDrag.dragDistance.y };
+				coord = { pageX: x + $.simulate._activeDrag.dragDistance.x , pageY: y + $.simulate._activeDrag.dragDistance.y };
 			}
 			else {
 				if ($.simulate._activeDrag) {
@@ -195,6 +220,14 @@
 				
 				// We start a new drag
 				this.simulateEvent( ele, "mousedown", coord );
+				if (options.clickToDrag === true) {
+					this.simulateEvent( ele, "mouseup", coord );
+					this.simulateEvent( ele, "click", coord );
+				}
+				$(ele).add(document).one('mouseup', function() {
+					$.simulate._activeDrag = undefined;
+				});
+				
 				$.extend($.simulate, {
 					_activeDrag: {
 						dragElement: ele,
@@ -202,10 +235,7 @@
 						dragDistance: { x: dx, y: dy }
 					}
 				});
-				$(ele).add(document).one('mouseup', function() {
-					$.simulate._activeDrag = undefined;
-				});
-				coord = { clientX: x + dx, clientY: y + dy };
+				coord = { pageX: x + dx, pageY: y + dy };
 			}
 
 			if (dx !== 0 || dy !== 0) {
@@ -244,24 +274,26 @@
 				center = findCenter( ele ),
 				x = Math.round( center.x ),
 				y = Math.round( center.y ),
-				coord = { clientX: x, clientY: y },
+				coord = { pageX: x, pageY: y },
 				eventTarget = (activeDrag)? activeDrag.dragElement : ele;
 			
 			if (activeDrag && (activeDrag.dragElement === ele || ele === document)) {
 				// We already moved the mouse during the drag so we just simulate the drop on the end position
 				x = activeDrag.dragStart.x + activeDrag.dragDistance.x;
 				y = activeDrag.dragStart.y + activeDrag.dragDistance.y;
-				coord = { clientX: x, clientY: y };
+				coord = { pageX: x, pageY: y };
 			}
 			else {
 				// Else we assume the drop should happen on target, so we move there
 				this.simulateEvent( eventTarget, "mousemove", coord );
 			}
-			
-			this.simulateEvent( eventTarget, "mouseup", coord );
+
 			if (options.clickToDrop) {
-				this.simulateEvent( eventTarget, "click", coord );
+				this.simulateEvent( eventTarget, "mousedown", coord );
 			}
+			this.simulateEvent( eventTarget, "mouseup", coord );
+			this.simulateEvent( eventTarget, "click", coord );
+			
 			$.simulate._activeDrag = undefined;
 			$(eventTarget).trigger({type: "simulate-drop"});
 			if ($.isFunction(options.callback)) {
@@ -285,7 +317,8 @@
 			$.extend(options, dragDistance);
 */			
 			$(ele).simulate( "drag", $.extend({},options,{
-				dragTarget: options.dragTarget || options.dropTarget, // If there is no dragTarget, we drag onto the dropTarget directly
+				// If there is no dragTarget, no dx and no dy, we drag onto the dropTarget directly
+				dragTarget: options.dragTarget || ((options.dx || options.dy)?undefined:options.dropTarget),
 				callback: function() {
 					$(dropEle).simulate( "drop", options );
 				}

@@ -11,15 +11,6 @@
 		expectedEvents: [],
 		
 		assertExpectedEvent: function(event) {
-			/*
-			var msg = event.type+" triggered";
-			if (event.type.indexOf('key') === 0) {
-				msg += " (which: "+event.which+")";
-			}
-			else if (event.type.indexOf('mouse') === 0) {
-				msg += " (x: "+event.pageX+", y: "+event.pageY+")";
-			}
-			*/
 			if (tests.expectedEvents.length === 0) {
 				ok(false, "Unexpected event: "+event.type);
 				return;

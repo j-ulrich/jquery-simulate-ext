@@ -5,6 +5,8 @@
 (function ($, undefined) {
 	"use strict";
 
+	// TODO: Write test for the clickToDrag/Drop options
+	
 $(document).ready(function() {
 	
 	module("drag-n-drop", {
@@ -26,11 +28,32 @@ $(document).ready(function() {
 		var dragX = 50,
 			dragY = 10;
 		
-		var elementX = Math.round(testElement.offset().left+testElement.width()/2),
-			elementY = Math.round(testElement.offset().top+testElement.height()/2);
+		var elementX = Math.round(testElement.offset().left+testElement.outerWidth()/2),
+			elementY = Math.round(testElement.offset().top+testElement.outerHeight()/2);
 		
-		var expectedX = Math.round(testElement.offset().left+testElement.width()/2)+dragX,
-			expectedY = Math.round(testElement.offset().top+testElement.height()/2)+dragY;
+		var expectedX = Math.round(testElement.offset().left+testElement.outerWidth()/2)+dragX,
+			expectedY = Math.round(testElement.offset().top+testElement.outerHeight()/2)+dragY;
+		tests.expectedEvents = [
+			{type: "mousedown", pageX: elementX, pageY: elementY},
+			{type: "mousemove", pageX: expectedX, pageY: expectedY},
+			{type: "simulate-drag"}
+		];
+		
+		testElement.simulate("drag", {dx: dragX, dy: dragY});
+	});
+	
+	test("drag on scrolled viewport", function() {
+		var testElement = $('#dragArea');
+		$(document).scrollTop(10);
+		
+		var dragX = 50,
+			dragY = 10;
+		
+		var elementX = Math.round(testElement.offset().left+testElement.outerWidth()/2),
+			elementY = Math.round(testElement.offset().top+testElement.outerHeight()/2);
+		
+		var expectedX = Math.round(testElement.offset().left+testElement.outerWidth()/2)+dragX,
+			expectedY = Math.round(testElement.offset().top+testElement.outerHeight()/2)+dragY;
 		tests.expectedEvents = [
 			{type: "mousedown", pageX: elementX, pageY: elementY},
 			{type: "mousemove", pageX: expectedX, pageY: expectedY},
@@ -44,8 +67,8 @@ $(document).ready(function() {
 		var testElement = $('#dragArea');
 		var dragX = 50,
 			dragY = 10;
-		var expectedX = Math.round(testElement.offset().left+testElement.width()/2)+dragX,
-			expectedY = Math.round(testElement.offset().top+testElement.height()/2)+dragY;
+		var expectedX = Math.round(testElement.offset().left+testElement.outerWidth()/2)+dragX,
+			expectedY = Math.round(testElement.offset().top+testElement.outerHeight()/2)+dragY;
 		tests.expectedEvents = [
 			{type: "mousedown"},
 			{type: "mousemove", pageX: expectedX, pageY: expectedY},
@@ -62,8 +85,8 @@ $(document).ready(function() {
 		var testElement = $('#dragArea'),
 			dropElement = $('#dropArea');
 
-		var expectedX = Math.round(dropElement.offset().left+dropElement.width()/2),
-			expectedY = Math.round(dropElement.offset().top+dropElement.height()/2);
+		var expectedX = Math.round(dropElement.offset().left+dropElement.outerWidth()/2),
+			expectedY = Math.round(dropElement.offset().top+dropElement.outerHeight()/2);
 		
 		tests.expectedEvents = [
 			{type: "mousedown"},
@@ -77,8 +100,8 @@ $(document).ready(function() {
 	test("drop", function() {
 		var testElement = $('#dropArea');
 		
-		var expectedX = Math.round(testElement.offset().left+testElement.width()/2),
-			expectedY = Math.round(testElement.offset().top+testElement.height()/2);
+		var expectedX = Math.round(testElement.offset().left+testElement.outerWidth()/2),
+			expectedY = Math.round(testElement.offset().top+testElement.outerHeight()/2);
 		
 		tests.expectedEvents = [
 			{type: "mousemove", pageX: expectedX, pageY: expectedY}, // A drop without an active drag moves the mouse onto the target before dropping
@@ -92,8 +115,8 @@ $(document).ready(function() {
 	test("drop callback", function() {
 		var testElement = $('#dropArea');
 		
-		var expectedX = Math.round(testElement.offset().left+testElement.width()/2),
-			expectedY = Math.round(testElement.offset().top+testElement.height()/2);
+		var expectedX = Math.round(testElement.offset().left+testElement.outerWidth()/2),
+			expectedY = Math.round(testElement.offset().top+testElement.outerHeight()/2);
 		
 		tests.expectedEvents = [
 			{type: "mousemove", pageX: expectedX, pageY: expectedY}, // A drop without an active drag moves the mouse onto the target before dropping
@@ -112,8 +135,8 @@ $(document).ready(function() {
 		
 		var dragX = 50,
 			dragY = 10;
-		var expectedX = Math.round(testElement.offset().left+testElement.width()/2)+dragX,
-			expectedY = Math.round(testElement.offset().top+testElement.height()/2)+dragY;
+		var expectedX = Math.round(testElement.offset().left+testElement.outerWidth()/2)+dragX,
+			expectedY = Math.round(testElement.offset().top+testElement.outerHeight()/2)+dragY;
 
 		tests.expectedEvents = [
 			{type: "mousedown"},
@@ -131,8 +154,8 @@ $(document).ready(function() {
 		
 		var dragX = 50,
 			dragY = 10;
-		var expectedX = Math.round(testElement.offset().left+testElement.width()/2)+dragX,
-			expectedY = Math.round(testElement.offset().top+testElement.height()/2)+dragY;
+		var expectedX = Math.round(testElement.offset().left+testElement.outerWidth()/2)+dragX,
+			expectedY = Math.round(testElement.offset().top+testElement.outerHeight()/2)+dragY;
 
 		tests.expectedEvents = [
 			{type: "mousedown"},
@@ -153,8 +176,8 @@ $(document).ready(function() {
 		
 		var drag = [ {x: 50, y: 10}, {x: 7, y: -30}, {x: -20, y: -5}];
 		
-		var expectedX = Math.round(testElement.offset().left+testElement.width()/2),
-			expectedY = Math.round(testElement.offset().top+testElement.height()/2);
+		var expectedX = Math.round(testElement.offset().left+testElement.outerWidth()/2),
+			expectedY = Math.round(testElement.offset().top+testElement.outerHeight()/2);
 		
 		tests.expectedEvents = [{type: "mousedown"}];
 		for (var i=0; i < drag.length; i+=1) {
@@ -176,8 +199,8 @@ $(document).ready(function() {
 		var testElement = $('#dragArea'),
 			dropElement = $('#dropArea');
 
-		var expectedX = Math.round(dropElement.offset().left+dropElement.width()/2),
-			expectedY = Math.round(dropElement.offset().top+dropElement.height()/2);
+		var expectedX = Math.round(dropElement.offset().left+dropElement.outerWidth()/2),
+			expectedY = Math.round(dropElement.offset().top+dropElement.outerHeight()/2);
 		
 		tests.expectedEvents = [
 			{type: "mousedown"},
@@ -198,10 +221,10 @@ $(document).ready(function() {
 		var dx = 10,
 			dy = 20;
 
-		var endOfDragX = Math.round(dragElement.offset().left+dragElement.width()/2)+dx,
-			endOfDragY = Math.round(dragElement.offset().top+dragElement.height()/2)+dy,
-			dropX = Math.round(dropElement.offset().left+dropElement.width()/2),
-			dropY = Math.round(dropElement.offset().top+dropElement.height()/2);
+		var endOfDragX = Math.round(dragElement.offset().left+dragElement.outerWidth()/2)+dx,
+			endOfDragY = Math.round(dragElement.offset().top+dragElement.outerHeight()/2)+dy,
+			dropX = Math.round(dropElement.offset().left+dropElement.outerWidth()/2),
+			dropY = Math.round(dropElement.offset().top+dropElement.outerHeight()/2);
 		
 		tests.expectedEvents = [
 			{type: "mousedown"},
@@ -225,10 +248,10 @@ $(document).ready(function() {
 			drag2X = 50,
 			drag2Y = 10;
 		
-		var expected1X = Math.round(dragElement1.offset().left+dragElement1.width()/2)+drag1X,
-			expected1Y = Math.round(dragElement1.offset().top+dragElement1.height()/2)+drag1Y,
-			expected2X = Math.round(dragElement2.offset().left+dragElement2.width()/2)+drag2X,
-			expected2Y = Math.round(dragElement2.offset().top+dragElement2.height()/2)+drag2Y;
+		var expected1X = Math.round(dragElement1.offset().left+dragElement1.outerWidth()/2)+drag1X,
+			expected1Y = Math.round(dragElement1.offset().top+dragElement1.outerHeight()/2)+drag1Y,
+			expected2X = Math.round(dragElement2.offset().left+dragElement2.outerWidth()/2)+drag2X,
+			expected2Y = Math.round(dragElement2.offset().top+dragElement2.outerHeight()/2)+drag2Y;
 		
 		tests.expectedEvents = [
 			{type: "mousedown"},
@@ -250,8 +273,8 @@ $(document).ready(function() {
 		var dragElement = $('#dragArea'),
 			dropElement = $('#dropArea');
 		
-		var expectedX = Math.round(dropElement.offset().left+dropElement.width()/2),
-			expectedY = Math.round(dropElement.offset().top+dropElement.height()/2);
+		var expectedX = Math.round(dropElement.offset().left+dropElement.outerWidth()/2),
+			expectedY = Math.round(dropElement.offset().top+dropElement.outerHeight()/2);
 		
 		tests.expectedEvents = [
 			{type: "mousedown"},
@@ -271,8 +294,8 @@ $(document).ready(function() {
 		var dx = 17,
 			dy = 102;
 		
-		var expectedX = Math.round(dragElement.offset().left+dragElement.width()/2)+dx,
-			expectedY = Math.round(dragElement.offset().top+dragElement.height()/2)+dy;
+		var expectedX = Math.round(dragElement.offset().left+dragElement.outerWidth()/2)+dx,
+			expectedY = Math.round(dragElement.offset().top+dragElement.outerHeight()/2)+dy;
 		
 		tests.expectedEvents = [
 			{type: "mousedown"},
@@ -290,8 +313,8 @@ $(document).ready(function() {
 		var dragElement = $('#dragArea'),
 			dropElement = $('#dropArea');
 		
-		var expectedX = Math.round(dropElement.offset().left+dropElement.width()/2),
-			expectedY = Math.round(dropElement.offset().top+dropElement.height()/2);
+		var expectedX = Math.round(dropElement.offset().left+dropElement.outerWidth()/2),
+			expectedY = Math.round(dropElement.offset().top+dropElement.outerHeight()/2);
 		
 		tests.expectedEvents = [
 			{type: "mousedown"},
@@ -311,10 +334,10 @@ $(document).ready(function() {
 		var dx = 10,
 			dy = -132;
 		
-		var dragX = Math.round(dragElement.offset().left+dragElement.width()/2)+dx,
-			dragY = Math.round(dragElement.offset().top+dragElement.height()/2)+dy,
-			dropX = Math.round(dropElement.offset().left+dropElement.width()/2),
-			dropY = Math.round(dropElement.offset().top+dropElement.height()/2);
+		var dragX = Math.round(dragElement.offset().left+dragElement.outerWidth()/2)+dx,
+			dragY = Math.round(dragElement.offset().top+dragElement.outerHeight()/2)+dy,
+			dropX = Math.round(dropElement.offset().left+dropElement.outerWidth()/2),
+			dropY = Math.round(dropElement.offset().top+dropElement.outerHeight()/2);
 		
 		tests.expectedEvents = [
 			{type: "mousedown"},
@@ -333,10 +356,10 @@ $(document).ready(function() {
 			dragTarget = $('#dropArea'),
 			dropElement = $('#dropArea2');
 		
-		var dragX = Math.round(dragTarget.offset().left+dragTarget.width()/2),
-			dragY = Math.round(dragTarget.offset().top+dragTarget.height()/2),
-			dropX = Math.round(dropElement.offset().left+dropElement.width()/2),
-			dropY = Math.round(dropElement.offset().top+dropElement.height()/2);
+		var dragX = Math.round(dragTarget.offset().left+dragTarget.outerWidth()/2),
+			dragY = Math.round(dragTarget.offset().top+dragTarget.outerHeight()/2),
+			dropX = Math.round(dropElement.offset().left+dropElement.outerWidth()/2),
+			dropY = Math.round(dropElement.offset().top+dropElement.outerHeight()/2);
 		
 		tests.expectedEvents = [
 			{type: "mousedown"},
@@ -353,8 +376,8 @@ $(document).ready(function() {
 	test("interpolated drag", function() {
 		var dragElement = $('#dragArea');
 		
-		var dragStartX = Math.round(dragElement.offset().left+dragElement.width()/2),
-			dragStartY = Math.round(dragElement.offset().top+dragElement.height()/2);
+		var dragStartX = Math.round(dragElement.offset().left+dragElement.outerWidth()/2),
+			dragStartY = Math.round(dragElement.offset().top+dragElement.outerHeight()/2);
 		
 		var stepCount = 5,
 			dragX = 60,
@@ -375,8 +398,8 @@ $(document).ready(function() {
 	test("interpolated drag using stepWidth", function() {
 		var dragElement = $('#dragArea');
 		
-		var dragStartX = Math.round(dragElement.offset().left+dragElement.width()/2),
-			dragStartY = Math.round(dragElement.offset().top+dragElement.height()/2);
+		var dragStartX = Math.round(dragElement.offset().left+dragElement.outerWidth()/2),
+			dragStartY = Math.round(dragElement.offset().top+dragElement.outerHeight()/2);
 		
 		var stepCount = 2,
 			stepWidth = 30,
@@ -394,8 +417,8 @@ $(document).ready(function() {
 	test("interpolated drag using stepCount", function() {
 		var dragElement = $('#dragArea');
 		
-		var dragStartX = Math.round(dragElement.offset().left+dragElement.width()/2),
-			dragStartY = Math.round(dragElement.offset().top+dragElement.height()/2);
+		var dragStartX = Math.round(dragElement.offset().left+dragElement.outerWidth()/2),
+			dragStartY = Math.round(dragElement.offset().top+dragElement.outerHeight()/2);
 		
 		var stepCount = 2,
 			dragWidth = 90,
@@ -414,7 +437,7 @@ $(document).ready(function() {
 		var dragElement = $('#dragArea');
 		var actualYPositions = [];
 		
-		var shakyAmplitude = 5;
+		var shakyAmplitude = 10;
 		
 		// Unbind "normal" assertExpectedEvent function and replace with a fuzzy variant of it
 		function assertExpectedEventShaky(event) {
@@ -442,8 +465,8 @@ $(document).ready(function() {
 		}
 		$(document).off("mousemove", "#qunit-fixture", tests.assertExpectedEvent).on("mousemove", "#qunit-fixture", assertExpectedEventShaky);
 		
-		var dragStartX = Math.round(dragElement.offset().left+dragElement.width()/2),
-			dragStartY = Math.round(dragElement.offset().top+dragElement.height()/2);
+		var dragStartX = Math.round(dragElement.offset().left+dragElement.outerWidth()/2),
+			dragStartY = Math.round(dragElement.offset().top+dragElement.outerHeight()/2);
 		
 		var stepCount = 2,
 			dragWidth = 90,
@@ -463,7 +486,7 @@ $(document).ready(function() {
 				posCounter += 1;
 			}
 		}
-		ok(posCounter > 1, "Verify shaky positions are random (if this test fails, rerun to rule out the unlikely case that all random positions are equal)");
+		ok(posCounter > 1, "Verify shaky positions are random (if this test fails, rerun to rule out the unlikely case that all random positions were equal)");
 		
 	});
 
@@ -494,8 +517,8 @@ $(document).ready(function() {
 		}
 		$(document).off("mousemove", "#qunit-fixture", tests.assertExpectedEvent).on("mousemove", "#qunit-fixture", assertExpectedEventDelay);
 		
-		var dragStartX = Math.round(dragElement.offset().left+dragElement.width()/2),
-			dragStartY = Math.round(dragElement.offset().top+dragElement.height()/2);
+		var dragStartX = Math.round(dragElement.offset().left+dragElement.outerWidth()/2),
+			dragStartY = Math.round(dragElement.offset().top+dragElement.outerHeight()/2);
 		
 		var stepCount = 2,
 			dragWidth = 90,
@@ -542,8 +565,8 @@ $(document).ready(function() {
 		}
 		$(document).off("mousemove", "#qunit-fixture", tests.assertExpectedEvent).on("mousemove", "#qunit-fixture", assertExpectedEventDelay);
 		
-		var dragStartX = Math.round(dragElement.offset().left+dragElement.width()/2),
-			dragStartY = Math.round(dragElement.offset().top+dragElement.height()/2);
+		var dragStartX = Math.round(dragElement.offset().left+dragElement.outerWidth()/2),
+			dragStartY = Math.round(dragElement.offset().top+dragElement.outerHeight()/2);
 		
 		var stepCount = 2,
 			dragWidth = 90,
@@ -590,8 +613,8 @@ $(document).ready(function() {
 		}
 		$(document).off("mousemove", "#qunit-fixture", tests.assertExpectedEvent).on("mousemove", "#qunit-fixture", assertExpectedEventDelay);
 		
-		var dragStartX = Math.round(dragElement.offset().left+dragElement.width()/2),
-			dragStartY = Math.round(dragElement.offset().top+dragElement.height()/2);
+		var dragStartX = Math.round(dragElement.offset().left+dragElement.outerWidth()/2),
+			dragStartY = Math.round(dragElement.offset().top+dragElement.outerHeight()/2);
 		
 		var stepCount = 2,
 			dragWidth = 90,
@@ -643,10 +666,10 @@ $(document).ready(function() {
 		}
 		$(document).off("mousemove", "#qunit-fixture", tests.assertExpectedEvent).on("mousemove", "#qunit-fixture", assertExpectedEventDelay);
 		
-		var dragStartX = Math.round(dragElement.offset().left+dragElement.width()/2),
-			dragStartY = Math.round(dragElement.offset().top+dragElement.height()/2),
-			dragEndX = Math.round(dropTarget.offset().left+dropTarget.width()/2),
-			dragEndY = Math.round(dropTarget.offset().top+dropTarget.height()/2);
+		var dragStartX = Math.round(dragElement.offset().left+dragElement.outerWidth()/2),
+			dragStartY = Math.round(dragElement.offset().top+dragElement.outerHeight()/2),
+			dragEndX = Math.round(dropTarget.offset().left+dropTarget.outerWidth()/2),
+			dragEndY = Math.round(dropTarget.offset().top+dropTarget.outerHeight()/2);
 		
 		var stepCount = 2,
 			stepWidthX = (dragEndX - dragStartX) / (stepCount+1),
