@@ -18,6 +18,9 @@ $(document).ready(function() {
 		teardown: function() {
 			$(document).off("simulate-drag simulate-drop", '#qunit-fixture');
 			tests.testTearDown();
+			if ($.simulate.activeDrag()) {
+				$(document).simulate("drop", {debug: false});
+			}
 		}
 	});
 	
@@ -42,27 +45,6 @@ $(document).ready(function() {
 		testElement.simulate("drag", {dx: dragX, dy: dragY});
 	});
 	
-	test("drag on scrolled viewport", function() {
-		var testElement = $('#dragArea');
-		$(document).scrollTop(10);
-		
-		var dragX = 50,
-			dragY = 10;
-		
-		var elementX = Math.round(testElement.offset().left+testElement.outerWidth()/2),
-			elementY = Math.round(testElement.offset().top+testElement.outerHeight()/2);
-		
-		var expectedX = Math.round(testElement.offset().left+testElement.outerWidth()/2)+dragX,
-			expectedY = Math.round(testElement.offset().top+testElement.outerHeight()/2)+dragY;
-		tests.expectedEvents = [
-			{type: "mousedown", pageX: elementX, pageY: elementY},
-			{type: "mousemove", pageX: expectedX, pageY: expectedY},
-			{type: "simulate-drag"}
-		];
-		
-		testElement.simulate("drag", {dx: dragX, dy: dragY});
-	});
-
 	test("drag callback", function() {
 		var testElement = $('#dragArea');
 		var dragX = 50,
@@ -169,6 +151,31 @@ $(document).ready(function() {
 		testElement.simulate("drag-n-drop", {dx: dragX, dy: dragY, callback: function() {
 			tests.assertExpectedEvent({type: "callback"});
 		}});
+	});
+	
+	test("drag'n'drop on scrolled viewport", function() {
+		var testElement = $('#dragArea');
+		
+		$(document).scrollTop(500);
+		
+		var dragX = 50,
+			dragY = 300;
+		
+		var elementX = Math.round(testElement.offset().left+testElement.outerWidth()/2),
+			elementY = Math.round(testElement.offset().top+testElement.outerHeight()/2);
+		
+		var expectedX = Math.round(testElement.offset().left+testElement.outerWidth()/2)+dragX,
+			expectedY = Math.round(testElement.offset().top+testElement.outerHeight()/2)+dragY;
+		tests.expectedEvents = [
+			{type: "mousedown", pageX: elementX, pageY: elementY},
+			{type: "mousemove", pageX: expectedX, pageY: expectedY},
+			{type: "simulate-drag"},
+			{type: "mouseup", pageX: expectedX, pageY: expectedY, target: $('#dropArea')[0]},
+			{type: "simulate-drop"}
+		];
+		
+		testElement.simulate("drag-n-drop", {dx: dragX, dy: dragY});
+		$(document).scrollTop(0);
 	});
 
 	test("multiple drags, then drop", function() {

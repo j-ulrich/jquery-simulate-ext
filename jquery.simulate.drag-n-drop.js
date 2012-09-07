@@ -44,19 +44,6 @@
 		}
 	};
 	
-	/* Overwrite the $.simulate.prototype.mouseEvent function
-	 * to convert pageX/Y to clientX/Y
-	 */
-	var originalMouseEvent = $.simulate.prototype.mouseEvent;
-	$.simulate.prototype.mouseEvent = function(type, options) {
-		if (options.pageX || options.pageY) {
-			var doc = $(document);
-			options.clientX = (options.pageX || 0) - doc.scrollLeft();
-			options.clientY = (options.pageY || 0) - doc.scrollTop();
-		}
-		return originalMouseEvent.apply(this, [type, options]);
-	};
-
 	// Based on the findCenter function from jquery.simulate.js
 	function findCenter( elem ) {
 		var offset,
@@ -73,6 +60,65 @@
 			x: offset.left + elem.outerWidth() / 2 /*- jDocument.scrollLeft()*/,
 			y: offset.top + elem.outerHeight() / 2 /*- jDocument.scrollTop()*/
 		};
+	}
+	
+	function pageToClientPos(x, y) {
+		var jDocument = $(document);
+		
+		if (typeof x == "number" && typeof y == "number") {
+			return {
+				x: x - jDocument.scrollLeft(),
+				y: y - jDocument.scrollTop()
+			};
+		}
+		else if (typeof x == "object" && x.pageX && x.pageY) {
+			return {
+				clientX: x.pageX - jDocument.scrollLeft(),
+				clientY: x.pageY - jDocument.scrollTop()
+			}
+		}
+	}
+	
+	var check = true, isRelative = true;
+	/**
+	 * This is a browser-independent implementation of document.elementFromPoint().
+	 * 
+	 * For details, see http://www.zehnet.de/2010/11/19/document-elementfrompoint-a-jquery-solution/
+	 */
+	function elementAtPosition(x, y) {
+		if(!document.elementFromPoint) return null;
+
+		var clientX = x, clientY = y;
+		if (typeof x == "object" && (x.clientX || x.clientY)) {
+			clientX = x.clientX || 0 ;
+			clientY = x.clientY || 0;
+		}
+		
+		if(check)
+		{
+			var sl, doc;
+			if ((sl = $(document).scrollTop()) >0)
+			{
+				doc = document.elementFromPoint(0, sl + $(window).height() -1);
+				if ( doc != null && doc.tagName.toUpperCase() == 'HTML' ) { doc = null; }
+				isRelative = ( doc == null );
+			}
+			else if((sl = $(document).scrollLeft()) >0)
+			{
+				doc = document.elementFromPoint(sl + $(window).width() -1, 0);
+				if ( doc != null && doc.tagName.toUpperCase() == 'HTML' ) { doc = null; }
+				isRelative = ( doc == null );
+			}
+			check = !(sl>0);
+		}
+
+		if(!isRelative)
+		{
+			clientX += $(document).scrollLeft();
+			clientY += $(document).scrollTop();
+		}
+
+		return document.elementFromPoint(clientX,clientY);
 	}
 	
 	function dragFinished(ele, options) {
@@ -271,19 +317,29 @@
 					clickToDrop: false,
 					callback: undefined
 				}, this.options),
+				moveBeforeDrop = true,
 				center = findCenter( ele ),
 				x = Math.round( center.x ),
 				y = Math.round( center.y ),
 				coord = { pageX: x, pageY: y },
-				eventTarget = (activeDrag)? activeDrag.dragElement : ele;
+				clientCoord = pageToClientPos(coord),
+				eventTarget = elementAtPosition(clientCoord);
 			
 			if (activeDrag && (activeDrag.dragElement === ele || ele === document)) {
 				// We already moved the mouse during the drag so we just simulate the drop on the end position
 				x = activeDrag.dragStart.x + activeDrag.dragDistance.x;
 				y = activeDrag.dragStart.y + activeDrag.dragDistance.y;
 				coord = { pageX: x, pageY: y };
+				clientCoord = pageToClientPos(coord);
+				eventTarget = elementAtPosition(clientCoord);
+				moveBeforeDrop = false;
 			}
-			else {
+			
+			if (!eventTarget) {
+				eventTarget = (activeDrag)? activeDrag.dragElement : ele;
+			}
+
+			if (moveBeforeDrop === true) {
 				// Else we assume the drop should happen on target, so we move there
 				this.simulateEvent( eventTarget, "mousemove", coord );
 			}
@@ -292,7 +348,9 @@
 				this.simulateEvent( eventTarget, "mousedown", coord );
 			}
 			this.simulateEvent( eventTarget, "mouseup", coord );
-			this.simulateEvent( eventTarget, "click", coord );
+			if (options.clickToDrop) {
+				this.simulateEvent( eventTarget, "click", coord );
+			}
 			
 			$.simulate._activeDrag = undefined;
 			$(eventTarget).trigger({type: "simulate-drop"});

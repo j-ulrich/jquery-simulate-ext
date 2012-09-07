@@ -41,7 +41,6 @@
 					ok(false, "Missing event: "+event);
 				}
 			}
-			$(document).simulate("drop");
 		}
 	};
 	

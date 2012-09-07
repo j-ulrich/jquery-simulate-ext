@@ -7,6 +7,7 @@
 	<script src="../libs/jquery-1.7.2.js"></script>
 	<script src="../libs/bililiteRange.js"></script>
 	<script src="../libs/jquery.simulate.js"></script>
+	<script src="../jquery.simulate.ext.js"></script>
 	<script src="../jquery.simulate.key-sequence.js"></script>
 	<script src="../jquery.simulate.key-combo.js"></script>
 	<script src="../jquery.simulate.drag-n-drop.js"></script>
@@ -25,9 +26,13 @@
 	<ol id="qunit-tests"></ol>
 	<div id="qunit-fixture">
 		<textarea id="textInput"></textarea>
-		<div id="dragArea" style="width: 100px; height: 100px;"></div>
-		<div id="dropArea" style="width: 100px; height: 100px;"></div>
-		<div id="dropArea2" style="width: 100px; height: 100px;"></div>
+		<div id="dragArea" style="width: 300px; height: 300px;"></div>
+		<div id="dropArea" style="width: 300px; height: 300px;"></div>
+		<div id="dropArea2" style="width: 300px; height: 300px;"></div>
+	</div>
+	<div style="height: 5000px">
+		<!-- This is a spacer div which ensures that the page is scrollable.
+			This is necessary for one of the drag-n-drop tests. -->
 	</div>
 </body>
 </html>
