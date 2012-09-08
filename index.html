@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>jquery-simulate-ext by j-ulrich</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <header>
+        <h1>jquery-simulate-ext</h1>
+        <p>jQuery simulate extensions</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/j-ulrich/jquery-simulate-ext" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/j-ulrich/jquery-simulate-ext/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/j-ulrich/jquery-simulate-ext/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h1>jQuery Simulate Extended Plugin 1.0</h1>
+
+<p>The simulate extended plugin provides methods for simulating complex user interactions based on the
+<a href="https://github.com/jquery/jquery-ui/blob/master/tests/jquery.simulate.js">jQuery.simulate.js</a> plugin
+from <a href="http://jqueryui.com">jQuery UI</a>.
+The plugin provides simulation of:</p>
+
+<ul>
+<li>Drag &amp; Drop</li>
+<li>Key Sequences</li>
+<li>Key Combinations</li>
+</ul><p>Additionally, the extended plugin includes documentation and fixes for the jQuery simulate plugin itself.</p>
+
+<h2>Usage</h2>
+
+<p>To use the jQuery simulate extended plugins, include <code>jquery.simulate.js</code>, <code>jquery.simulate.ext.js</code>
+and then the desired plugins (in that order).</p>
+
+<p>The simulations are executed by calling the <code>.simulate()</code> function on a jQuery object. The simulation
+is then executed on all elements in the collection of the jQuery object (unless otherwise noted).</p>
+
+<ul>
+<li>Synopsis: <code>.simulate(type, options)</code>
+</li>
+<li>Parameters:
+
+<ul>
+<li>
+<strong>type</strong> <em>{String}</em>: The type of the interaction to be simulated.</li>
+<li>
+<strong>options</strong> <em>{Object}</em>: An option object containing the options for the action to be simulated.</li>
+</ul>
+</li>
+</ul><p>The types of simulated actions are:</p>
+
+<ul>
+<li>From the simulate plugin:
+
+<ul>
+<li>Mouse Events: <code>"mousemove"</code>, <code>"mousedown"</code>, <code>"mouseup"</code>, <code>"click"</code>, <code>dblclick"</code>,
+<code>"mouseover"</code>, <code>"mouseout"</code>, <code>"mouseenter"</code>, <code>"mouseleave"</code>, <code>"contextmenu"</code>
+</li>
+<li>Key Events: <code>"keydown"</code>, <code>"keyup"</code>, <code>"keypress"</code>
+</li>
+<li><code>"focus"</code></li>
+<li><code>"blur"</code></li>
+</ul>
+</li>
+<li>From the simulate-ext plugins:
+
+<ul>
+<li>Drag &amp; Drop: <code>"drag-n-drop"</code>, <code>"drag"</code>, <code>"drop"</code>
+</li>
+<li><code>"key-sequence"</code></li>
+<li><code>"key-combo"</code></li>
+</ul>
+</li>
+</ul><h4>Example:</h4>
+
+<div class="highlight"><pre><span class="nx">$</span><span class="p">(</span><span class="s1">'input[name="testInput"]'</span><span class="p">).</span><span class="nx">simulate</span><span class="p">(</span><span class="s2">"key-sequence"</span><span class="p">,</span> <span class="p">{</span><span class="nx">sequence</span><span class="o">:</span> <span class="s2">"asdf"</span><span class="p">});</span>
+</pre></div>
+
+<h4>Demos:</h4>
+
+<p>The <a href="https://github.com/j-ulrich/jquery-simulate-ext/tree/master/demo">demos folder</a> contains a
+demonstration of most of the features of the simulate extended plugins.</p>
+
+<p>Live demos can be found at jsFiddle and JS Bin where you can also play around with the plugin:</p>
+
+<ul>
+<li>
+<a href="http://jsfiddle.net/Ignitor/SmZEr/embedded/result/">http://jsfiddle.net/Ignitor/SmZEr/embedded/result/</a> (<a href="http://jsfiddle.net/Ignitor/SmZEr/">jsFiddle</a>)</li>
+<li>
+<a href="http://jsbin.com/eqasew/latest/edit#live">http://jsbin.com/eqasew/latest/edit#live</a> (<a href="http://jsbin.com/eqasew/latest/edit">JS Bin</a>)</li>
+</ul><h2>Documentation</h2>
+
+<p>The options and events for the different interactions are described in the files in the <a href="https://github.com/j-ulrich/jquery-simulate-ext/tree/master/doc">doc folder</a>:</p>
+
+<ul>
+<li><a href="https://github.com/j-ulrich/jquery-simulate-ext/tree/master/doc/simulate.md">Mouse Events</a></li>
+<li><a href="https://github.com/j-ulrich/jquery-simulate-ext/tree/master/doc/simulate.md">Key Events</a></li>
+<li><a href="https://github.com/j-ulrich/jquery-simulate-ext/tree/master/doc/simulate.md">Focus/Blur</a></li>
+<li><a href="https://github.com/j-ulrich/jquery-simulate-ext/tree/master/doc/drag-n-drop.md">Drag &amp; Drop</a></li>
+<li><a href="https://github.com/j-ulrich/jquery-simulate-ext/tree/master/doc/key-sequence.md">Key Sequence</a></li>
+<li><a href="https://github.com/j-ulrich/jquery-simulate-ext/tree/master/doc/key-combo.md">Key Combination</a></li>
+</ul><h2>Requirements</h2>
+
+<p>The plugin requires</p>
+
+<ul>
+<li><a href="http://jquery.com">jQuery 1.3.2+</a></li>
+<li><a href="https://github.com/jquery/jquery-ui/blob/master/tests/jquery.simulate.js">jQuery Simulate</a></li>
+<li>
+<a href="http://bililite.com/blog/2011/01/17/cross-browser-text-ranges-and-selections">bililiteRange</a> for
+the key-sequence and key-combo plugins</li>
+</ul><h2>Compatibility</h2>
+
+<p>The plugins have been successfully tested with jQuery 1.7.2 and <a href="https://github.com/jquery/jquery-ui/blob/485ca7192ac57d018b8ce4f03e7dec6e694a53b7/tests/jquery.simulate.js">jQuery Simulate @485ca7192a</a>.
+However, they should be compatible with future versions.</p>
+
+<h2>Licensing</h2>
+
+<p>Copyright © 2012 Jochen Ulrich
+<a href="https://github.com/j-ulrich/jquery-simulate-ext">https://github.com/j-ulrich/jquery-simulate-ext</a></p>
+
+<p>Licensed under the <a href="http://opensource.org/licenses/MIT">MIT license</a>.</p>
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/j-ulrich">j-ulrich</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
