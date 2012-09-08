@@ -10,7 +10,7 @@ The plugin provides simulation of:
 * Key Sequences
 * Key Combinations
 
-Additionally, the extended plugin include documentation and fixes for the jQuery simulate plugin itself.
+Additionally, the extended plugin includes documentation and fixes for the jQuery simulate plugin itself.
 
 Usage
 -----
@@ -18,7 +18,7 @@ To use the jQuery simulate extended plugins, include `jquery.simulate.js`, `jque
 and then the desired plugins (in that order).
 
 The simulations are executed by calling the `.simulate()` function on a jQuery object. The simulation
-is then executed on all elements in the collection of the jQuery object.
+is then executed on all elements in the collection of the jQuery object (unless otherwise noted).
 
 - Synopsis: `.simulate(type, options)`
 - Parameters:
@@ -28,11 +28,12 @@ is then executed on all elements in the collection of the jQuery object.
 The types of simulated actions are:
 
 - From the simulate plugin:
-	- Mouse Events: `"mousemove"`, `"mousedown"`, `"mouseup"`, `"click"`
+	- Mouse Events: `"mousemove"`, `"mousedown"`, `"mouseup"`, `"click"`, `dblclick"`,
+		`"mouseover"`, `"mouseout"`, `"mouseenter"`, `"mouseleave"`, `"contextmenu"`
 	- Key Events: `"keydown"`, `"keyup"`, `"keypress"`
 	- `"focus"`
 	- `"blur"`
-- From the simulate-ext plugin:
+- From the simulate-ext plugins:
 	- Drag & Drop: `"drag-n-drop"`, `"drag"`, `"drop"`
 	- `"key-sequence"`
 	- `"key-combo"`
