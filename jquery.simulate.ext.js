@@ -1,3 +1,7 @@
+/*jslint white: true vars: true browser: true todo: true */
+/*jshint camelcase:true, plusplus:true, forin:true, noarg:true, noempty:true, eqeqeq:true, bitwise:true, strict:true, undef:true, unused:true, curly:true, browser:true, devel:true, maxerr:100, white:false, onevar:false */
+/*global jQuery:true $:true */
+
 /* jQuery Simulate Extended Plugin 1.0
  * http://github.com/j-ulrich/jquery-simulate-ext
  * 
