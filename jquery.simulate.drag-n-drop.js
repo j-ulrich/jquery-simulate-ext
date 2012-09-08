@@ -46,8 +46,7 @@
 	
 	// Based on the findCenter function from jquery.simulate.js
 	function findCenter( elem ) {
-		var offset,
-			jDocument = $( elem.ownerDocument );
+		var offset;
 		elem = $( elem );
 		if (elem[0] === document) {
 			offset = {left: 0, top: 0}; 
@@ -57,25 +56,25 @@
 		}
 			
 		return {
-			x: offset.left + elem.outerWidth() / 2 /*- jDocument.scrollLeft()*/,
-			y: offset.top + elem.outerHeight() / 2 /*- jDocument.scrollTop()*/
+			x: offset.left + elem.outerWidth() / 2,
+			y: offset.top + elem.outerHeight() / 2
 		};
 	}
 	
 	function pageToClientPos(x, y) {
 		var jDocument = $(document);
 		
-		if (typeof x == "number" && typeof y == "number") {
+		if (typeof x === "number" && typeof y === "number") {
 			return {
 				x: x - jDocument.scrollLeft(),
 				y: y - jDocument.scrollTop()
 			};
 		}
-		else if (typeof x == "object" && x.pageX && x.pageY) {
+		else if (typeof x === "object" && x.pageX && x.pageY) {
 			return {
 				clientX: x.pageX - jDocument.scrollLeft(),
 				clientY: x.pageY - jDocument.scrollTop()
-			}
+			};
 		}
 	}
 	
@@ -86,10 +85,12 @@
 	 * For details, see http://www.zehnet.de/2010/11/19/document-elementfrompoint-a-jquery-solution/
 	 */
 	function elementAtPosition(x, y) {
-		if(!document.elementFromPoint) return null;
+		if(!document.elementFromPoint) {
+			return null;
+		}
 
 		var clientX = x, clientY = y;
-		if (typeof x == "object" && (x.clientX || x.clientY)) {
+		if (typeof x === "object" && (x.clientX || x.clientY)) {
 			clientX = x.clientX || 0 ;
 			clientY = x.clientY || 0;
 		}
@@ -100,13 +101,13 @@
 			if ((sl = $(document).scrollTop()) >0)
 			{
 				doc = document.elementFromPoint(0, sl + $(window).height() -1);
-				if ( doc != null && doc.tagName.toUpperCase() == 'HTML' ) { doc = null; }
+				if ( doc != null && doc.tagName.toUpperCase() === 'HTML' ) { doc = null; }
 				isRelative = ( doc == null );
 			}
 			else if((sl = $(document).scrollLeft()) >0)
 			{
 				doc = document.elementFromPoint(sl + $(window).width() -1, 0);
-				if ( doc != null && doc.tagName.toUpperCase() == 'HTML' ) { doc = null; }
+				if ( doc != null && doc.tagName.toUpperCase() === 'HTML' ) { doc = null; }
 				isRelative = ( doc == null );
 			}
 			check = !(sl>0);
@@ -135,13 +136,13 @@
 		var stepWidth, stepCount, stepVector;
 		
 		if (interpolOptions.stepWidth) {
-			stepWidth = parseInt(interpolOptions.stepWidth);
+			stepWidth = parseInt(interpolOptions.stepWidth, 10);
 			stepCount = Math.floor(dragDistance / stepWidth)-1;
 			var stepScale = stepWidth / dragDistance;
 			stepVector = {x: drag.x*stepScale, y: drag.y*stepScale };
 		}
 		else {
-			stepCount = parseInt(interpolOptions.stepCount);
+			stepCount = parseInt(interpolOptions.stepCount, 10);
 			stepWidth = dragDistance / (stepCount+1);
 			stepVector = {x: drag.x/(stepCount+1), y: drag.y/(stepCount+1)};
 		}
@@ -152,8 +153,8 @@
 			coords.x += stepVector.x;
 			coords.y += stepVector.y;
 			var effectiveCoords = {x: coords.x, y: coords.y};
-			if (interpolOptions.shaky && (interpolOptions.shaky === true || !isNaN(parseInt(interpolOptions.shaky)) )) {
-				var amplitude = (interpolOptions.shaky === true)? 1 : parseInt(interpolOptions.shaky);
+			if (interpolOptions.shaky && (interpolOptions.shaky === true || !isNaN(parseInt(interpolOptions.shaky,10)) )) {
+				var amplitude = (interpolOptions.shaky === true)? 1 : parseInt(interpolOptions.shaky,10);
 				effectiveCoords.x += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
 				effectiveCoords.y += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
 			}
@@ -164,9 +165,9 @@
 		function stepAndSleep() {
 			var timeElapsed = now() - lastTime; // Work-around for Firefox "bug": setTimeout can fire before the timeout
 			if (timeElapsed >= stepDelay) {
-				if (i < stepCount) {
+				if (step < stepCount) {
 					interpolationStep();
-					i += 1;
+					step += 1;
 					setTimeout(stepAndSleep, stepDelay);
 				}
 				else {
@@ -189,9 +190,9 @@
 			dragFinished(ele, options);
 		}
 		else {
-			var stepDelay = parseInt(interpolOptions.stepDelay) || Math.ceil(parseInt(interpolOptions.duration) / (stepCount+1));
-			var i = 0;
-			var now = Date.now || function() { return new Date().getTime() },
+			var stepDelay = parseInt(interpolOptions.stepDelay,10) || Math.ceil(parseInt(interpolOptions.duration,10) / (stepCount+1));
+			var step = 0;
+			var now = Date.now || function() { return new Date().getTime(); },
 				lastTime = now();
 
 			setTimeout(stepAndSleep, stepDelay);

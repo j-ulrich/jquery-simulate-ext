@@ -10,6 +10,7 @@
  */
 
 ;(function( $ ) {
+	"use strict";
 
 	/* Overwrite the $.simulate.prototype.mouseEvent function
 	 * to convert pageX/Y to clientX/Y

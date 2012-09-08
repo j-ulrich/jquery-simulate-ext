@@ -1,6 +1,6 @@
 /*jslint white: true vars: true browser: true todo: true */
 /*jshint camelcase:true, plusplus:true, forin:true, noarg:true, noempty:true, eqeqeq:true, bitwise:true, strict:true, undef:true, unused:true, curly:true, browser:true, devel:true, maxerr:100, white:false, onevar:false */
-/*global jQuery:false $:false */
+/*global jQuery:true $:true bililiteRange:true */
 
 /* jQuery Simulate Key-Sequence Plugin 1.0
  * http://github.com/j-ulrich/jquery-simulate-ext
@@ -53,7 +53,7 @@
 				}, this.options),
 				sequence = opts.sequence;
 				
-			opts.delay = parseInt(opts.delay);
+			opts.delay = parseInt(opts.delay,10);
 			
 			var localkeys = $.extend({}, opts, $(target).data('simulate-keySequence')); // allow for element-specific key functions
 			// most elements to not keep track of their selection when they lose focus, so we have to do it for them
@@ -66,7 +66,7 @@
 					$.data(target, 'simulate-keySequence.selection').bounds('selection');
 				}).bind('keyup.simulate-keySequence', function(evt){
 					// restore the selection if we got here with a tab (a click should select what was clicked on)
-					if (evt.which == 9){
+					if (evt.which === 9){
 						// there's a flash of selection when we restore the focus, but I don't know how to avoid that.
 						$.data(target, 'simulate-keySequence.selection').select();
 					}else{
@@ -75,7 +75,9 @@
 				});
 			}
 			target.focus();
-			if (typeof sequence === 'undefined') return; // no string, so we just set up the event handlers
+			if (typeof sequence === 'undefined') { // no string, so we just set up the event handlers
+				return;
+			}
 			sequence = sequence.replace(/\n/g, '{enter}'); // turn line feeds into explicit break insertions
 			
 			function sequenceFinished() {
@@ -108,14 +110,14 @@
 
 			if (!opts.delay || opts.delay <= 0) {
 				// Run as fast as possible
-				sequence.replace(/{[^}]*}|[^{]+/g, function(s){
+				sequence.replace(/\{[^}]*\}|[^{]+/g, function(s){
 					(localkeys[s] || $.simulate.prototype.simulateKeySequence.defaults[s] || $.simulate.prototype.simulateKeySequence.defaults.simplechar)(rng, s, opts);
 				});
 				sequenceFinished();
 			}
 			else {
-				var tokenRegExp = /{[^}]*}|[^{]/g; // This matches curly bracket expressions or single characters
-				var now = Date.now || function() { return new Date().getTime() },
+				var tokenRegExp = /\{[^}]*\}|[^{]/g; // This matches curly bracket expressions or single characters
+				var now = Date.now || function() { return new Date().getTime(); },
 					lastTime = now();
 				
 				processNextToken();
@@ -190,7 +192,7 @@ $.simulate.prototype.simulateKeySequence.defaults = {
 	simplechar: function (rng, s, opts){
 		rng.text(s, 'end');
 		if (opts.triggerKeyEvents) {
-			for (var i =0; i < s.length; ++i){
+			for (var i =0; i < s.length; i += 1){
 				var charCode = s.charCodeAt(i);
 				var keyCode = $.simulate.prototype.simulateKeySequence.prototype.charToKeyCode(s.charAt(i));
 				// a bit of cheating: rng._el is the element associated with rng.
@@ -201,11 +203,10 @@ $.simulate.prototype.simulateKeySequence.defaults = {
 		}
 	},
 	'{{}': function (rng, s, opts){
-		$.simulate.prototype.simulateKeySequence.defaults.simplechar (rng, '{', opts)
+		$.simulate.prototype.simulateKeySequence.defaults.simplechar(rng, '{', opts);
 	},
 	'{enter}': function (rng, s, opts){
 		rng.insertEOL();
-		var b = rng.bounds();
 		rng.select();
 		if (opts.triggerKeyEvents === true) {
 			$(rng._el).simulate('keydown', {keyCode: 13});
@@ -215,7 +216,7 @@ $.simulate.prototype.simulateKeySequence.defaults = {
 	},
 	'{backspace}': function (rng, s, opts){
 		var b = rng.bounds();
-		if (b[0] == b[1]) rng.bounds([b[0]-1, b[0]]); // no characters selected; it's just an insertion point. Remove the previous character
+		if (b[0] === b[1]) { rng.bounds([b[0]-1, b[0]]); } // no characters selected; it's just an insertion point. Remove the previous character
 		rng.text('', 'end'); // delete the characters and update the selection
 		if (opts.triggerKeyEvents === true) {
 			$(rng._el).simulate('keydown', {keyCode: 8});
@@ -224,7 +225,7 @@ $.simulate.prototype.simulateKeySequence.defaults = {
 	},
 	'{del}': function (rng, s, opts){
 		var b = rng.bounds();
-		if (b[0] == b[1]) rng.bounds([b[0], b[0]+1]); // no characters selected; it's just an insertion point. Remove the next character
+		if (b[0] === b[1]) { rng.bounds([b[0], b[0]+1]); } // no characters selected; it's just an insertion point. Remove the next character
 		rng.text('', 'end'); // delete the characters and update the selection
 		if (opts.triggerKeyEvents === true) {
 			$(rng._el).simulate('keydown', {keyCode: 46});
@@ -233,7 +234,7 @@ $.simulate.prototype.simulateKeySequence.defaults = {
 	},
 	'{rightarrow}':  function (rng, s, opts){
 		var b = rng.bounds();
-		if (b[0] == b[1]) ++b[1]; // no characters selected; it's just an insertion point. Move to the right
+		if (b[0] === b[1]) { b[1] += 1; } // no characters selected; it's just an insertion point. Move to the right
 		rng.bounds([b[1], b[1]]).select();
 		if (opts.triggerKeyEvents === true) {
 			$(rng._el).simulate('keydown', {keyCode: 39});
@@ -242,7 +243,7 @@ $.simulate.prototype.simulateKeySequence.defaults = {
 	},
 	'{leftarrow}': function (rng, s, opts){
 		var b = rng.bounds();
-		if (b[0] == b[1]) --b[0]; // no characters selected; it's just an insertion point. Move to the left
+		if (b[0] === b[1]) { b[0] -= 1; } // no characters selected; it's just an insertion point. Move to the left
 		rng.bounds([b[0], b[0]]).select();
 		if (opts.triggerKeyEvents === true) {
 			$(rng._el).simulate('keydown', {keyCode: 37});
@@ -254,4 +255,4 @@ $.simulate.prototype.simulateKeySequence.defaults = {
 	}
 };
 
-})(jQuery)
+})(jQuery);

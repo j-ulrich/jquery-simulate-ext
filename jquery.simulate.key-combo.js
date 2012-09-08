@@ -146,7 +146,7 @@
 					eventOptions.metaKey = false;
 					break;
 				default:
-					 break;
+					break;
 				}
 				target.simulate("keyup", eventOptions);				
 			}
