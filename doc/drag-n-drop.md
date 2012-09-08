@@ -141,12 +141,14 @@ drag'n'drop:
 * The target of the drag events is always the element on which the drag is simulated.
 	With a real drag, the target would be the topmost, visible element at the position of the `mousedown`.
 	To see the difference, imagine the following example of two `div` elements:
+
 	![Two nested divs. The inner div covers the center of the outer div.](https://raw.github.com/j-ulrich/jquery-simulate-ext/master/doc/divs.png)
+	
 	When the drag is simulated on the `#outerDiv`, the events will target `#outerDiv` while a real drag
-	on the center of the `#outerDiv` (black cross in the image) would target the `#innerDiv`. This
-	way, the behavior of drag simulations is more predictable (you explicitly name the element to be dragged
-	and don't get surprised that another element is dragged because it covers the center of the element to
-	be dragged).
+	on the center of the `#outerDiv` (black cross in the image) would target the `#innerDiv`. The
+	way it is implemented makes the behavior of drag simulations more predictable (you explicitly name the
+	element to be dragged and don't get surprised that another element is dragged because it covers the
+	center of the element to be dragged).
 	If you explicitly want to simulate a drag on the element at a given position, retrieve the element
 	using `document.elementFromPoint()` and simulate the drag on that element.
 * The target of a drop is different from a real drop when the center of the drop target (or the end of the
