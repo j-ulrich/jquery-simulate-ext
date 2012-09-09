@@ -9,7 +9,12 @@
     <title>jquery-simulate-ext by j-ulrich</title>
     <link rel="stylesheet" href="stylesheets/styles.css" />
     <link rel="stylesheet" href="stylesheets/pygment_trac.css" />
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/themes/ui-lightness/jquery-ui.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
+    <script src="jquery.simulate.js"></script>
+    <script src="jquery.simulate.ext.js"></script>
+    <script src="jquery.simulate.drag-n-drop.js"></script>
     <script src="javascripts/main.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -17,6 +22,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
     <style type="text/css">
+    
+        #demoSlider {
+            margin: 1em;
+            width: 70%;
+        }
+        
+        #demoButton {
+            margin: 1em;
+        }
+    
         #banner .github-links {
             left: 50%;
             position: fixed;
@@ -54,7 +69,7 @@
 
       <header>
         <h1>jquery-simulate-ext</h1>
-        <p>jQuery simulate extensions</p>
+        <p>jQuery simulate extended</p>
       </header>
 
       <div id="banner">
@@ -85,8 +100,13 @@
 
 <p>The simulate extended plugin provides methods for simulating complex user interactions based on the
 <a href="https://github.com/jquery/jquery-ui/blob/master/tests/jquery.simulate.js">jQuery.simulate.js</a> plugin
-from <a href="http://jqueryui.com">jQuery UI</a>.
-The plugin provides simulation of:</p>
+from <a href="http://jqueryui.com">jQuery UI</a>.</p>
+
+<h4>Demo:</h4>
+<div id="demoSlider"></div>
+<button id="demoButton">Simulate drag-n-drop</button>
+
+<p>The plugin provides simulation of:</p>
 
 <ul>
 <li>Drag &amp; Drop</li>
@@ -140,7 +160,7 @@ is then executed on all elements in the collection of the jQuery object (unless 
 </li>
 </ul><h4>Example:</h4>
 
-<div class="highlight"><pre><span class="nx">$</span><span class="p">(</span><span class="s1">'input[name="testInput"]'</span><span class="p">).</span><span class="nx">simulate</span><span class="p">(</span><span class="s2">"key-sequence"</span><span class="p">,</span> <span class="p">{</span><span class="nx">sequence</span><span class="o">:</span> <span class="s2">"asdf"</span><span class="p">});</span>
+<div class="highlight"><pre><span class="nx">$</span><span class="p">(</span><span class="s1">'#myInput'</span><span class="p">).</span><span class="nx">simulate</span><span class="p">(</span><span class="s2">"key-sequence"</span><span class="p">,</span> <span class="p">{</span><span class="nx">sequence</span><span class="o">:</span> <span class="s2">"asdf"</span><span class="p">});</span>
 </pre></div>
 
 <h4>Demos:</h4>

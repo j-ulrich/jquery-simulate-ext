@@ -13,6 +13,12 @@ var sectionHeight = function() {
 $(window).resize(sectionHeight);
 
 $(document).ready(function(){
+
+  $('#demoSlider').slider();
+  $('#demoButton').click(function() {
+    $('#demoSlider .ui-slider-handle').simulate('drag-n-drop', {dx: 300, interpolation: {stepWidth: 10, stepDelay: 10}});  
+  });
+
   $("section h1, section h2").each(function(){
     $("nav ul").append("<li class='tag-" + this.nodeName.toLowerCase() + "'><a href='#" + $(this).text().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g,'') + "'>" + $(this).text() + "</a></li>");
     $(this).attr("id",$(this).text().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g,''));
