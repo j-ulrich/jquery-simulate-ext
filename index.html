@@ -1,11 +1,14 @@
 <!doctype html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="author" content="Jochen Ulrich" />
+	<meta name="keywords" content="jquery, simulate, key, mouse, press, button, move, drag'n'drop, drag, drop, user interaction, drag & drop" />
+	<meta name="description" content="jQuery plugin providing simulation of user interaction" />
     <title>jquery-simulate-ext by j-ulrich</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="stylesheets/styles.css" />
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="javascripts/main.js"></script>
     <!--[if lt IE 9]>
@@ -13,6 +16,39 @@
     <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
+    <style type="text/css">
+        #banner .github-links {
+            left: 50%;
+            position: fixed;
+            margin-left: -325px;
+        }
+        #banner .github-links ul {
+            margin: 0px;
+        }
+        #banner .github-links .button {
+            margin-left: 0px;
+            margin-right: 5px;
+        }
+        
+        .donation-list li {
+        	margin-top: 0.5em;
+        	margin-bottom: 0.5em;
+        }
+        .donation-list form {
+        	display: inline;
+        }
+        .donation-list img {
+        	vertical-align: middle;
+        }
+        .donation-list input[type="image"] {
+        	vertical-align: middle;
+        }
+        
+        ul ul {
+        	margin-bottom: 0.5em;
+        }
+        
+    </style>
   </head>
   <body>
 
@@ -23,8 +59,14 @@
 
       <div id="banner">
         <span id="logo"></span>
-
-        <a href="https://github.com/j-ulrich/jquery-simulate-ext" class="button fork"><strong>View On GitHub</strong></a>
+		
+		<div class="github-links">
+			<ul>
+				<li><a href="https://github.com/j-ulrich/jquery-simulate-ext/blob/master/README.md" class="button">Documentation</a></li>
+				<li><a href="https://github.com/j-ulrich/jquery-simulate-ext/issues" class="button">Bug Tracker</a></li>
+				<li><a href="https://github.com/j-ulrich/jquery-simulate-ext" class="button"><strong>View On GitHub</strong></a></li>
+			</ul>
+		</div>
         <div class="downloads">
           <span>Downloads:</span>
           <ul>
@@ -39,7 +81,7 @@
         <ul></ul>
       </nav>
       <section>
-        <h1>jQuery Simulate Extended Plugin 1.0</h1>
+        <h1>jQuery Simulate Extended Plugin</h1>
 
 <p>The simulate extended plugin provides methods for simulating complex user interactions based on the
 <a href="https://github.com/jquery/jquery-ui/blob/master/tests/jquery.simulate.js">jQuery.simulate.js</a> plugin
@@ -110,9 +152,9 @@ demonstration of most of the features of the simulate extended plugins.</p>
 
 <ul>
 <li>
-<a href="http://jsfiddle.net/Ignitor/SmZEr/embedded/result/">http://jsfiddle.net/Ignitor/SmZEr/embedded/result/</a> (<a href="http://jsfiddle.net/Ignitor/SmZEr/">jsFiddle</a>)</li>
+<a href="http://jsfiddle.net/Ignitor/Psjhf/embedded/result/">http://jsfiddle.net/Ignitor/Psjhf/embedded/result/</a> (<a href="http://jsfiddle.net/Ignitor/Psjhf/">jsFiddle</a>)</li>
 <li>
-<a href="http://jsbin.com/eqasew/latest/edit#live">http://jsbin.com/eqasew/latest/edit#live</a> (<a href="http://jsbin.com/eqasew/latest/edit">JS Bin</a>)</li>
+<a href="http://jsbin.com/inalax/latest/edit#live">http://jsbin.com/inalax/latest/edit#live</a> (<a href="http://jsbin.com/inalax/latest/edit">JS Bin</a>)</li>
 </ul><h2>Documentation</h2>
 
 <p>The options and events for the different interactions are described in the files in the <a href="https://github.com/j-ulrich/jquery-simulate-ext/tree/master/doc">doc folder</a>:</p>
@@ -141,10 +183,25 @@ However, they should be compatible with future versions.</p>
 
 <h2>Licensing</h2>
 
-<p>Copyright © 2012 Jochen Ulrich
-<a href="https://github.com/j-ulrich/jquery-simulate-ext">https://github.com/j-ulrich/jquery-simulate-ext</a></p>
+<p>Copyright &copy; 2012 Jochen Ulrich<br/><a href="https://github.com/j-ulrich/jquery-simulate-ext">https://github.com/j-ulrich/jquery-simulate-ext</a></p>
 
-<p>Licensed under the <a href="http://opensource.org/licenses/MIT">MIT license</a>.</p>
+<p>Licensed under the <a href="https://github.com/j-ulrich/jquery-simulate-ext/blob/master/MIT-LICENSE.txt">MIT license</a>.</p>
+
+<h2>Donations</h2>
+If you like my work, you can support me with a donation:
+<ul class="donation-list">
+	<li>PayPal:
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="L87LW8W227NBJ">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1">
+</form>
+	</li>
+	<li>Flattr: <a href="http://flattr.com/thing/878282/jquery-simulate-ext" target="_blank"><img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a></li>
+	<li>Or buy me something from my <a href="http://www.amazon.de/registry/wishlist/13KP208ECPT0N">Amazon Wishlist</a></li>
+</ul>
+
       </section>
       <footer>
         <p>Project maintained by <a href="https://github.com/j-ulrich">j-ulrich</a></p>
