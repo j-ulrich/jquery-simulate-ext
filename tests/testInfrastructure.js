@@ -27,12 +27,12 @@
 		
 		testSetup: function() {
 			tests.expectedEvents = [];
-			$(document).on("keyup keydown keypress mousedown mouseup mousemove", '#qunit-fixture', tests.assertExpectedEvent);
+			$(document).on("keyup keydown keypress mousedown mouseup mousemove click", '#qunit-fixture', tests.assertExpectedEvent);
 		},
 		
 		testTearDown: function() {
 			var event;
-			$(document).off("keyup keydown keypress mousedown mouseup mousemove", '#qunit-fixture');
+			$(document).off("keyup keydown keypress mousedown mouseup mousemove click", '#qunit-fixture');
 			while ( (event = tests.expectedEvents.shift()) !== undefined) {
 				if (event.type) {
 					ok(false, "Missing event: "+event.type);

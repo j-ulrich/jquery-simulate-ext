@@ -5,8 +5,6 @@
 (function ($, undefined) {
 	"use strict";
 
-	// TODO: Write test for the clickToDrag/Drop options
-	
 $(document).ready(function() {
 	
 	module("drag-n-drop", {
@@ -817,6 +815,30 @@ $(document).ready(function() {
 		}
 		delayUntilIFrameLoad();
 	});
+	
+	test("clickToDrag / clickToDrop", function() {
+		var testElement = $('#dragArea');
+		
+		var dragX = 50,
+			dragY = 10;
+		var expectedX = Math.round(testElement.offset().left+testElement.outerWidth()/2)+dragX,
+			expectedY = Math.round(testElement.offset().top+testElement.outerHeight()/2)+dragY;
+
+		tests.expectedEvents = [
+			{type: "mousedown"},
+			{type: "mouseup"},
+			{type: "click"},
+			{type: "mousemove", pageX: expectedX, pageY: expectedY},
+			{type: "simulate-drag"},
+			{type: "mousedown"},
+			{type: "mouseup", pageX: expectedX, pageY: expectedY},
+			{type: "click"},
+			{type: "simulate-drop"}
+		];
+		
+		testElement.simulate("drag-n-drop", {dx: dragX, dy: dragY, clickToDrag: true, clickToDrop: true});
+	});
+
 
 });
 	
