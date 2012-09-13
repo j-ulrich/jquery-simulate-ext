@@ -1,6 +1,6 @@
 /*jslint white: true vars: true browser: true todo: true */
 /*jshint camelcase:true, plusplus:true, forin:true, noarg:true, noempty:true, eqeqeq:true, bitwise:true, strict:true, undef:true, unused:true, curly:true, browser:true, devel:true, maxerr:100, white:false, onevar:false */
-/*global noty:true jQuery:true $:true sprintf:true Roundizzle:true */
+/*global jQuery:true $:true */
 
 (function ($, undefined) {
 	"use strict";

@@ -9,18 +9,6 @@
  * Licensed under the MIT license (MIT-LICENSE.txt).
  */
 
-/* TODO: Implement startOffset & endOffset options
- * The offsets define the position relative to the center or upper left corner of an element
- * where the drag/drop should start/end.
- * 
- * The structure could be like this:
- * {
- * 	base: "center", // Either "center" or "upperleft"
- * 	x: 0,
- * 	y: 0
- * }
- */
-
 ;(function($, undefined) {
 	"use strict";
 	

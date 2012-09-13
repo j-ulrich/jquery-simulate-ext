@@ -17,6 +17,7 @@
 	 */
 	var originalMouseEvent = $.simulate.prototype.mouseEvent,
 		rdocument = /\[object (?:HTML)?Document\]/;
+	
 	$.simulate.prototype.mouseEvent = function(type, options) {
 		if (options.pageX || options.pageY) {
 			var doc = rdocument.test(Object.prototype.toString.call(this.target))? this.target : (this.target.ownerDocument || document);
