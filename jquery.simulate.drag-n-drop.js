@@ -2,7 +2,7 @@
 /*jshint camelcase:true, plusplus:true, forin:true, noarg:true, noempty:true, eqeqeq:true, bitwise:true, strict:true, undef:true, unused:true, curly:true, browser:true, devel:true, maxerr:100, white:false, onevar:false */
 /*global jQuery:true $:true */
 
-/* jQuery Simulate Drag-n-Drop Plugin 1.0
+/* jQuery Simulate Drag-n-Drop Plugin 1.1
  * http://github.com/j-ulrich/jquery-simulate-ext
  * 
  * Copyright (c) 2012 Jochen Ulrich
@@ -44,11 +44,35 @@
 		}
 	};
 	
+	var rdocument = /\[object (?:HTML)?Document\]/;
+	function isDocument( elem ) {
+		return rdocument.test(Object.prototype.toString.call($(elem)[0]));
+	}
+	
+	function selectFirstMatch(array, check) {
+		if ($.isFunction(check)) {
+			for (var i=0; i < array.length; i+=1) {
+				if (check(array[i])) {
+					return array[i];
+				}
+			}
+			return undefined;
+		}
+		else {
+			for (var i=0; i < array.length; i+=1) {
+				if (array[i]) {
+					return array[i];
+				}
+			}
+			return undefined;
+		}
+	}
+	
 	// Based on the findCenter function from jquery.simulate.js
 	function findCenter( elem ) {
 		var offset;
 		elem = $( elem );
-		if (elem[0] === document) {
+		if ( isDocument(elem[0]) ) {
 			offset = {left: 0, top: 0}; 
 		}
 		else {
@@ -61,8 +85,13 @@
 		};
 	}
 	
-	function pageToClientPos(x, y) {
-		var jDocument = $(document);
+	function pageToClientPos(x, y, docRel) {
+		var jDocument;
+		if ( isDocument(y) ) {
+			jDocument = $(y);
+		} else {
+			jDocument = $(docRel || document);
+		}
 		
 		if (typeof x === "number" && typeof y === "number") {
 			return {
@@ -84,8 +113,15 @@
 	 * 
 	 * For details, see http://www.zehnet.de/2010/11/19/document-elementfrompoint-a-jquery-solution/
 	 */
-	function elementAtPosition(x, y) {
-		if(!document.elementFromPoint) {
+	function elementAtPosition(x, y, docRel) {
+		var doc;
+		if ( isDocument(y) ) {
+			doc = y;
+		} else {
+			doc = docRel || document;
+		}
+		
+		if(!doc.elementFromPoint) {
 			return null;
 		}
 
@@ -97,29 +133,29 @@
 		
 		if(check)
 		{
-			var sl, doc;
-			if ((sl = $(document).scrollTop()) >0)
+			var sl, ele;
+			if ((sl = $(doc).scrollTop()) >0)
 			{
-				doc = document.elementFromPoint(0, sl + $(window).height() -1);
-				if ( doc != null && doc.tagName.toUpperCase() === 'HTML' ) { doc = null; }
-				isRelative = ( doc == null );
+				ele = doc.elementFromPoint(0, sl + $(window).height() -1);
+				if ( ele != null && ele.tagName.toUpperCase() === 'HTML' ) { ele = null; }
+				isRelative = ( ele == null );
 			}
-			else if((sl = $(document).scrollLeft()) >0)
+			else if((sl = $(doc).scrollLeft()) >0)
 			{
-				doc = document.elementFromPoint(sl + $(window).width() -1, 0);
-				if ( doc != null && doc.tagName.toUpperCase() === 'HTML' ) { doc = null; }
-				isRelative = ( doc == null );
+				ele = doc.elementFromPoint(sl + $(window).width() -1, 0);
+				if ( ele != null && ele.tagName.toUpperCase() === 'HTML' ) { ele = null; }
+				isRelative = ( ele == null );
 			}
 			check = !(sl>0);
 		}
 
 		if(!isRelative)
 		{
-			clientX += $(document).scrollLeft();
-			clientY += $(document).scrollTop();
+			clientX += $(doc).scrollLeft();
+			clientY += $(doc).scrollTop();
 		}
 
-		return document.elementFromPoint(clientX,clientY);
+		return doc.elementFromPoint(clientX,clientY);
 	}
 	
 	function dragFinished(ele, options) {
@@ -130,10 +166,11 @@
 	}
 	
 	function interpolatedEvents(ele, start, drag, options) {
-		var self = this;
-		var interpolOptions = options.interpolation;
-		var dragDistance = Math.sqrt(Math.pow(drag.x,2) + Math.pow(drag.y,2)); // sqrt(a^2 + b^2)
-		var stepWidth, stepCount, stepVector;
+		var self = this,
+			targetDoc = selectFirstMatch([ele, ele.ownerDocument], isDocument) || document,
+			interpolOptions = options.interpolation,
+			dragDistance = Math.sqrt(Math.pow(drag.x,2) + Math.pow(drag.y,2)), // sqrt(a^2 + b^2)
+			stepWidth, stepCount, stepVector;
 		
 		if (interpolOptions.stepWidth) {
 			stepWidth = parseInt(interpolOptions.stepWidth, 10);
@@ -147,31 +184,41 @@
 			stepVector = {x: drag.x/(stepCount+1), y: drag.y/(stepCount+1)};
 		}
 		
+		
 		var coords = $.extend({},start);
 		
 		function interpolationStep() {
 			coords.x += stepVector.x;
 			coords.y += stepVector.y;
-			var effectiveCoords = {x: coords.x, y: coords.y};
+			var effectiveCoords = {pageX: coords.x, pageY: coords.y};
 			if (interpolOptions.shaky && (interpolOptions.shaky === true || !isNaN(parseInt(interpolOptions.shaky,10)) )) {
 				var amplitude = (interpolOptions.shaky === true)? 1 : parseInt(interpolOptions.shaky,10);
-				effectiveCoords.x += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
-				effectiveCoords.y += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
+				effectiveCoords.pageX += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
+				effectiveCoords.pageY += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
 			}
-			self.simulateEvent( ele, "mousemove", {pageX: Math.round(effectiveCoords.x), pageY: Math.round(effectiveCoords.y)});	
+			var clientCoord = pageToClientPos(effectiveCoords, targetDoc),
+				eventTarget = elementAtPosition(clientCoord, targetDoc) || ele;
+			self.simulateEvent( eventTarget, "mousemove", {pageX: Math.round(effectiveCoords.pageX), pageY: Math.round(effectiveCoords.pageY)});	
 		}
 		
 		
+		var now = Date.now || function() { return new Date().getTime(); },
+			lastTime;
+		
 		function stepAndSleep() {
-			var timeElapsed = now() - lastTime; // Work-around for Firefox "bug": setTimeout can fire before the timeout
+			var timeElapsed = now() - lastTime; // Work-around for Firefox & IE "bug": setTimeout can fire before the timeout
 			if (timeElapsed >= stepDelay) {
 				if (step < stepCount) {
 					interpolationStep();
 					step += 1;
+					lastTime = now();
 					setTimeout(stepAndSleep, stepDelay);
 				}
 				else {
-					self.simulateEvent( ele, "mousemove", {pageX: start.x+drag.x, pageY: start.y+drag.y});
+					var pageCoord = {pageX: Math.round(start.x+drag.x), pageY: Math.round(start.y+drag.y)},
+						clientCoord = pageToClientPos(pageCoord, targetDoc),
+						eventTarget = elementAtPosition(clientCoord, targetDoc) || ele;
+					self.simulateEvent( eventTarget, "mousemove", pageCoord);
 					dragFinished(ele, options);
 				}
 			}
@@ -186,15 +233,17 @@
 			for (var i=0; i < stepCount; i+=1) {
 				interpolationStep();
 			}
-			self.simulateEvent( ele, "mousemove", {pageX: start.x+drag.x, pageY: start.y+drag.y});
+			var pageCoord = {pageX: Math.round(start.x+drag.x), pageY: Math.round(start.y+drag.y)},
+				clientCoord = pageToClientPos(pageCoord, targetDoc),
+				eventTarget = elementAtPosition(clientCoord, targetDoc) || ele;
+			self.simulateEvent( eventTarget, "mousemove", pageCoord);
 			dragFinished(ele, options);
 		}
 		else {
 			var stepDelay = parseInt(interpolOptions.stepDelay,10) || Math.ceil(parseInt(interpolOptions.duration,10) / (stepCount+1));
 			var step = 0;
-			var now = Date.now || function() { return new Date().getTime(); },
-				lastTime = now();
 
+			lastTime = now();
 			setTimeout(stepAndSleep, stepDelay);
 		}
 		
@@ -257,7 +306,7 @@
 				// We just continue to move the dragged element
 				$.simulate._activeDrag.dragDistance.x += dx;
 				$.simulate._activeDrag.dragDistance.y += dy;	
-				coord = { pageX: x + $.simulate._activeDrag.dragDistance.x , pageY: y + $.simulate._activeDrag.dragDistance.y };
+				coord = { pageX: Math.round(x + $.simulate._activeDrag.dragDistance.x) , pageY: Math.round(y + $.simulate._activeDrag.dragDistance.y) };
 			}
 			else {
 				if ($.simulate._activeDrag) {
@@ -271,7 +320,7 @@
 					this.simulateEvent( ele, "mouseup", coord );
 					this.simulateEvent( ele, "click", coord );
 				}
-				$(ele).add(document).one('mouseup', function() {
+				$(ele).add(ele.ownerDocument).one('mouseup', function() {
 					$.simulate._activeDrag = undefined;
 				});
 				
@@ -282,7 +331,7 @@
 						dragDistance: { x: dx, y: dy }
 					}
 				});
-				coord = { pageX: x + dx, pageY: y + dy };
+				coord = { pageX: Math.round(x + dx), pageY: Math.round(y + dy) };
 			}
 
 			if (dx !== 0 || dy !== 0) {
@@ -291,7 +340,11 @@
 					interpolatedEvents.apply(this, [ele, {x: x, y: y}, {x: dx, y: dy}, options]);
 				}
 				else {
-					this.simulateEvent( ele, "mousemove", coord );
+					var targetDoc = selectFirstMatch([ele, ele.ownerDocument], isDocument) || document,
+						clientCoord = pageToClientPos(coord, targetDoc),
+						eventTarget = elementAtPosition(clientCoord, targetDoc) || ele;
+
+					this.simulateEvent( eventTarget, "mousemove", coord );
 					dragFinished(ele, options);
 				}
 			}
@@ -323,16 +376,17 @@
 				x = Math.round( center.x ),
 				y = Math.round( center.y ),
 				coord = { pageX: x, pageY: y },
-				clientCoord = pageToClientPos(coord),
-				eventTarget = elementAtPosition(clientCoord);
+				targetDoc = ( (activeDrag)? selectFirstMatch([activeDrag.dragElement, activeDrag.dragElement.ownerDocument], isDocument) : selectFirstMatch([ele, ele.ownerDocument], isDocument) ) || document, 
+				clientCoord = pageToClientPos(coord, targetDoc),
+				eventTarget = elementAtPosition(clientCoord, targetDoc);
 			
-			if (activeDrag && (activeDrag.dragElement === ele || ele === document)) {
+			if (activeDrag && (activeDrag.dragElement === ele || isDocument(ele))) {
 				// We already moved the mouse during the drag so we just simulate the drop on the end position
-				x = activeDrag.dragStart.x + activeDrag.dragDistance.x;
-				y = activeDrag.dragStart.y + activeDrag.dragDistance.y;
+				x = Math.round(activeDrag.dragStart.x + activeDrag.dragDistance.x);
+				y = Math.round(activeDrag.dragStart.y + activeDrag.dragDistance.y);
 				coord = { pageX: x, pageY: y };
-				clientCoord = pageToClientPos(coord);
-				eventTarget = elementAtPosition(clientCoord);
+				clientCoord = pageToClientPos(coord, targetDoc);
+				eventTarget = elementAtPosition(clientCoord, targetDoc);
 				moveBeforeDrop = false;
 			}
 			

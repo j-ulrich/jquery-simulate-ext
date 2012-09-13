@@ -10,7 +10,21 @@
 ;(function( $ ) {
 
 var rkeyEvent = /^key/,
-	rmouseEvent = /^(?:mouse|contextmenu)|click/;
+	rmouseEvent = /^(?:mouse|contextmenu)|click/,
+	rdocument = /\[object (?:HTML)?Document\]/;
+
+function isDocument(ele) {
+	return rdocument.test(Object.prototype.toString.call(ele));
+}
+
+function windowOfDocument(doc) {
+	for (var i=0; i < window.frames.length; i+=1) {
+		if (window.frames[i].document === doc) {
+			return window.frames[i];
+		}
+	}
+	return window;
+}
 
 $.fn.simulate = function( type, options ) {
 	return this.each(function() {
@@ -48,11 +62,17 @@ $.extend( $.simulate.prototype, {
 	},
 
 	mouseEvent: function( type, options ) {
-		var event, eventDoc, doc, body;
+		var event,
+			eventDoc,
+			doc = isDocument(this.target)? this.target : (this.target.ownerDocument || document),
+			docEle,
+			body;
+		
+		
 		options = $.extend({
 			bubbles: true,
 			cancelable: (type !== "mousemove"),
-			view: window,
+			view: windowOfDocument(doc),
 			detail: 0,
 			screenX: 0,
 			screenY: 0,
@@ -67,39 +87,41 @@ $.extend( $.simulate.prototype, {
 			relatedTarget: undefined
 		}, options );
 
-		if ( document.createEvent ) {
-			event = document.createEvent( "MouseEvents" );
+		
+		
+		if ( doc.createEvent ) {
+			event = doc.createEvent( "MouseEvents" );
 			event.initMouseEvent( type, options.bubbles, options.cancelable,
 				options.view, options.detail,
 				options.screenX, options.screenY, options.clientX, options.clientY,
 				options.ctrlKey, options.altKey, options.shiftKey, options.metaKey,
-				options.button, options.relatedTarget || document.body.parentNode );
+				options.button, options.relatedTarget || doc.body.parentNode );
 
 			// IE 9+ creates events with pageX and pageY set to 0.
 			// Trying to modify the properties throws an error,
 			// so we define getters to return the correct values.
 			if ( event.pageX === 0 && event.pageY === 0 && Object.defineProperty ) {
-				eventDoc = event.relatedTarget.ownerDocument || document;
-				doc = eventDoc.documentElement;
+				eventDoc = isDocument(event.relatedTarget)? event.relatedTarget : (event.relatedTarget.ownerDocument || document);
+				docEle = eventDoc.documentElement;
 				body = eventDoc.body;
 
 				Object.defineProperty( event, "pageX", {
 					get: function() {
 						return options.clientX +
-							( doc && doc.scrollLeft || body && body.scrollLeft || 0 ) -
-							( doc && doc.clientLeft || body && body.clientLeft || 0 );
+							( docEle && docEle.scrollLeft || body && body.scrollLeft || 0 ) -
+							( docEle && docEle.clientLeft || body && body.clientLeft || 0 );
 					}
 				});
 				Object.defineProperty( event, "pageY", {
 					get: function() {
 						return options.clientY +
-							( doc && doc.scrollTop || body && body.scrollTop || 0 ) -
-							( doc && doc.clientTop || body && body.clientTop || 0 );
+							( docEle && docEle.scrollTop || body && body.scrollTop || 0 ) -
+							( docEle && docEle.clientTop || body && body.clientTop || 0 );
 					}
 				});
 			}
-		} else if ( document.createEventObject ) {
-			event = document.createEventObject();
+		} else if ( doc.createEventObject ) {
+			event = doc.createEventObject();
 			$.extend( event, options );
 			// TODO: what is this mapping for?
 			event.button = { 0:1, 1:4, 2:2 }[ event.button ] || event.button;
@@ -109,11 +131,11 @@ $.extend( $.simulate.prototype, {
 	},
 
 	keyEvent: function( type, options ) {
-		var event;
+		var event, doc;
 		options = $.extend({
 			bubbles: true,
 			cancelable: true,
-			view: window,
+			view: windowOfDocument(doc),
 			ctrlKey: false,
 			altKey: false,
 			shiftKey: false,
@@ -122,15 +144,16 @@ $.extend( $.simulate.prototype, {
 			charCode: undefined
 		}, options );
 
-		if ( document.createEvent ) {
+		doc = isDocument(this.target)? this.target : (this.target.ownerDocument || document);
+		if ( doc.createEvent ) {
 			try {
-				event = document.createEvent( "KeyEvents" );
+				event = doc.createEvent( "KeyEvents" );
 				event.initKeyEvent( type, options.bubbles, options.cancelable, options.view,
 					options.ctrlKey, options.altKey, options.shiftKey, options.metaKey,
 					options.keyCode, options.charCode );
 			// TODO: what is this supporting?
 			} catch( err ) {
-				event = document.createEvent( "Events" );
+				event = doc.createEvent( "Events" );
 				event.initEvent( type, options.bubbles, options.cancelable );
 				$.extend( event, {
 					view: options.view,
@@ -142,8 +165,8 @@ $.extend( $.simulate.prototype, {
 					charCode: options.charCode
 				});
 			}
-		} else if ( document.createEventObject ) {
-			event = document.createEventObject();
+		} else if ( doc.createEventObject ) {
+			event = doc.createEventObject();
 			$.extend( event, options );
 		}
 
@@ -225,13 +248,21 @@ $.extend( $.simulate.prototype, {
 
 function findCenter( elem ) {
 	var offset,
-		document = $( elem.ownerDocument );
+		$document;
+	
 	elem = $( elem );
-	offset = elem.offset();
+	if ( isDocument(elem[0]) ) {
+		$document = elem;
+		offset = { left: 0, top: 0 };
+	}
+	else {
+		$document = $( elem[0].ownerDocument || document );
+		offset = elem.offset();
+	}
 	
 	return {
-		x: offset.left + elem.outerWidth() / 2 - document.scrollLeft(),
-		y: offset.top + elem.outerHeight() / 2 - document.scrollTop()
+		x: offset.left + elem.outerWidth() / 2 - $document.scrollLeft(),
+		y: offset.top + elem.outerHeight() / 2 - $document.scrollTop()
 	};
 }
 
@@ -244,13 +275,14 @@ $.extend( $.simulate.prototype, {
 			y = Math.floor( center.y ), 
 			dx = options.dx || 0,
 			dy = options.dy || 0,
-			coord = { clientX: x, clientY: y };
+			coord = { clientX: x, clientY: y },
+			doc = isDocument(target)? target : (target.ownerDocument || document);
 		this.simulateEvent( target, "mousedown", coord );
 		coord = { clientX: x + 1, clientY: y + 1 };
-		this.simulateEvent( document, "mousemove", coord );
+		this.simulateEvent( doc, "mousemove", coord );
 		coord = { clientX: x + dx, clientY: y + dy };
-		this.simulateEvent( document, "mousemove", coord );
-		this.simulateEvent( document, "mousemove", coord );
+		this.simulateEvent( doc, "mousemove", coord );
+		this.simulateEvent( doc, "mousemove", coord );
 		this.simulateEvent( target, "mouseup", coord );
 		this.simulateEvent( target, "click", coord );
 	}

@@ -153,28 +153,48 @@ $(document).ready(function() {
 		}});
 	});
 	
-	test("drag'n'drop on scrolled viewport", function() {
-		var testElement = $('#dragArea');
+	test("drag-n-drop on scrolled viewport", function() {
+		var testElement = $('#dragArea'),
+			dropElement = $('#dropArea');
 		
-		$(document).scrollTop(500);
+		// Check if we have to move the #qunit-fixture div into the viewport to be able to test this
+		if (document.elementFromPoint(-1,-1) === null) {
+			$('#qunit-fixture').css({
+				top: "auto",
+				left: "auto",
+				position: "inherit"
+			});
+			$(document).scrollTop(dropElement.offset().top);
+		}
+		else {
+			$(document).scrollTop(500);
+		}
 		
 		var dragX = 50,
-			dragY = 300;
+			dragY = Math.round(dropElement.offset().top - testElement.offset().top);
 		
 		var elementX = Math.round(testElement.offset().left+testElement.outerWidth()/2),
 			elementY = Math.round(testElement.offset().top+testElement.outerHeight()/2);
 		
 		var expectedX = Math.round(testElement.offset().left+testElement.outerWidth()/2)+dragX,
 			expectedY = Math.round(testElement.offset().top+testElement.outerHeight()/2)+dragY;
+		
 		tests.expectedEvents = [
 			{type: "mousedown", pageX: elementX, pageY: elementY},
 			{type: "mousemove", pageX: expectedX, pageY: expectedY},
 			{type: "simulate-drag"},
-			{type: "mouseup", pageX: expectedX, pageY: expectedY, target: $('#dropArea')[0]},
+			{type: "mouseup", pageX: expectedX, pageY: expectedY, target: dropElement[0]},
 			{type: "simulate-drop"}
 		];
 		
 		testElement.simulate("drag-n-drop", {dx: dragX, dy: dragY});
+		
+		// Reset #qunit-fixture
+		$('#qunit-fixture').css({
+			top: "",
+			left: "",
+			position: ""
+		});
 		$(document).scrollTop(0);
 	});
 
@@ -400,6 +420,58 @@ $(document).ready(function() {
 		);
 		
 		dragElement.simulate("drag", {dx: dragX, dy: dragY, interpolation: {stepCount: stepCount}});
+	});
+	
+	test("interpolated drag across elements", function() {
+		var dragElement = $('#dragArea'),
+			dragTarget = $('#dropArea');
+		
+		// Check if we have to move the #qunit-fixture div into the viewport to be able to test this
+		if (document.elementFromPoint(-1,-1) === null) {
+			$('#qunit-fixture').css({
+				top: "auto",
+				left: "auto",
+				position: "inherit"
+			});
+			$(document).scrollTop(dragTarget.offset().top);
+		}
+
+		
+		var dragStartX = Math.round(dragElement.offset().left+dragElement.outerWidth()/2),
+			dragStartY = Math.round(dragElement.offset().top+dragElement.outerHeight()/2),
+			dragEndX = Math.round(dragTarget.offset().left+dragTarget.outerWidth()/2),
+			dragEndY = Math.round(dragTarget.offset().top+dragTarget.outerHeight()/2);
+		
+		var stepCount = 5,
+			dragX = dragEndX - dragStartX,
+			dragY = dragEndY - dragStartY,
+			eventTarget = dragElement[0],
+			eventX,
+			eventY;
+		
+		tests.expectedEvents = [{type: "mousedown"}];
+		for (var i=1; i <= stepCount; i+=1) {
+			eventX = Math.round(dragStartX+i*dragX/(stepCount+1));
+			eventY = Math.round(dragStartY+i*dragY/(stepCount+1));
+			if (eventX >= dragTarget.offset().left && eventY >= dragTarget.offset().top) {
+				eventTarget = dragTarget[0];
+			}
+			tests.expectedEvents.push({type: "mousemove", pageX: eventX, pageY: eventY, target: eventTarget});
+		}
+		tests.expectedEvents.push(
+			{type: "mousemove", pageX: dragStartX+dragX, pageY: dragStartY+dragY },
+			{type: "simulate-drag"}
+		);
+		
+		dragElement.simulate("drag", {dragTarget: dragTarget, interpolation: {stepCount: stepCount}});
+		
+		// Reset #qunit-fixture
+		$('#qunit-fixture').css({
+			top: "",
+			left: "",
+			position: ""
+		});
+		$(document).scrollTop(0);
 	});
 
 	test("interpolated drag using stepWidth", function() {
@@ -699,6 +771,51 @@ $(document).ready(function() {
 		setTimeout(function() {
 			start();
 		},(stepCount+2)*stepDelay);
+	});
+	
+	test("drag-n-drop within iFrame", function() {
+		
+		function actualTest() {
+			var iFrameDoc = window.frames[0].document,
+				dragElement = $(iFrameDoc.getElementById("iframe-dragArea")),
+				dropElement = $(iFrameDoc.getElementById("iframe-dropArea"));
+		
+			$(document).off("keyup keydown keypress mousedown mouseup mousemove simulate-drag simulate-drop", '#qunit-fixture', tests.assertExpectedEvent);
+			$(iFrameDoc).on("keyup keydown keypress mousedown mouseup mousemove simulate-drag simulate-drop", 'body', tests.assertExpectedEvent);
+
+			var expectedX = Math.round(dropElement.offset().left+dropElement.outerWidth()/2),
+				expectedY = Math.round(dropElement.offset().top+dropElement.outerHeight()/2);
+
+			tests.expectedEvents = [
+				{type: "mousedown"},
+				{type: "mousemove", pageX: expectedX, pageY: expectedY},
+				{type: "simulate-drag"},
+				{type: "mouseup", pageX: expectedX, pageY: expectedY},
+				{type: "simulate-drop"}
+			];
+
+			$(dragElement).simulate("drag-n-drop", {dropTarget: dropElement});
+
+			$(iFrameDoc).off("keyup keydown keypress mousedown mouseup mousemove simulate-drag simulate-drop", tests.assertExpectedEvent);
+		}
+		
+		// Delay test until iframe is loaded
+		stop();
+		function delayUntilIFrameLoad() {
+			var iFrameDoc = window.frames[0].document,
+				dropElement = $(iFrameDoc.getElementById("iframe-dropArea"));
+			
+			if (dropElement.length !== 0) {
+				$(document).scrollTop(500);
+				actualTest();
+				$(document).scrollTop(0);
+				start();
+			}
+			else {
+				setTimeout(delayUntilIFrameLoad, 100);
+			}
+		}
+		delayUntilIFrameLoad();
 	});
 
 });

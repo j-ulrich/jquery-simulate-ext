@@ -1,7 +1,7 @@
-jQuery Simulate Extensions: Drag'n'Drop
+jQuery Simulate Extensions: Drag & Drop
 ========================================
 
-The drag'n'drop plugin allows simulation of drags and drops.
+The drag & drop plugin allows simulation of drags and drops.
 
 The plugin simulates the mouse events for dragging and dropping. It can be used to simulate complex
 dragging routes by performing multiple, successive drag simulations (the plugin continues to move
@@ -137,25 +137,29 @@ The simulation of drag and drop generates the following events:
 	* `simulate-drop` (target: dragged element if one exists, else drop element)
 
 It should be noted that the target of the simulated events can differ from the target of a real
-drag'n'drop:
-* The target of the drag events is always the element on which the drag is simulated.
+drag & drop:
+* The target of the drag start events (`mousedown` etc.) is always the element on which the drag is simulated.
 	With a real drag, the target would be the topmost, visible element at the position of the `mousedown`.
 	To see the difference, imagine the following example of two `div` elements:
 
 	![Two nested divs. The inner div covers the center of the outer div.](https://raw.github.com/j-ulrich/jquery-simulate-ext/master/doc/divs.png)
 	
-	When the drag is simulated on the `#outerDiv`, the events will target `#outerDiv` while a real drag
+	When a drag is simulated on the `#outerDiv`, the events will target `#outerDiv` while a real drag
 	on the center of the `#outerDiv` (black cross in the image) would target the `#innerDiv`. The
 	way it is implemented makes the behavior of drag simulations more predictable (you explicitly name the
 	element to be dragged and don't get surprised that another element is dragged because it covers the
-	center of the element to be dragged).
+	center of the element you expect to be dragged).
 	If you explicitly want to simulate a drag on the element at a given position, retrieve the element
 	using `document.elementFromPoint()` and simulate the drag on that element.
-* The target of a drop is different from a real drop when the center of the drop target (or the end of the
-	drag) lies outside of the viewport since in most (not all!) browsers, the `document.elementFromPoint()`
-	function returns `null` in that case. In such a case, the drop is simulated on either the dragged
-	element (if one exists) or the element on which the drop is simulated. However, this should
-	be a very rare case.
+* In some browsers (Chrome, Firefox, Safari?), the target of the `mousemove` event is "different
+	from a real drag" if the drag is outside of the viewport of	the browser (which is basically not possible
+	to achieve with a real drag). The reason is that in those browsers, the function `document.elementFromPoint()`
+	returns `null` when the position is outside of the viewport. In such a case, the events are triggered
+	on the dragged element. However, this should be a rare use case.
+* The same applies to the target of the drop events if the center of the drop target (or the end
+	of the drag) lies outside of the viewport. In such a case, the drop is simulated on either the dragged
+	element (if one exists) or the element on which the drop is simulated. Again, this should
+	be a rare use case.
 
 
 #### Example: ####
@@ -172,3 +176,22 @@ mouseup   (which: 1)
 click     (which: 1)
 simulate-drop
 ```
+
+iframes
+-------
+__Note:__ With the [current version](https://github.com/jquery/jquery-ui/blob/485ca7192ac57d018b8ce4f03e7dec6e694a53b7/tests/jquery.simulate.js)
+of `jquery.simulate.js`, drag & drop simulation within child-iframes does not work correctly when the parent page is scrolled.
+Therefore, the jQuery simulate extended repository contains a fixed version of `jquery.simulate.js` at
+[`libs/jquery.simulate.js`](https://github.com/j-ulrich/jquery-simulate-ext/tree/master/libs/jquery.simulate.js).
+
+The plugin supports simulation of drag & drop within child-iframes since version 1.1. For the simulation to work,
+it is important that the element in the jQuery object is an element from within the iframe, e.g.:
+
+```javascript
+$( window.frames[0].document.getElementById("elementWithinIFrame") ).simulate("drag-n-drop", {dx: 50});
+```
+
+However, the plugin does *not* support drag & drop *between elements from different frames*. The element receiving the
+drop events will always be from the same document like the dragged element. If you want to drag & drop
+between different frames, you have to bind to the drop events (`mouseup` etc.) on the target iframe and
+reproduce them in the iframe manually.

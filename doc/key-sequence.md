@@ -41,10 +41,12 @@ content of the element:
 
 * `{backspace}`: Deletes the currently selected characters or the character in front of the selection cursor.
 * `{del}`: Deletes the currently selected characters or the character behind the selection cursor.
-* `{rightarrow}`: Moves the selection cursor one character to the right.
-* `{leftarrow}`: Moves the selection cursor one character to the left.
+* `{rightarrow}`: Moves the selection cursor one character to the right. Doesn't work in InternetExplorer.
+	Doesn't work correctly in Opera on Windows (cannot be used to go the next line).
+* `{leftarrow}`: Moves the selection cursor one character to the left. Doesn't work in InternetExplorer.
 * `{selectall}`: Selects all characters.
-* `{enter}`: Inserts a line break.
+* `{enter}`: Inserts a line break. Doesn't work correctly in Opera on Windows (the line break is
+	inserted behind the sequence).
 * `{{}`: Inserts a literal `{`
 
 Except for the `{selectall}` sequence, the special sequences also generate `keydown` and `keyup`

@@ -2,7 +2,7 @@
 /*jshint camelcase:true, plusplus:true, forin:true, noarg:true, noempty:true, eqeqeq:true, bitwise:true, strict:true, undef:true, unused:true, curly:true, browser:true, devel:true, maxerr:100, white:false, onevar:false */
 /*global jQuery:true $:true */
 
-/* jQuery Simulate Key-Combo Plugin 1.0
+/* jQuery Simulate Key-Combo Plugin 1.1
  * http://github.com/j-ulrich/jquery-simulate-ext
  * 
  * Copyright (c) 2012 Jochen Ulrich

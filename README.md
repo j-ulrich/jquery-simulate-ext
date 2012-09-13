@@ -66,7 +66,7 @@ The options and events for the different interactions are described in the files
 Requirements
 ------------
 The plugin requires
-* [jQuery 1.3.2+](http://jquery.com)
+* [jQuery 1.7.0+](http://jquery.com)
 * [jQuery Simulate](https://github.com/jquery/jquery-ui/blob/master/tests/jquery.simulate.js)
 * [bililiteRange](http://bililite.com/blog/2011/01/17/cross-browser-text-ranges-and-selections) for
 	the key-sequence and key-combo plugins

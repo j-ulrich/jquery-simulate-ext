@@ -117,7 +117,7 @@ $(document).ready(function() {
 		
 		testElement.simulate("key-sequence", {sequence: testSequence});
 		
-		strictEqual(testElement.val(), "{b", "Verify result of sequence (this is known to fail in IE < 10.0)");
+		strictEqual(testElement.val(), "{b", "Verify result of sequence (this is known to fail in IE)");
 	});
 	
 	test("line break", function() {
@@ -138,7 +138,7 @@ $(document).ready(function() {
 		
 		testElement.simulate("key-sequence", {sequence: testSequence});
 		
-		strictEqual(testElement.val(), "foo\nbar", "Verify result of sequence");
+		strictEqual(testElement.val(), "foo\nbar", "Verify result of sequence (this is known to fail in Opera on Windows)");
 	});
 	
 	test("delay", function() {
