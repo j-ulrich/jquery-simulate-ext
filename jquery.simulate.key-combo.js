@@ -17,6 +17,12 @@
 ;(function($,undefined) {
 	"use strict";
 
+	/**
+	 * Key codes of the modifier keys.
+	 * @private
+	 * @author julrich
+	 * @since 1.0
+	 */
 	var ModifierKeyCodes = {
 		SHIFT:		16,
 		CONTROL:	17,
@@ -24,25 +30,21 @@
 		COMMAND:	91
 	};
 
-	$.extend( $.simulate.prototype, {
+	$.extend( $.simulate.prototype,
+			
+	/**
+	 * @lends $.simulate.prototype
+	 */		
+	{
 		
 		
 		/**
 		 * Simulates simultaneous key presses
 		 * 
-		 * Expects an option called "combo" which is a string of the keys to be pressed simultaneously,
-		 * separated by a plus sign ("+"). The keys are either single characters or modifier keys.
-		 * The following modifier keys are supported:
-		 * - "ctrl": The control key
-		 * - "alt": The alt key (or option key)
-		 * - "shift": The shift key
-		 * - "meta": The command key on Apple keyboards
-		 * 
-		 * Examples of combos:
-		 * - "ctrl+c"
-		 * - "ctrl+alt+q"
-		 * - "a+d"
-		 * - "shift+k"
+		 * @see https://github.com/j-ulrich/jquery-simulate-ext/blob/master/doc/key-combo.md
+		 * @public
+		 * @author julrich
+		 * @since 1.0
 		 */
 		simulateKeyCombo: function() {
 			var target = $(this.target),

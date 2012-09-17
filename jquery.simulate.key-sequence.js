@@ -42,7 +42,21 @@
 ;(function($){
 	"use strict";
 
-	$.extend($.simulate.prototype, {
+	$.extend($.simulate.prototype,
+			
+	/**
+	 * @lends $.simulate.prototype
+	 */		
+	{
+		
+		/**
+		 * Simulates sequencial key strokes.
+		 * 
+		 * @see https://github.com/j-ulrich/jquery-simulate-ext/blob/master/doc/key-sequence.md
+		 * @public
+		 * @author Daniel Wachsstock, julrich
+		 * @since 1.0
+		 */
 		simulateKeySequence: function() {
 			var target = this.target,
 				opts = $.extend({
@@ -80,6 +94,16 @@
 			}
 			sequence = sequence.replace(/\n/g, '{enter}'); // turn line feeds into explicit break insertions
 			
+			/**
+			 * Informs the rest of the world that the sequences is finished.
+			 * @fires simulate-keySequence
+			 * @requires target
+			 * @requires sequence
+			 * @requires opts
+			 * @inner
+			 * @author julrich
+			 * @since 1.0
+			 */
 			function sequenceFinished() {
 				$(target).trigger({type: 'simulate-keySequence', sequence: sequence});
 				if ($.isFunction(opts.callback)) {
@@ -89,6 +113,18 @@
 				}
 			}
 			
+			/**
+			 * Simulates the key stroke for one character (or special sequence) and sleeps for
+			 * <code>opts.delay</code> milliseconds.
+			 * @requires lastTime
+			 * @requires now()
+			 * @requires tokenRegExp
+			 * @requires opts
+			 * @requires rng
+			 * @inner
+			 * @author julrich
+			 * @since 1.0
+			 */
 			function processNextToken() {
 				var timeElapsed = now() - lastTime; // Work-around for Firefox "bug": setTimeout can fire before the timeout
 				if (timeElapsed >= opts.delay) {
@@ -126,46 +162,68 @@
 		}
 	});
 
-	$.extend($.simulate.prototype.simulateKeySequence.prototype, {
+	$.extend($.simulate.prototype.simulateKeySequence.prototype,
+			
+	/**
+	 * @lends $.simulate.prototype.simulateKeySequence.prototype
+	 */		
+	{
+		
 			/**
-			 * Maps char codes to IE keycodes (covers IE and Webkit)
+			 * Maps special character char codes to IE key codes (covers IE and Webkit)
+			 * @author julrich
+			 * @since 1.0
 			 */
 			IEKeyCodeTable: {
-				33: 49,		// ! -> 1
-				64: 50,		// @ -> 2
-				35: 51,		// # -> 3
-				36: 52,		// $ -> 4
-				37: 53,		// % -> 5
-				94: 54,		// ^ -> 6
-				38: 55,		// & -> 7
-				42: 56,		// * -> 8
-				40: 57,		// ( -> 9
-				41: 48,		// ) -> 0
+				 33: 49,	// ! -> 1
+				 64: 50,	// @ -> 2
+				 35: 51,	// # -> 3
+				 36: 52,	// $ -> 4
+				 37: 53,	// % -> 5
+				 94: 54,	// ^ -> 6
+				 38: 55,	// & -> 7
+				 42: 56,	// * -> 8
+				 40: 57,	// ( -> 9
+				 41: 48,	// ) -> 0
 				
-				59: 186,	// ; -> 186
-				58: 186,	// : -> 186
-				61: 187,	// = -> 187
-				43: 187,	// + -> 187
-				44: 188,	// , -> 188
-				60: 188,	// < -> 188
-				45: 189,	// - -> 189
-				95: 189,	// _ -> 189
-				46: 190,	// . -> 190
-				62: 190,	// > -> 190
-				47: 191,	// / -> 191
-				63: 191,	// ? -> 191
-				96: 192,	// ` -> 192
+				 59: 186,	// ; -> 186
+				 58: 186,	// : -> 186
+				 61: 187,	// = -> 187
+				 43: 187,	// + -> 187
+				 44: 188,	// , -> 188
+				 60: 188,	// < -> 188
+				 45: 189,	// - -> 189
+				 95: 189,	// _ -> 189
+				 46: 190,	// . -> 190
+				 62: 190,	// > -> 190
+				 47: 191,	// / -> 191
+				 63: 191,	// ? -> 191
+				 96: 192,	// ` -> 192
 				126: 192,	// ~ -> 192
-				91: 219,	// [ -> 219
+				 91: 219,	// [ -> 219
 				123: 219,	// { -> 219
-				92: 220,	// \ -> 220
+				 92: 220,	// \ -> 220
 				124: 220,	// | -> 220
-				93: 221,	// ] -> 221
+				 93: 221,	// ] -> 221
 				125: 221,	// } -> 221
-				39: 222,	// ' -> 222
-				34: 222		// " -> 222
+				 39: 222,	// ' -> 222
+				 34: 222	// " -> 222
 			},
 			
+			/**
+			 * Tries to convert character codes to key codes.
+			 * @param {Numeric} character - A character code
+			 * @returns {Numeric} The key code corresponding to the given character code,
+			 * based on the key code table of InternetExplorer. If no corresponding key code
+			 * could be found (which will be the case for all special characters except the common
+			 * ones), the character code itself is returned. However, <code>keyCode === charCode</code>
+			 * does not imply that no key code was found because some key codes are identical to the
+			 * character codes (e.g. for uppercase characters).
+			 * @requires $.simulate.prototype.simulateKeySequence.prototype.IEKeyCodeTable
+			 * @see $.simulate.prototype.simulateKeySequence.prototype.IEKeyCodeTable
+			 * @author julrich
+			 * @since 1.0
+			 */
 			charToKeyCode: function(character) {
 				var specialKeyCodeTable = $.simulate.prototype.simulateKeySequence.prototype.IEKeyCodeTable;
 				var charCode = character.charCodeAt(0);
@@ -189,6 +247,15 @@
 
 // add the functions publicly so they can be overridden
 $.simulate.prototype.simulateKeySequence.defaults = {
+	
+	/**
+	 * Simulates key strokes of "normal" characters (i.e. non-special sequences).
+	 * @param {Object} rng - bililiteRange object of the simulation target element.
+	 * @param {String} s - String of (simple) characters to be simulated. 
+	 * @param {Object} opts - The key-sequence options.
+	 * @author Daniel Wachsstock, julrich
+	 * @since 1.0
+	 */
 	simplechar: function (rng, s, opts){
 		rng.text(s, 'end');
 		if (opts.triggerKeyEvents) {
@@ -202,9 +269,27 @@ $.simulate.prototype.simulateKeySequence.defaults = {
 			}
 		}
 	},
+	
+	/**
+	 * Simulates key strokes of a curly opening bracket. 
+	 * @param {Object} rng - bililiteRange object of the simulation target element.
+	 * @param {String} s - Ignored. 
+	 * @param {Object} opts - The key-sequence options.
+	 * @author Daniel Wachsstock, julrich
+	 * @since 1.0
+	 */
 	'{{}': function (rng, s, opts){
 		$.simulate.prototype.simulateKeySequence.defaults.simplechar(rng, '{', opts);
 	},
+	
+	/**
+	 * Simulates hitting the enter button.
+	 * @param {Object} rng - bililiteRange object of the simulation target element.
+	 * @param {String} s - Ignored. 
+	 * @param {Object} opts - The key-sequence options.
+	 * @author Daniel Wachsstock, julrich
+	 * @since 1.0
+	 */
 	'{enter}': function (rng, s, opts){
 		rng.insertEOL();
 		rng.select();
@@ -214,6 +299,15 @@ $.simulate.prototype.simulateKeySequence.defaults = {
 			$(rng._el).simulate('keyup', {keyCode: 13});
 		}
 	},
+	
+	/**
+	 * Simulates hitting the backspace button.
+	 * @param {Object} rng - bililiteRange object of the simulation target element.
+	 * @param {String} s - Ignored. 
+	 * @param {Object} opts - The key-sequence options.
+	 * @author Daniel Wachsstock, julrich
+	 * @since 1.0
+	 */
 	'{backspace}': function (rng, s, opts){
 		var b = rng.bounds();
 		if (b[0] === b[1]) { rng.bounds([b[0]-1, b[0]]); } // no characters selected; it's just an insertion point. Remove the previous character
@@ -223,6 +317,15 @@ $.simulate.prototype.simulateKeySequence.defaults = {
 			$(rng._el).simulate('keyup', {keyCode: 8});
 		}
 	},
+	
+	/**
+	 * Simulates hitting the delete button.
+	 * @param {Object} rng - bililiteRange object of the simulation target element.
+	 * @param {String} s - Ignored. 
+	 * @param {Object} opts - The key-sequence options.
+	 * @author Daniel Wachsstock, julrich
+	 * @since 1.0
+	 */
 	'{del}': function (rng, s, opts){
 		var b = rng.bounds();
 		if (b[0] === b[1]) { rng.bounds([b[0], b[0]+1]); } // no characters selected; it's just an insertion point. Remove the next character
@@ -232,6 +335,15 @@ $.simulate.prototype.simulateKeySequence.defaults = {
 			$(rng._el).simulate('keyup', {keyCode: 46});
 		}
 	},
+	
+	/**
+	 * Simulates hitting the right arrow button.
+	 * @param {Object} rng - bililiteRange object of the simulation target element.
+	 * @param {String} s - Ignored. 
+	 * @param {Object} opts - The key-sequence options.
+	 * @author Daniel Wachsstock, julrich
+	 * @since 1.0
+	 */
 	'{rightarrow}':  function (rng, s, opts){
 		var b = rng.bounds();
 		if (b[0] === b[1]) { b[1] += 1; } // no characters selected; it's just an insertion point. Move to the right
@@ -241,6 +353,15 @@ $.simulate.prototype.simulateKeySequence.defaults = {
 			$(rng._el).simulate('keyup', {keyCode: 39});
 		}
 	},
+	
+	/**
+	 * Simulates hitting the left arrow button.
+	 * @param {Object} rng - bililiteRange object of the simulation target element.
+	 * @param {String} s - Ignored. 
+	 * @param {Object} opts - The key-sequence options.
+	 * @author Daniel Wachsstock, julrich
+	 * @since 1.0
+	 */
 	'{leftarrow}': function (rng, s, opts){
 		var b = rng.bounds();
 		if (b[0] === b[1]) { b[0] -= 1; } // no characters selected; it's just an insertion point. Move to the left
@@ -250,6 +371,13 @@ $.simulate.prototype.simulateKeySequence.defaults = {
 			$(rng._el).simulate('keyup', {keyCode: 37});
 		}
 	},
+	
+	/**
+	 * Selects all characters in the target element.
+	 * @param {Object} rng - bililiteRange object of the simulation target element.
+	 * @author Daniel Wachsstock, julrich
+	 * @since 1.0
+	 */
 	'{selectall}' : function (rng){
 		rng.bounds('all').select();
 	}
