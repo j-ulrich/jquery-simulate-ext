@@ -32,6 +32,8 @@
 		}
 	};
 	
+	var now = Date.now || function() { return new Date().getTime(); };
+	
 	var rdocument = /\[object (?:HTML)?Document\]/;
 	/**
 	 * Tests whether an object is an (HTML) document object.
@@ -235,6 +237,8 @@
 	 * and <code>dy</code>.
 	 * @param {Object} options - The drag options. Must have the property <code>interpolation</code>
 	 * containing the interpolation options (<code>stepWidth</code>, <code>stepCount</code>, etc.).
+	 * @requires eventTarget
+	 * @requires now()
 	 * @private
 	 * @author julrich
 	 * @since 1.0
@@ -288,8 +292,7 @@
 		}
 		
 		
-		var now = Date.now || function() { return new Date().getTime(); },
-			lastTime;
+		var lastTime;
 		
 		/**
 		 * Performs one interpolation step (i.e. cares about firing the event) and then sleeps for
