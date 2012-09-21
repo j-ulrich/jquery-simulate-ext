@@ -36,12 +36,12 @@ $.simulate = function( elem, type, options ) {
 	var method = $.camelCase( "simulate-" + type );
 
 	this.target = elem;
-	this.options = options;
+	this.options = options || {};
 
 	if ( this[ method ] ) {
 		this[ method ]();
 	} else {
-		this.simulateEvent( elem, type, options );
+		this.simulateEvent( elem, type, this.options );
 	}
 };
 
