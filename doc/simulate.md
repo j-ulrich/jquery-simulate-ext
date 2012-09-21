@@ -13,6 +13,7 @@ is then executed on all elements in the collection of the jQuery object.
 - Parameters:
 	* __type__ _{String}_: The type of the interaction to be simulated.
 	* __options__ _{Object}_: An option object containing the options for the action to be simulated.
+		Default: `undefined`
 
 The possible types of simulated actions are:
 
