@@ -101,7 +101,7 @@ the simulation is finished, use either the `callback` option or trigger on the `
 	is finished.
 
 #### `drag-n-drop`: ####
-The ´drag-n-drop` simulation accepts all options of the both `drag` and `drop` simulations. However,
+The `drag-n-drop` simulation accepts all options of the both `drag` and `drop` simulations. However,
 the `callback` option behaves like the one from the `drop` simulation and there is one additional option: 
 * __dropTarget__ _{DOM Element}_: Additionally to the `dragTarget` option (or `dx` and `dy` options) to
 	define an end position of the drag, the `dropTarget` position allows to define an element on whose
