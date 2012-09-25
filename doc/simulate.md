@@ -3,6 +3,11 @@ jQuery Simulate
 
 The jQuery simulate plugin allows to simulate user interaction using mouse and key events.
 
+#### Table of Contents ####
+- [Usage](#usage)
+- [Options](#options)
+	- [Key Events](#key-events)
+	- [Mouse Events](#mouse-events)
 
 Usage
 -----

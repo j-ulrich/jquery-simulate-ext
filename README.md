@@ -12,6 +12,16 @@ The plugin provides simulation of:
 
 Additionally, the extended plugin includes documentation and fixes for the jQuery simulate plugin itself.
 
+#### Table of Contents ####
+- [Usage](#usage)
+	- [Example](#example)
+	- [Demos](#demos)
+- [Documentation](#documentation)
+- [Requirements](#requirements)
+- [Compatibility](#compatibility)
+- [Licensing](#licensing)
+
+
 Usage
 -----
 To use the jQuery simulate extended plugins, include `jquery.simulate.js`, `jquery.simulate.ext.js`

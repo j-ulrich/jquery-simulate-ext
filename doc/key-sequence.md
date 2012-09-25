@@ -13,6 +13,14 @@ The plugin is based on the sendkeys plugin by Daniel Wachsstock (http://bililite
 
 __Note:__ The key-sequence plugin requires bililiteRange.js.
 
+#### Table of Contents ####
+- [Usage](#usage)
+- [Options](#options)
+- [Special Sequences](#special-sequences)
+- [Events](#events)
+- [Special Characters and keyCodes](#special-characters-and-keycodes)
+
+
 Usage
 -----
 The `.simulate()` type parameter to simulate key sequences is `"key-sequence"`: `.simulate("key-sequence", options)`

@@ -13,6 +13,12 @@ element using the `textContent` or `innerText` property.
 
 __Note:__ The key-combo plugin requires the key-sequence plugin and bililiteRange.js.
 
+#### Table of Contents ####
+- [Usage](#usage)
+- [Options](#options)
+- [Combo Syntax](#combo-syntax)
+- [Events](#events)
+
 Usage
 -----
 The `.simulate()` type parameter to simulate key combinations is `"key-combo"`: `.simulate("key-combo", options)`

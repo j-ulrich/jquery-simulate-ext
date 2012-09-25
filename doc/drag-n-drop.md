@@ -7,6 +7,15 @@ The plugin simulates the mouse events for dragging and dropping. It can be used 
 dragging routes by performing multiple, successive drag simulations (the plugin continues to move
 the object around until a drop is simulated or until a drag is simulated on another object).
 
+#### Table of Contents ####
+- [Usage](#usage)
+- [Options](#options)
+	- [drag](#drag)
+	- [drop](#drop)
+	- [drag-n-drop](#drag-n-drop)
+- [Events](#events)
+- [iframes](#iframes)
+
 Usage
 -----
 The `.simulate()` type parameter to simulate drags is `"drag"`, for drops it is `"drop"` and to simulate
