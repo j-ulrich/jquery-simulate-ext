@@ -23,12 +23,10 @@
 			var ele = this.first();
 			new $.simulate( ele[0], type, options);
 			return ele;
-			break;
 		default:
 			return this.each(function() {
 				new $.simulate( this, type, options );
 			});
-			break;
 		}
 	};
 	
@@ -52,15 +50,16 @@
 	 * @param {Array} array - Array of objects to be be tested
 	 * @param {Function} check - Callback function that accepts one argument (which will be one element
 	 * from the <i>array</i>) and returns a boolean.
-	 * @returns {Boolean|Null} the first element in <i>array</i> for which <i>check</i> returns <code>true</code>.
+	 * @returns {Boolean|null} the first element in <i>array</i> for which <i>check</i> returns <code>true</code>.
 	 * If none of the elements in <i>array</i> passes <i>check</i>, <code>null</code> is returned.
 	 * @private
 	 * @author julrich
 	 * @since 1.1
 	 */
 	function selectFirstMatch(array, check) {
+		var i;
 		if ($.isFunction(check)) {
-			for (var i=0; i < array.length; i+=1) {
+			for (i=0; i < array.length; i+=1) {
 				if (check(array[i])) {
 					return array[i];
 				}
@@ -68,7 +67,7 @@
 			return null;
 		}
 		else {
-			for (var i=0; i < array.length; i+=1) {
+			for (i=0; i < array.length; i+=1) {
 				if (array[i]) {
 					return array[i];
 				}
@@ -187,16 +186,16 @@
 			if ((sl = $(doc).scrollTop()) >0)
 			{
 				ele = doc.elementFromPoint(0, sl + $(window).height() -1);
-				if ( ele != null && ele.tagName.toUpperCase() === 'HTML' ) { ele = null; }
-				elementAtPosition.prototype.nativeUsesRelative = ( ele == null );
+				if ( ele !== null && ele.tagName.toUpperCase() === 'HTML' ) { ele = null; }
+				elementAtPosition.prototype.nativeUsesRelative = ( ele === null );
 			}
 			else if((sl = $(doc).scrollLeft()) >0)
 			{
 				ele = doc.elementFromPoint(sl + $(window).width() -1, 0);
-				if ( ele != null && ele.tagName.toUpperCase() === 'HTML' ) { ele = null; }
-				elementAtPosition.prototype.nativeUsesRelative = ( ele == null );
+				if ( ele !== null && ele.tagName.toUpperCase() === 'HTML' ) { ele = null; }
+				elementAtPosition.prototype.nativeUsesRelative = ( ele === null );
 			}
-			elementAtPosition.prototype.check = !(sl>0);
+			elementAtPosition.prototype.check = (sl<=0); // Check was not meaningful because we were at scroll position 0
 		}
 
 		if(!elementAtPosition.prototype.nativeUsesRelative)
@@ -230,6 +229,7 @@
 	
 	/**
 	 * Generates a series of <code>mousemove</code> events for a drag.
+	 * @param {Object} self - The simulate object.
 	 * @param {DOM Element} ele - The element which is dragged.
 	 * @param {Object} start - The start coordinates of the drag, represented using the properties
 	 * <code>x</code> and <code>y</code>.
@@ -243,9 +243,8 @@
 	 * @author julrich
 	 * @since 1.0
 	 */
-	function interpolatedEvents(ele, start, drag, options) {
-		var self = this,
-			targetDoc = selectFirstMatch([ele, ele.ownerDocument], isDocument) || document,
+	function interpolatedEvents(self, ele, start, drag, options) {
+		var targetDoc = selectFirstMatch([ele, ele.ownerDocument], isDocument) || document,
 			interpolOptions = options.interpolation,
 			dragDistance = Math.sqrt(Math.pow(drag.dx,2) + Math.pow(drag.dy,2)), // sqrt(a^2 + b^2)
 			stepWidth, stepCount, stepVector;
@@ -359,10 +358,10 @@
 	 * or <code>undefined</code> when there is no active drag.
 	 * The returned object contains the following properties:
 	 * <ul>
-	 * 	<li><code>dragElement</code>: the dragged element</li>
-	 * 	<li><code>dragStart</code>: object with the properties <code>x</code> and <code>y</code>
+	 *     <li><code>dragElement</code>: the dragged element</li>
+	 *     <li><code>dragStart</code>: object with the properties <code>x</code> and <code>y</code>
 	 * representing the page relative start coordinates of the drag</li>
-	 * 	<li><code>dragDistance</code>: object with the properties <code>x</code> and <code>y</code>
+	 *     <li><code>dragDistance</code>: object with the properties <code>x</code> and <code>y</code>
 	 * representing the distance of the drag in x and y direction</li>
 	 * </ul>
 	 * @public
@@ -393,7 +392,8 @@
 		 * @since 1.0
 		 */
 		simulateDrag: function() {
-			var ele = this.target,
+			var self = this,
+				ele = self.target,
 				options = $.extend({
 					dx: 0,
 					dy: 0,
@@ -448,10 +448,10 @@
 				}
 				
 				// We start a new drag
-				this.simulateEvent( ele, "mousedown", coord );
+				self.simulateEvent( ele, "mousedown", coord );
 				if (options.clickToDrag === true) {
-					this.simulateEvent( ele, "mouseup", coord );
-					this.simulateEvent( ele, "click", coord );
+					self.simulateEvent( ele, "mouseup", coord );
+					self.simulateEvent( ele, "click", coord );
 				}
 				$(ele).add(ele.ownerDocument).one('mouseup', function() {
 					$.simulate._activeDrag = undefined;
@@ -470,14 +470,14 @@
 			if (dx !== 0 || dy !== 0) {
 				
 				if ( options.interpolation && (options.interpolation.stepCount || options.interpolation.stepWidth) ) {
-					interpolatedEvents.apply(this, [ele, {x: x, y: y}, {dx: dx, dy: dy}, options]);
+					interpolatedEvents(self, ele, {x: x, y: y}, {dx: dx, dy: dy}, options);
 				}
 				else {
 					var targetDoc = selectFirstMatch([ele, ele.ownerDocument], isDocument) || document,
 						clientCoord = pageToClientPos(coord, targetDoc),
 						eventTarget = elementAtPosition(clientCoord, targetDoc) || ele;
 
-					this.simulateEvent( eventTarget, "mousemove", coord );
+					self.simulateEvent( eventTarget, "mousemove", coord );
 					dragFinished(ele, options);
 				}
 			}
@@ -495,12 +495,13 @@
 		 * @since 1.0
 		 */
 		simulateDrop: function() {
-			var ele = this.target,
+			var self = this,
+				ele = this.target,
 				activeDrag = $.simulate._activeDrag,
 				options = $.extend({
 					clickToDrop: false,
 					callback: undefined
-				}, this.options),
+				}, self.options),
 				moveBeforeDrop = true,
 				center = findCenter( ele ),
 				x = Math.round( center.x ),
@@ -526,15 +527,15 @@
 
 			if (moveBeforeDrop === true) {
 				// Else we assume the drop should happen on target, so we move there
-				this.simulateEvent( eventTarget, "mousemove", coord );
+				self.simulateEvent( eventTarget, "mousemove", coord );
 			}
 
 			if (options.clickToDrop) {
-				this.simulateEvent( eventTarget, "mousedown", coord );
+				self.simulateEvent( eventTarget, "mousedown", coord );
 			}
 			this.simulateEvent( eventTarget, "mouseup", coord );
 			if (options.clickToDrop) {
-				this.simulateEvent( eventTarget, "click", coord );
+				self.simulateEvent( eventTarget, "click", coord );
 			}
 			
 			$.simulate._activeDrag = undefined;
@@ -553,11 +554,12 @@
 		 * @since 1.0
 		 */
 		simulateDragNDrop: function() {
-			var ele = this.target,
+			var self = this,
+				ele = this.target,
 				options = $.extend({
 					dragTarget: undefined,
 					dropTarget: undefined
-				}, this.options),
+				}, self.options),
 				// If there is a dragTarget or dx/dy, then we drag there and simulate an independent drop on dropTarget or ele
 				dropEle = ((options.dragTarget || options.dx || options.dy)? options.dropTarget : ele) || ele;
 /*

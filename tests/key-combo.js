@@ -85,7 +85,7 @@ $(document).ready(function() {
 			/* shift */	{type: "keydown", keyCode: 16, ctrlKey: false, shiftKey: true, altKey: false, metaKey: false},
 			/* a */		{type: "keydown", keyCode: 65, ctrlKey: false, shiftKey: true, altKey: false, metaKey: false}, {type: "keypress", which: "A".charCodeAt(0), ctrlKey: false, shiftKey: true, altKey: false, metaKey: false},
 			/* a */		{type: "keyup", keyCode: 65, ctrlKey: false, shiftKey: true, altKey: false, metaKey: false},
-			/* shift */	{type: "keyup", keyCode: 16, ctrlKey: false, shiftKey: false, altKey: false, metaKey: false},
+			/* shift */	{type: "keyup", keyCode: 16, ctrlKey: false, shiftKey: false, altKey: false, metaKey: false}
 		];
 		
 		testElement.simulate("key-combo", {combo: "shift+a"});
@@ -100,7 +100,7 @@ $(document).ready(function() {
 			/* ctrl */	{type: "keydown", keyCode: 17, ctrlKey: true, shiftKey: false, altKey: false, metaKey: false},
 			/* a */		{type: "keydown", keyCode: 65, ctrlKey: true, shiftKey: false, altKey: false, metaKey: false}, {type: "keypress", which: "a".charCodeAt(0), ctrlKey: true, shiftKey: false, altKey: false, metaKey: false},
 			/* a */		{type: "keyup", keyCode: 65, ctrlKey: true, shiftKey: false, altKey: false, metaKey: false},
-			/* ctrl */	{type: "keyup", keyCode: 17, ctrlKey: false, shiftKey: false, altKey: false, metaKey: false},
+			/* ctrl */	{type: "keyup", keyCode: 17, ctrlKey: false, shiftKey: false, altKey: false, metaKey: false}
 		];
 		
 		testElement.simulate("key-combo", {combo: "ctrl+a"});
@@ -115,7 +115,7 @@ $(document).ready(function() {
 			/* ctrl */	{type: "keydown", keyCode: 17, ctrlKey: true, shiftKey: false, altKey: false, metaKey: false},
 			/* + */		{type: "keydown", keyCode: 187, ctrlKey: true, shiftKey: false, altKey: false, metaKey: false}, {type: "keypress", which: "+".charCodeAt(0), ctrlKey: true, shiftKey: false, altKey: false, metaKey: false},
 			/* + */		{type: "keyup", keyCode: 187, ctrlKey: true, shiftKey: false, altKey: false, metaKey: false},
-			/* ctrl */	{type: "keyup", keyCode: 17, ctrlKey: false, shiftKey: false, altKey: false, metaKey: false},
+			/* ctrl */	{type: "keyup", keyCode: 17, ctrlKey: false, shiftKey: false, altKey: false, metaKey: false}
 		];
 		
 		testElement.simulate("key-combo", {combo: "ctrl++"});

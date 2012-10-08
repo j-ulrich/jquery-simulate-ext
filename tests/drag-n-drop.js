@@ -205,7 +205,8 @@ $(document).ready(function() {
 			expectedY = Math.round(testElement.offset().top+testElement.outerHeight()/2);
 		
 		tests.expectedEvents = [{type: "mousedown"}];
-		for (var i=0; i < drag.length; i+=1) {
+		var i;
+		for (i=0; i < drag.length; i+=1) {
 			expectedX += drag[i].x;
 			expectedY += drag[i].y;
 			tests.expectedEvents.push({type: "mousemove", pageX: expectedX, pageY: expectedY},
@@ -214,7 +215,7 @@ $(document).ready(function() {
 		tests.expectedEvents.push({type: "mouseup", pageX: expectedX, pageY: expectedY}, {type: "simulate-drop"});
 			
 		
-		for (var i=0; i < drag.length; i+=1) {
+		for (i=0; i < drag.length; i+=1) {
 			testElement.simulate("drag", {dx: drag[i].x, dy: drag[i].y});
 		}
 		testElement.simulate("drop");
@@ -286,7 +287,7 @@ $(document).ready(function() {
 			{type: "simulate-drop"},
 			{type: "mousedown"},
 			{type: "mousemove", pageX: expected2X, pageY: expected2Y},
-			{type: "simulate-drag"},
+			{type: "simulate-drag"}
 		];
 		
 		dragElement1.simulate("drag", {dx: drag1X, dy: drag1Y});
@@ -550,7 +551,8 @@ $(document).ready(function() {
 			stepWidth = dragWidth / (stepCount+1);
 		
 		tests.expectedEvents = [{type: "mousedown"}];
-		for (var i=1; i <= stepCount+1; i+=1) {
+		var i;
+		for (i=1; i <= stepCount+1; i+=1) {
 			tests.expectedEvents.push({type: "mousemove", pageX: dragStartX+i*stepWidth, pageY: dragStartY });
 		}
 		tests.expectedEvents.push({type: "simulate-drag"});
@@ -558,7 +560,7 @@ $(document).ready(function() {
 		dragElement.simulate("drag", {dx: dragWidth, interpolation: {stepCount: stepCount, shaky: shakyAmplitude}});
 		
 		var posCounter = 0;
-		for (var i in actualYPositions) {
+		for (i in actualYPositions) {
 			if (actualYPositions.hasOwnProperty(i)) {
 				posCounter += 1;
 			}

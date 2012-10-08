@@ -134,6 +134,6 @@ consistent across browsers. At least for the alphanumeric characters and for "me
 characters.
 To keep the plugin simple, the current implementation assumes a US keyboard, it uses the same key
 codes like InternetExplorer for all browsers and the support of special characters is limited to
-the most common ones (see [the code](https://github.com/j-ulrich/jquery-simulate-ext/tree/master/jquery.simulate.key-sequence.js#L172-211)
+the most common ones (see [the code](https://github.com/j-ulrich/jquery-simulate-ext/tree/master/src/jquery.simulate.key-sequence.js#L172-211)
 for the complete list). However, this might change in future versions.
 For more information about this topic see http://unixpapa.com/js/key.html.

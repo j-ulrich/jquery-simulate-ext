@@ -1,6 +1,11 @@
 jQuery Simulate Extended Changelog
 ==================================
 
+Version 1.1.1 - (Released: 2012-10-08)
+-------------
+* Adds grunt.js build system.
+* Source code cleanup.
+
 Version 1.1 - (Released: 2012-09-12)
 -----------
 #### `drag-n-drop` ####
