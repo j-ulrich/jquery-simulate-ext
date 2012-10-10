@@ -1,10 +1,17 @@
 jQuery Simulate Extended Changelog
 ==================================
 
+Version 1.1.2 - (Released: 2012-10-11)
+-------------
+* The build script now produces two dist versions: the "normal" version contains the jQuery simulate
+extended plugins and the "complete" version also includes jQuery simulate.
+
+
 Version 1.1.1 - (Released: 2012-10-08)
 -------------
 * Adds grunt.js build system.
 * Source code cleanup.
+
 
 Version 1.1 - (Released: 2012-09-12)
 -----------
