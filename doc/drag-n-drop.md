@@ -39,14 +39,14 @@ returns an object with the following structure:
 	dragDistance: { x: dx, y: dy }	// The distance of the drag. In case of multiple, successive drags,
 									// this is the total distance, i.e. the sum of all drag distances
 									// that already took place.
-									// In other words: the drag ended/will end at dragStart + dragDistance
+									// In other words: the current drag ended/will end at dragStart + dragDistance
 }
 ```
 
 In case of a `"drag"` and a `"drag-n-drop"`, the element on which `.simulate()` is called is the
 element which will be dragged, i.e. where the drag begins by simulating a `mousedown` event.
 In case of a `"drop"`, the element on which `.simulate()` is called is the element where the drop occurs,
-i.e. where the drag ends by simulating a `mouseup` event. If that element is currently dragged or if
+i.e. where the drag ends by simulating a `mouseup` event. If that element is currently dragged or if it
 is `document`, the drop will take place at the end position of the current drag without further moving/dragging.
 All the mouse events will take place on the center of the corresponding element.
 
@@ -66,7 +66,7 @@ Options
 #### `drag`: ####
 * __dx__ _{Numeric}_: Distance to be dragged in x-direction in pixels. Default: `0`
 * __dy__ _{Numeric}_: Distance to be dragged in y-direction in pixels. Default: `0`
-* __dragTarget__ _{DOM Element}_: Alternative to specifying the distance to be dragged using `dx` and
+* __dragTarget__ _{DOM Element}_: Alternatively to specifying the distance to be dragged using `dx` and
 	`dy`, you can specify a DOM element where the dragging should end. The drag will end on the center
 	of the given element. When `dragTarget` is specified, `dx` and `dy` are ignored. Default: `undefined`
 * __clickToDrag__ _{Boolean}_: Defines whether the plugin should simulate a whole mouse click instead of
@@ -127,7 +127,7 @@ The simulation of drag and drop generates the following events:
 
 - drag:
 	* `mousedown` (target: dragged element; pageX/Y: center of the dragged element)
-	* if the option `clickToDrag` is used:
+	* if the option `clickToDrag` is used, then:
 		* `mouseup` (target: dragged element; pageX/Y: center of the dragged element)
 		* `click` (target: dragged element; pageX/Y: center of the dragged element)
 	* one or more `mousemove` events (depending on the `interpolation` options)
@@ -136,24 +136,24 @@ The simulation of drag and drop generates the following events:
 	* one or more `mousemove` events (depending on the `interpolation` options)
 	* `simulate-drag` (target: dragged element)
 - drop:
-	* if the element on which the drop is simulated (called "drop element" here) is not the currently dragged element or `document`:
+	* if the element on which the drop is simulated (called "drop element" here) is not the currently dragged element or `document`, then:
 		* `mousemove` (target: dragged element if one exists, else drop element; pageX/Y: center of the drop element)
-	* if the option `clickToDrop` is used:
+	* if the option `clickToDrop` is used, then:
 		* `mousedown` (target: dragged element if one exists, else drop element; pageX/Y: same as the last, simulated `mousemove` event)
 	* `mouseup` (target: dragged element if one exists, else drop element; pageX/Y: same as the last, simulated `mousemove` event)
-	* if the option `clickToDrop` is used:
+	* if the option `clickToDrop` is used, then:
 		* `click` (target: dragged element if one exists, else drop element; pageX/Y: same as the last, simulated `mousemove` event)
 	* `simulate-drop` (target: dragged element if one exists, else drop element)
 
 It should be noted that the target of the simulated events can differ from the target of a real
 drag & drop:
-* The target of the drag start events (`mousedown` etc.) is always the element on which the drag is simulated.
+* The target of the drag start events (`mousedown`, `mouseup`, `click`) is always the element on which the drag is simulated.
 	With a real drag, the target would be the topmost, visible element at the position of the `mousedown`.
 	To see the difference, imagine the following example of two `div` elements:
 
 	![Two nested divs. The inner div covers the center of the outer div.](https://raw.github.com/j-ulrich/jquery-simulate-ext/master/doc/divs.png)
 	
-	When a drag is simulated on the `#outerDiv`, the events will target `#outerDiv` while a real drag
+	When a drag is _simulated_ on the `#outerDiv`, the events will target `#outerDiv` while a real drag
 	on the center of the `#outerDiv` (black cross in the image) would target the `#innerDiv`. The
 	way it is implemented makes the behavior of drag simulations more predictable (you explicitly name the
 	element to be dragged and don't get surprised that another element is dragged because it covers the
