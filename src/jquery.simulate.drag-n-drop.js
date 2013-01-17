@@ -2,10 +2,10 @@
 /*jshint camelcase:true, plusplus:true, forin:true, noarg:true, noempty:true, eqeqeq:true, bitwise:true, strict:true, undef:true, unused:true, curly:true, browser:true, devel:true, maxerr:100, white:false, onevar:false */
 /*global jQuery:true $:true */
 
-/* jQuery Simulate Drag-n-Drop Plugin 1.1.2
+/* jQuery Simulate Drag-n-Drop Plugin 1.1.3
  * http://github.com/j-ulrich/jquery-simulate-ext
  * 
- * Copyright (c) 2012 Jochen Ulrich
+ * Copyright (c) 2013 Jochen Ulrich
  * Licensed under the MIT license (MIT-LICENSE.txt).
  */
 

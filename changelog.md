@@ -1,6 +1,11 @@
 jQuery Simulate Extended Changelog
 ==================================
 
+Version 1.1.3 - (Released: 2013-01-17)
+-------------
+* Updates the jQuery package manifest file and registers the plugin at plugins.jquery.com.
+
+
 Version 1.1.2 - (Released: 2012-10-11)
 -------------
 * The build script now produces two dist versions: the "normal" version contains the jQuery simulate
