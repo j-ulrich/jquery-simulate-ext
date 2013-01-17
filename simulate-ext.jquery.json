@@ -10,7 +10,7 @@
 	"licenses": [
 		{
 			"type": "MIT",
-			"url": "http://github.com/j-ulrich/jquery-simulate-ext/MIT-LICENSE.txt"
+			"url": "https://github.com/j-ulrich/jquery-simulate-ext/blob/master/MIT-LICENSE.txt"
 		}
 	],
 	"dependencies": {
@@ -21,7 +21,7 @@
 	
 	"description": "jQuery Simulate - extended. Simulating complex user interaction based on the jQuery Simulate plugin.",
 	"keywords": ["jquery", "simulate", "key", "mouse", "press", "button", "move", "drag'n'drop", "drag", "drop", "user interaction", "drag & drop"],
-	"homepage": "https://j-ulrich.github.com/jquery-simulate-ext",
+	"homepage": "http://j-ulrich.github.com/jquery-simulate-ext",
 	"docs": "https://github.com/j-ulrich/jquery-simulate-ext/blob/master/README.md",
 	"demo": "http://jsfiddle.net/Ignitor/Psjhf/embedded/result/",
 	"bugs": "https://github.com/j-ulrich/jquery-simulate-ext/issues"
