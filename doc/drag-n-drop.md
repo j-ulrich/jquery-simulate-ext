@@ -204,3 +204,26 @@ However, the plugin does *not* support drag & drop *between elements from differ
 drop events will always be from the same document like the dragged element. If you want to drag & drop
 between different frames, you have to bind to the drop events (`mouseup` etc.) on the target iframe and
 reproduce them in the iframe manually.
+
+To trigger on the simulation end events (`simulate-drag` and `simulate-drop`) when simulating on an element
+within an iframe, it is necessary to use the same jQuery object which performs the simulation.
+For example, consider a parent document which contains a jQuery object called `$p` and an iframe
+containing a jQuery object called `$i`. If a drag is simulated on an element within the iframe using
+`$p` and we want to trigger on the `simulate-drag` event, we need to use `$p` on the element within
+the iframe (or an element above in the DOM of the iframe):
+
+```javascript
+// Will work:
+$p( elementWithinIFrame ).on("simulate-drag", myTrigger);
+// Trigger on an element above in the hierarchy like this:
+$p( window.frames[0].document ).on("simulate-drag", myTrigger);
+
+// NOT working:
+$i( elementWithinIFrame ).on("simulate-drag", myTrigger);
+// NOT working either:
+$i( window.frames[0].document ).on("simulate-drag", myTrigger);
+// NOT working because the event will not bubble out of the iframe:
+$p( document ).on("simulate-drag", myTrigger);
+```
+In other words: the iframe will not see that the interaction was simulated.
+

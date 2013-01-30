@@ -1,6 +1,6 @@
 {
 	"name": "simulate-ext",
-	"version": "1.1.3",
+	"version": "1.1.4",
 	"title": "jQuery Simulate Extended",
 	"author": {
 		"name": "Jochen Ulrich",
@@ -19,7 +19,7 @@
 	
 	
 	
-	"description": "jQuery Simulate - extended. Simulating complex user interaction based on the jQuery Simulate plugin.",
+	"description": "jQuery Simulate - Extended. Simulating complex user interaction based on the jQuery Simulate plugin.",
 	"keywords": ["jquery", "simulate", "key", "mouse", "press", "move", "drag", "drop", "user-interaction"],
 	"homepage": "http://j-ulrich.github.com/jquery-simulate-ext",
 	"docs": "https://github.com/j-ulrich/jquery-simulate-ext/blob/master/README.md",
