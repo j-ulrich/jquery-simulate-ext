@@ -1,7 +1,7 @@
 jQuery Simulate Extended Changelog
 ==================================
 
-Version 1.1.4 - (Released: 2013-01-17)
+Version 1.1.4 - (Released: 2013-01-30)
 -------------
 * Extends the documentation for simulating drag-n-drops within iframes.
 * Registers the plugin at plugins.jquery.com.
