@@ -60,7 +60,7 @@ demonstration of most of the features of the simulate extended plugins.
 Live demos can be found at jsFiddle and JS Bin where you can also play around with the plugin:
 
 - http://jsfiddle.net/Ignitor/Psjhf/embedded/result/ ([jsFiddle](http://jsfiddle.net/Ignitor/Psjhf/))
-- http://jsbin.com/inalax/latest/edit#live ([JS Bin](http://jsbin.com/inalax/latest/edit))
+- http://jsbin.com/inalax/25/edit#live ([JS Bin](http://jsbin.com/inalax/25/edit))
 
 
 Documentation
