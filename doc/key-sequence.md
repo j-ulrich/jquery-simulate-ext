@@ -50,7 +50,7 @@ content of the element:
 * `{backspace}`: Deletes the currently selected characters or the character in front of the selection cursor.
 * `{del}`: Deletes the currently selected characters or the character behind the selection cursor.
 * `{rightarrow}`: Moves the selection cursor one character to the right. Doesn't work in InternetExplorer.
-	Doesn't work correctly in Opera on Windows (cannot be used to go the next line).
+	Doesn't work correctly in Opera on Windows (cannot be used to move to the next line).
 * `{leftarrow}`: Moves the selection cursor one character to the left. Doesn't work in InternetExplorer.
 * `{selectall}`: Selects all characters.
 * `{enter}`: Inserts a line break. Doesn't work correctly in Opera on Windows (the line break is
@@ -95,9 +95,9 @@ the plugin generates the following events:
 
 The values of the `keyCode`, `charCode` and `which` properties of the events should be equal to
 the corresponding values of native (i.e. non-simulated) events for all browsers.
-As a rule of thumb: `keyCode` and `which` are equal for all events. For `keypress` events
+As a rule of thumb: `keyCode` and `which` are equal for all events. For `keypress` events,
 they are the ASCII code of the character. For `keydown` and `keyup` events, they are a "key code"
-which is differs among browsers. See [below](#special-characters-and-keycodes) for more details.
+which differs among browsers. See [below](#special-characters-and-keycodes) for more details.
 
 Additionally, the plugin generates a `simulate-keySequence` event as soon as the simulation of the
 key sequence is finished. This `simulate-keySequence` has a property called `sequence` which
@@ -129,8 +129,8 @@ simulate-keySequence (sequence: "Test!")
 Special Characters and keyCodes
 -------------------------------
 The values of the `keyCode` and `which` properties for `keyup` and `keydown` events are not
-consistent across browsers. At least for the alphanumeric characters and for "meta" keys
-(Control, Space, Esc, leftarrow, ...) the values are consistent but the values differ for special
+consistent across browsers. For the alphanumeric characters and for "meta" keys
+(Control, Space, Esc, leftarrow, ...), the values are consistent but the values differ for special
 characters.
 To keep the plugin simple, the current implementation assumes a US keyboard, it uses the same key
 codes like InternetExplorer for all browsers and the support of special characters is limited to

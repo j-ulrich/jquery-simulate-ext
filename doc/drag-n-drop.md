@@ -25,7 +25,7 @@ a complete drag & drop, it is `"drag-n-drop"`:
 - `.simulate("drag-n-drop", options)`
 
 The drags and drops are simulated for the first element in the jQuery set of matched elements since there
-can be only one drag at a time. If there is an active drag on one element and a drag is started on another
+can be only one drag at a time. If there is an active drag on one element and a drag is simulated on another
 element, the former drag is ended (i.e. a drop is simulated) before the new drag begins.
 
 Information about the currently active drag can be retrieved using `$.simulate.activeDrag()`. It
@@ -91,9 +91,9 @@ Options
 		points do not lie perfectly on the line between the start and end point. This makes the drag
 		more human-like. The value of the option can either be the number of pixels which the events
 		may differ from the exact position (the number applies to both x and y direction; the number is
-		a treated as a maximum value; the actual variation is generated randomly in the range `[0;shaky]`
-		for each interpolation step) or it can be a boolean where `true` is equal to a value of `1`
-		and `false` is equal to a value of 0. Default: `false`
+		treated as a maximum value, i.e. the actual variation is generated randomly in the range `[0;shaky]`
+		for each interpolation step) or it can be a boolean where `true` is equal to a value of `1` (pixel)
+		and `false` is equal to a value of `0`. Default: `false`
 * __callback__ _{Function}_: Callback function which is executed as soon as the simulation of the drag
 	is finished.
 
@@ -110,7 +110,7 @@ the simulation is finished, use either the `callback` option or trigger on the `
 	is finished.
 
 #### `drag-n-drop`: ####
-The `drag-n-drop` simulation accepts all options of the both `drag` and `drop` simulations. However,
+The `drag-n-drop` simulation accepts all options of both the `drag` and `drop` simulations. However,
 the `callback` option behaves like the one from the `drop` simulation and there is one additional option: 
 * __dropTarget__ _{DOM Element}_: Additionally to the `dragTarget` option (or `dx` and `dy` options) to
 	define an end position of the drag, the `dropTarget` position allows to define an element on whose
@@ -200,10 +200,10 @@ it is important that the element in the jQuery object is an element from within 
 $( window.frames[0].document.getElementById("elementWithinIFrame") ).simulate("drag-n-drop", {dx: 50});
 ```
 
-However, the plugin does *not* support drag & drop *between elements from different frames*. The element receiving the
+However, the plugin does __not__ support drag & drop *between elements from different frames*. The element receiving the
 drop events will always be from the same document like the dragged element. If you want to drag & drop
-between different frames, you have to bind to the drop events (`mouseup` etc.) on the target iframe and
-reproduce them in the iframe manually.
+between different frames, you have to bind to the drop events (`mouseup` etc.) in the source iframe and
+reproduce them in the target iframe manually.
 
 To trigger on the simulation end events (`simulate-drag` and `simulate-drop`) when simulating on an element
 within an iframe, it is necessary to use the same jQuery object which performs the simulation.
