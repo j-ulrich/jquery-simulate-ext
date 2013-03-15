@@ -11,7 +11,7 @@ element using the `textContent` or `innerText` property.
 
 The plugin is based on the sendkeys plugin by Daniel Wachsstock (http://bililite.com/blog/2008/08/20/the-fnsendkeys-plugin/).
 
-__Note:__ The key-sequence plugin requires bililiteRange.js.
+__Note:__ The key-sequence plugin requires bililiteRange.js (can be found in the [libs](https://github.com/j-ulrich/jquery-simulate-ext/tree/master/libs) folder of this repository).
 
 #### Table of Contents ####
 - [Usage](#usage)

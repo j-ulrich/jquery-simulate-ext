@@ -11,7 +11,7 @@ __Note:__ The insertion of characters works on **all** elements (not only on inp
 In case of elements other than input and textarea, the insertion will change the content of the
 element using the `textContent` or `innerText` property.
 
-__Note:__ The key-combo plugin requires the key-sequence plugin and bililiteRange.js.
+__Note:__ The key-combo plugin requires the key-sequence plugin and bililiteRange.js (can be found in the [libs](https://github.com/j-ulrich/jquery-simulate-ext/tree/master/libs) folder of this repository).
 
 #### Table of Contents ####
 - [Usage](#usage)
