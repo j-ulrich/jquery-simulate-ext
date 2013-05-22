@@ -1,31 +1,19 @@
-/*jslint white: true vars: true browser: true todo: true */
 /*jshint camelcase:true, plusplus:true, forin:true, noarg:true, noempty:true, eqeqeq:true, bitwise:true, strict:true, undef:true, unused:true, curly:true, browser:true, devel:true, maxerr:100, white:false, onevar:false */
+/*jslint white: true vars: true browser: true todo: true */
 /*global jQuery:true $:true */
 
-/* jQuery Simulate Drag-n-Drop Plugin 1.0
+/* jQuery Simulate Drag-n-Drop Plugin 1.1.5
  * http://github.com/j-ulrich/jquery-simulate-ext
  * 
- * Copyright (c) 2012 Jochen Ulrich
+ * Copyright (c) 2013 Jochen Ulrich
  * Licensed under the MIT license (MIT-LICENSE.txt).
- */
-
-/* TODO: Implement startOffset & endOffset options
- * The offsets define the position relative to the center or upper left corner of an element
- * where the drag/drop should start/end.
- * 
- * The structure could be like this:
- * {
- * 	base: "center", // Either "center" or "upperleft"
- * 	x: 0,
- * 	y: 0
- * }
  */
 
 ;(function($, undefined) {
 	"use strict";
 	
-	/* Overwrite the $.fn.simulate function
-	 * to reduce the jQuery set to the first element
+	/* Overwrite the $.fn.simulate function to reduce the jQuery set to the first element for the
+	 * drag-n-drop interactions.
 	 */
 	$.fn.simulate = function( type, options ) {
 		switch (type) {
@@ -35,20 +23,74 @@
 			var ele = this.first();
 			new $.simulate( ele[0], type, options);
 			return ele;
-			break;
 		default:
 			return this.each(function() {
 				new $.simulate( this, type, options );
 			});
-			break;
 		}
 	};
 	
+	var now = Date.now || function() { return new Date().getTime(); };
+	
+	var rdocument = /\[object (?:HTML)?Document\]/;
+	/**
+	 * Tests whether an object is an (HTML) document object.
+	 * @param {DOM Element} elem - the object/element to be tested
+	 * @returns {Boolean} <code>true</code> if <i>elem</i> is an (HTML) document object.
+	 * @private
+	 * @author julrich
+	 * @since 1.1
+	 */
+	function isDocument( elem ) {
+		return rdocument.test(Object.prototype.toString.call($(elem)[0]));
+	}
+	
+	/**
+	 * Selects the first match from an array.
+	 * @param {Array} array - Array of objects to be be tested
+	 * @param {Function} check - Callback function that accepts one argument (which will be one element
+	 * from the <i>array</i>) and returns a boolean.
+	 * @returns {Boolean|null} the first element in <i>array</i> for which <i>check</i> returns <code>true</code>.
+	 * If none of the elements in <i>array</i> passes <i>check</i>, <code>null</code> is returned.
+	 * @private
+	 * @author julrich
+	 * @since 1.1
+	 */
+	function selectFirstMatch(array, check) {
+		var i;
+		if ($.isFunction(check)) {
+			for (i=0; i < array.length; i+=1) {
+				if (check(array[i])) {
+					return array[i];
+				}
+			}
+			return null;
+		}
+		else {
+			for (i=0; i < array.length; i+=1) {
+				if (array[i]) {
+					return array[i];
+				}
+			}
+			return null;
+		}
+	}
+	
 	// Based on the findCenter function from jquery.simulate.js
+	/**
+	 * Calculates the position of the center of an DOM element.
+	 * @param {DOM Element} elem - the element whose center should be calculated.
+	 * @returns {Object} an object with the properties <code>x</code> and <code>y</code>
+	 * representing the position of the center of <i>elem</i> in page relative coordinates
+	 * (i.e. independent of any scrolling).
+	 * @private
+	 * @author julrich
+	 * @since 1.0
+	 */
 	function findCenter( elem ) {
 		var offset;
 		elem = $( elem );
-		if (elem[0] === document) {
+		if ( isDocument(elem[0]) ) {
 			offset = {left: 0, top: 0}; 
 		}
 		else {
@@ -61,8 +103,32 @@
 		};
 	}
 	
-	function pageToClientPos(x, y) {
-		var jDocument = $(document);
+	/**
+	 * Converts page relative coordinates into client relative coordinates.
+	 * @param {Numeric|Object} x - Either the x coordinate of the page relative coordinates or
+	 * an object with the properties <code>pageX</code> and <code>pageY</code> representing page
+	 * relative coordinates.
+	 * @param {Numeric} [y] - If <i>x</i> is numeric (i.e. the x coordinate of page relative coordinates),
+	 * then this is the y coordinate. If <i>x</i> is an object, this parameter is skipped.
+	 * @param {DOM Document} [docRel] - Optional DOM document object used to calculate the client relative
+	 * coordinates. The page relative coordinates are interpreted as being relative to that document and
+	 * the scroll position of that document is used to calculate the client relative coordinates.
+	 * By default, <code>document</code> is used.
+	 * @returns {Object} an object representing the client relative coordinates corresponding to the
+	 * given page relative coordinates. The object either provides the properties <code>x</code> and
+	 * <code>y</code> when <i>x</i> and <i>y</i> were given as arguments, or <code>clientX</code>
+	 * and <code>clientY</code> when the parameter <i>x</i> was given as an object (see above).
+	 * @private
+	 * @author julrich
+	 * @since 1.0
+	 */
+	function pageToClientPos(x, y, docRel) {
+		var jDocument;
+		if ( isDocument(y) ) {
+			jDocument = $(y);
+		} else {
+			jDocument = $(docRel || document);
+		}
 		
 		if (typeof x === "number" && typeof y === "number") {
 			return {
@@ -78,14 +144,33 @@
 		}
 	}
 	
-	var check = true, isRelative = true;
 	/**
-	 * This is a browser-independent implementation of document.elementFromPoint().
+	 * Browser-independent implementation of <code>document.elementFromPoint()</code>.
 	 * 
-	 * For details, see http://www.zehnet.de/2010/11/19/document-elementfrompoint-a-jquery-solution/
+	 * When run for the first time on a scrolled page, this function performs a check on how
+	 * <code>document.elementFromPoint()</code> is implemented in the current browser. It stores
+	 * the results in two static variables so that the check can be skipped for successive calls.
+	 * 
+	 * @param {Numeric|Object} x - Either the x coordinate of client relative coordinates or an object
+	 * with the properties <code>x</code> and <code>y</code> representing client relative coordinates.
+	 * @param {Numeric} [y] - If <i>x</i> is numeric (i.e. the x coordinate of client relative coordinates),
+	 * this is the y coordinate. If <i>x</i> is an object, this parameter is skipped.
+	 * @param {DOM Document} [docRel] - Optional DOM document object
+	 * @returns {DOM Element|Null}
+	 * @private
+	 * @author Nicolas Zeh (Basic idea), julrich
+	 * @see http://www.zehnet.de/2010/11/19/document-elementfrompoint-a-jquery-solution/
+	 * @since 1.0
 	 */
-	function elementAtPosition(x, y) {
-		if(!document.elementFromPoint) {
+	function elementAtPosition(x, y, docRel) {
+		var doc;
+		if ( isDocument(y) ) {
+			doc = y;
+		} else {
+			doc = docRel || document;
+		}
+		
+		if(!doc.elementFromPoint) {
 			return null;
 		}
 
@@ -95,83 +180,149 @@
 			clientY = x.clientY || 0;
 		}
 		
-		if(check)
+		if(elementAtPosition.prototype.check)
 		{
-			var sl, doc;
-			if ((sl = $(document).scrollTop()) >0)
+			var sl, ele;
+			if ((sl = $(doc).scrollTop()) >0)
 			{
-				doc = document.elementFromPoint(0, sl + $(window).height() -1);
-				if ( doc != null && doc.tagName.toUpperCase() === 'HTML' ) { doc = null; }
-				isRelative = ( doc == null );
+				ele = doc.elementFromPoint(0, sl + $(window).height() -1);
+				if ( ele !== null && ele.tagName.toUpperCase() === 'HTML' ) { ele = null; }
+				elementAtPosition.prototype.nativeUsesRelative = ( ele === null );
 			}
-			else if((sl = $(document).scrollLeft()) >0)
+			else if((sl = $(doc).scrollLeft()) >0)
 			{
-				doc = document.elementFromPoint(sl + $(window).width() -1, 0);
-				if ( doc != null && doc.tagName.toUpperCase() === 'HTML' ) { doc = null; }
-				isRelative = ( doc == null );
+				ele = doc.elementFromPoint(sl + $(window).width() -1, 0);
+				if ( ele !== null && ele.tagName.toUpperCase() === 'HTML' ) { ele = null; }
+				elementAtPosition.prototype.nativeUsesRelative = ( ele === null );
 			}
-			check = !(sl>0);
+			elementAtPosition.prototype.check = (sl<=0); // Check was not meaningful because we were at scroll position 0
 		}
 
-		if(!isRelative)
+		if(!elementAtPosition.prototype.nativeUsesRelative)
 		{
-			clientX += $(document).scrollLeft();
-			clientY += $(document).scrollTop();
+			clientX += $(doc).scrollLeft();
+			clientY += $(doc).scrollTop();
 		}
 
-		return document.elementFromPoint(clientX,clientY);
+		return doc.elementFromPoint(clientX,clientY);
 	}
+	// Default values for the check variables
+	elementAtPosition.prototype.check = true;
+	elementAtPosition.prototype.nativeUsesRelative = true;
 	
+	/**
+	 * Informs the rest of the world that the drag is finished.
+	 * @param {DOM Element} ele - The element which was dragged.
+	 * @param {Object} [options] - The drag options.
+	 * @fires simulate-drag
+	 * @private
+	 * @author julrich 
+	 * @since 1.0
+	 */
 	function dragFinished(ele, options) {
+		var opts = options || {};
 		$(ele).trigger({type: "simulate-drag"});
-		if ($.isFunction(options.callback)) {
-			options.callback.apply(ele);
+		if ($.isFunction(opts.callback)) {
+			opts.callback.apply(ele);
 		}
 	}
 	
-	function interpolatedEvents(ele, start, drag, options) {
-		var self = this;
-		var interpolOptions = options.interpolation;
-		var dragDistance = Math.sqrt(Math.pow(drag.x,2) + Math.pow(drag.y,2)); // sqrt(a^2 + b^2)
-		var stepWidth, stepCount, stepVector;
+	/**
+	 * Generates a series of <code>mousemove</code> events for a drag.
+	 * @param {Object} self - The simulate object.
+	 * @param {DOM Element} ele - The element which is dragged.
+	 * @param {Object} start - The start coordinates of the drag, represented using the properties
+	 * <code>x</code> and <code>y</code>.
+	 * @param {Object} drag - The distance to be dragged, represented using the properties <code>dx</code>
+	 * and <code>dy</code>.
+	 * @param {Object} options - The drag options. Must have the property <code>interpolation</code>
+	 * containing the interpolation options (<code>stepWidth</code>, <code>stepCount</code>, etc.).
+	 * @requires eventTarget
+	 * @requires now()
+	 * @private
+	 * @author julrich
+	 * @since 1.0
+	 */
+	function interpolatedEvents(self, ele, start, drag, options) {
+		var targetDoc = selectFirstMatch([ele, ele.ownerDocument], isDocument) || document,
+			interpolOptions = options.interpolation,
+			dragDistance = Math.sqrt(Math.pow(drag.dx,2) + Math.pow(drag.dy,2)), // sqrt(a^2 + b^2)
+			stepWidth, stepCount, stepVector;
 		
 		if (interpolOptions.stepWidth) {
 			stepWidth = parseInt(interpolOptions.stepWidth, 10);
 			stepCount = Math.floor(dragDistance / stepWidth)-1;
 			var stepScale = stepWidth / dragDistance;
-			stepVector = {x: drag.x*stepScale, y: drag.y*stepScale };
+			stepVector = {x: drag.dx*stepScale, y: drag.dy*stepScale };
 		}
 		else {
 			stepCount = parseInt(interpolOptions.stepCount, 10);
 			stepWidth = dragDistance / (stepCount+1);
-			stepVector = {x: drag.x/(stepCount+1), y: drag.y/(stepCount+1)};
+			stepVector = {x: drag.dx/(stepCount+1), y: drag.dy/(stepCount+1)};
 		}
+		
 		
 		var coords = $.extend({},start);
 		
+		/**
+		 * Calculates the effective coordinates for one <code>mousemove</code> event and fires the event.
+		 * @requires eventTarget
+		 * @requires targetDoc
+		 * @requires coords
+		 * @requires stepVector
+		 * @requires interpolOptions
+		 * @fires mousemove
+		 * @inner
+		 * @author julrich
+		 * @since 1.0
+		 */
 		function interpolationStep() {
 			coords.x += stepVector.x;
 			coords.y += stepVector.y;
-			var effectiveCoords = {x: coords.x, y: coords.y};
+			var effectiveCoords = {pageX: coords.x, pageY: coords.y};
 			if (interpolOptions.shaky && (interpolOptions.shaky === true || !isNaN(parseInt(interpolOptions.shaky,10)) )) {
 				var amplitude = (interpolOptions.shaky === true)? 1 : parseInt(interpolOptions.shaky,10);
-				effectiveCoords.x += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
-				effectiveCoords.y += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
+				effectiveCoords.pageX += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
+				effectiveCoords.pageY += Math.floor(Math.random()*(2*amplitude+1)-amplitude);
 			}
-			self.simulateEvent( ele, "mousemove", {pageX: Math.round(effectiveCoords.x), pageY: Math.round(effectiveCoords.y)});	
+			var clientCoord = pageToClientPos(effectiveCoords, targetDoc),
+				eventTarget = elementAtPosition(clientCoord, targetDoc) || ele;
+			self.simulateEvent( eventTarget, "mousemove", {pageX: Math.round(effectiveCoords.pageX), pageY: Math.round(effectiveCoords.pageY)});	
 		}
 		
 		
+		var lastTime;
+		
+		/**
+		 * Performs one interpolation step (i.e. cares about firing the event) and then sleeps for
+		 * <code>stepDelay</code> milliseconds.
+		 * @requires lastTime
+		 * @requires stepDelay
+		 * @requires step
+		 * @requires ele
+		 * @requires eventTarget
+		 * @reuiqre targetDoc
+		 * @requires start
+		 * @requires drag
+		 * @requires now()
+		 * @inner
+		 * @author julrich
+		 * @since 1.0
+		 */
 		function stepAndSleep() {
-			var timeElapsed = now() - lastTime; // Work-around for Firefox "bug": setTimeout can fire before the timeout
+			var timeElapsed = now() - lastTime; // Work-around for Firefox & IE "bug": setTimeout can fire before the timeout
 			if (timeElapsed >= stepDelay) {
 				if (step < stepCount) {
 					interpolationStep();
 					step += 1;
+					lastTime = now();
 					setTimeout(stepAndSleep, stepDelay);
 				}
 				else {
-					self.simulateEvent( ele, "mousemove", {pageX: start.x+drag.x, pageY: start.y+drag.y});
+					var pageCoord = {pageX: Math.round(start.x+drag.dx), pageY: Math.round(start.y+drag.dy)},
+						clientCoord = pageToClientPos(pageCoord, targetDoc),
+						eventTarget = elementAtPosition(clientCoord, targetDoc) || ele;
+					self.simulateEvent( eventTarget, "mousemove", pageCoord);
 					dragFinished(ele, options);
 				}
 			}
@@ -186,20 +337,37 @@
 			for (var i=0; i < stepCount; i+=1) {
 				interpolationStep();
 			}
-			self.simulateEvent( ele, "mousemove", {pageX: start.x+drag.x, pageY: start.y+drag.y});
+			var pageCoord = {pageX: Math.round(start.x+drag.dx), pageY: Math.round(start.y+drag.dy)},
+				clientCoord = pageToClientPos(pageCoord, targetDoc),
+				eventTarget = elementAtPosition(clientCoord, targetDoc) || ele;
+			self.simulateEvent( eventTarget, "mousemove", pageCoord);
 			dragFinished(ele, options);
 		}
 		else {
 			var stepDelay = parseInt(interpolOptions.stepDelay,10) || Math.ceil(parseInt(interpolOptions.duration,10) / (stepCount+1));
 			var step = 0;
-			var now = Date.now || function() { return new Date().getTime(); },
-				lastTime = now();
 
+			lastTime = now();
 			setTimeout(stepAndSleep, stepDelay);
 		}
 		
 	}
 
+	/**
+	 * @returns {Object|undefined} an object containing information about the currently active drag
+	 * or <code>undefined</code> when there is no active drag.
+	 * The returned object contains the following properties:
+	 * <ul>
+	 *     <li><code>dragElement</code>: the dragged element</li>
+	 *     <li><code>dragStart</code>: object with the properties <code>x</code> and <code>y</code>
+	 * representing the page relative start coordinates of the drag</li>
+	 *     <li><code>dragDistance</code>: object with the properties <code>x</code> and <code>y</code>
+	 * representing the distance of the drag in x and y direction</li>
+	 * </ul>
+	 * @public
+	 * @author julrich
+	 * @since 1.0
+	 */
 	$.simulate.activeDrag = function() {
 		if (!$.simulate._activeDrag) {
 			return undefined;
@@ -207,11 +375,25 @@
 		return $.extend(true,{},$.simulate._activeDrag);
 	};
 	
-	$.extend( $.simulate.prototype, {
+	$.extend( $.simulate.prototype,
+
+	/**
+	 * @lends $.simulate.prototype
+	 */
+	{
 		
 	
+		/**
+		 * Simulates a drag.
+		 *
+		 * @see https://github.com/j-ulrich/jquery-simulate-ext/blob/master/doc/drag-n-drop.md
+		 * @public
+		 * @author julrich
+		 * @since 1.0
+		 */
 		simulateDrag: function() {
-			var ele = this.target,
+			var self = this,
+				ele = self.target,
 				options = $.extend({
 					dx: 0,
 					dy: 0,
@@ -257,7 +439,7 @@
 				// We just continue to move the dragged element
 				$.simulate._activeDrag.dragDistance.x += dx;
 				$.simulate._activeDrag.dragDistance.y += dy;	
-				coord = { pageX: x + $.simulate._activeDrag.dragDistance.x , pageY: y + $.simulate._activeDrag.dragDistance.y };
+				coord = { pageX: Math.round(x + $.simulate._activeDrag.dragDistance.x) , pageY: Math.round(y + $.simulate._activeDrag.dragDistance.y) };
 			}
 			else {
 				if ($.simulate._activeDrag) {
@@ -266,12 +448,12 @@
 				}
 				
 				// We start a new drag
-				this.simulateEvent( ele, "mousedown", coord );
+				self.simulateEvent( ele, "mousedown", coord );
 				if (options.clickToDrag === true) {
-					this.simulateEvent( ele, "mouseup", coord );
-					this.simulateEvent( ele, "click", coord );
+					self.simulateEvent( ele, "mouseup", coord );
+					self.simulateEvent( ele, "click", coord );
 				}
-				$(ele).add(document).one('mouseup', function() {
+				$(ele).add(ele.ownerDocument).one('mouseup', function() {
 					$.simulate._activeDrag = undefined;
 				});
 				
@@ -282,16 +464,20 @@
 						dragDistance: { x: dx, y: dy }
 					}
 				});
-				coord = { pageX: x + dx, pageY: y + dy };
+				coord = { pageX: Math.round(x + dx), pageY: Math.round(y + dy) };
 			}
 
 			if (dx !== 0 || dy !== 0) {
 				
 				if ( options.interpolation && (options.interpolation.stepCount || options.interpolation.stepWidth) ) {
-					interpolatedEvents.apply(this, [ele, {x: x, y: y}, {x: dx, y: dy}, options]);
+					interpolatedEvents(self, ele, {x: x, y: y}, {dx: dx, dy: dy}, options);
 				}
 				else {
-					this.simulateEvent( ele, "mousemove", coord );
+					var targetDoc = selectFirstMatch([ele, ele.ownerDocument], isDocument) || document,
+						clientCoord = pageToClientPos(coord, targetDoc),
+						eventTarget = elementAtPosition(clientCoord, targetDoc) || ele;
+
+					self.simulateEvent( eventTarget, "mousemove", coord );
 					dragFinished(ele, options);
 				}
 			}
@@ -303,36 +489,35 @@
 		/**
 		 * Simulates a drop.
 		 * 
-		 * The position where the drop occurs is determined in the following way:
-		 * 1.) If there is an active drag with a distance dx != 0 and dy != 0, the drop occurs
-		 * at the end position of that drag.
-		 * 2.) If there is no active drag or the distance of the active drag is 0 (i.e. dx == 0 and
-		 * dy == 0), then the drop occurs at the center of the element given to the drop. In this case,
-		 * the mouse is moved onto the center of the element before the drop is simulated.
-		 * In both cases, an active drag will be ended.
+		 * @see https://github.com/j-ulrich/jquery-simulate-ext/blob/master/doc/drag-n-drop.md
+		 * @public
+		 * @author julrich
+		 * @since 1.0
 		 */
 		simulateDrop: function() {
-			var ele = this.target,
+			var self = this,
+				ele = this.target,
 				activeDrag = $.simulate._activeDrag,
 				options = $.extend({
 					clickToDrop: false,
 					callback: undefined
-				}, this.options),
+				}, self.options),
 				moveBeforeDrop = true,
 				center = findCenter( ele ),
 				x = Math.round( center.x ),
 				y = Math.round( center.y ),
 				coord = { pageX: x, pageY: y },
-				clientCoord = pageToClientPos(coord),
-				eventTarget = elementAtPosition(clientCoord);
+				targetDoc = ( (activeDrag)? selectFirstMatch([activeDrag.dragElement, activeDrag.dragElement.ownerDocument], isDocument) : selectFirstMatch([ele, ele.ownerDocument], isDocument) ) || document, 
+				clientCoord = pageToClientPos(coord, targetDoc),
+				eventTarget = elementAtPosition(clientCoord, targetDoc);
 			
-			if (activeDrag && (activeDrag.dragElement === ele || ele === document)) {
+			if (activeDrag && (activeDrag.dragElement === ele || isDocument(ele))) {
 				// We already moved the mouse during the drag so we just simulate the drop on the end position
-				x = activeDrag.dragStart.x + activeDrag.dragDistance.x;
-				y = activeDrag.dragStart.y + activeDrag.dragDistance.y;
+				x = Math.round(activeDrag.dragStart.x + activeDrag.dragDistance.x);
+				y = Math.round(activeDrag.dragStart.y + activeDrag.dragDistance.y);
 				coord = { pageX: x, pageY: y };
-				clientCoord = pageToClientPos(coord);
-				eventTarget = elementAtPosition(clientCoord);
+				clientCoord = pageToClientPos(coord, targetDoc);
+				eventTarget = elementAtPosition(clientCoord, targetDoc);
 				moveBeforeDrop = false;
 			}
 			
@@ -342,15 +527,15 @@
 
 			if (moveBeforeDrop === true) {
 				// Else we assume the drop should happen on target, so we move there
-				this.simulateEvent( eventTarget, "mousemove", coord );
+				self.simulateEvent( eventTarget, "mousemove", coord );
 			}
 
 			if (options.clickToDrop) {
-				this.simulateEvent( eventTarget, "mousedown", coord );
+				self.simulateEvent( eventTarget, "mousedown", coord );
 			}
 			this.simulateEvent( eventTarget, "mouseup", coord );
 			if (options.clickToDrop) {
-				this.simulateEvent( eventTarget, "click", coord );
+				self.simulateEvent( eventTarget, "click", coord );
 			}
 			
 			$.simulate._activeDrag = undefined;
@@ -360,12 +545,21 @@
 			}
 		},
 		
+		/**
+		 * Simulates a drag followed by drop.
+		 * 
+		 * @see https://github.com/j-ulrich/jquery-simulate-ext/blob/master/doc/drag-n-drop.md
+		 * @public
+		 * @author julrich
+		 * @since 1.0
+		 */
 		simulateDragNDrop: function() {
-			var ele = this.target,
+			var self = this,
+				ele = this.target,
 				options = $.extend({
 					dragTarget: undefined,
 					dropTarget: undefined
-				}, this.options),
+				}, self.options),
 				// If there is a dragTarget or dx/dy, then we drag there and simulate an independent drop on dropTarget or ele
 				dropEle = ((options.dragTarget || options.dx || options.dy)? options.dropTarget : ele) || ele;
 /*
