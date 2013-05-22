@@ -183,6 +183,34 @@ $(document).ready(function() {
 		},(testSequence.length+2)*keyDelay);
 
 	});
+	
+	// See issue #6 (https://github.com/j-ulrich/jquery-simulate-ext/issues/6)
+	test("delay, spaces in sequence, non-input element", function() {
+		var testElement = $('#emptyDiv');
+		
+		var keyDelay = 5,
+			testSequence = "a b c";
+		
+		tests.expectedEvents = [
+			/* a */ {type: "keydown", keyCode: 65}, {type: "keypress", which: "a".charCodeAt(0)}, {type: "keyup", keyCode: 65},
+			/*   */ {type: "keydown", keyCode: 32}, {type: "keypress", which: " ".charCodeAt(0)}, {type: "keyup", keyCode: 32},
+			/* b */ {type: "keydown", keyCode: 66}, {type: "keypress", which: "b".charCodeAt(0)}, {type: "keyup", keyCode: 66},
+			/*   */ {type: "keydown", keyCode: 32}, {type: "keypress", which: " ".charCodeAt(0)}, {type: "keyup", keyCode: 32},
+			/* c */ {type: "keydown", keyCode: 67}, {type: "keypress", which: "c".charCodeAt(0)}, {type: "keyup", keyCode: 67},
+			{type: "simulate-keySequence", sequence: testSequence }
+		];
+
+		stop();
+		testElement.simulate("key-sequence", {sequence: testSequence, delay: keyDelay,
+			callback: function() {
+			strictEqual(testElement.text(), testSequence, "Verify result of sequence");
+			start();
+		}
+		});
+		
+
+
+	});
 
 
 });

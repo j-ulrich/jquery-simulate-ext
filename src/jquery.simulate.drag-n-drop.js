@@ -2,7 +2,7 @@
 /*jslint white: true vars: true browser: true todo: true */
 /*global jQuery:true $:true */
 
-/* jQuery Simulate Drag-n-Drop Plugin 1.1.4
+/* jQuery Simulate Drag-n-Drop Plugin 1.1.5
  * http://github.com/j-ulrich/jquery-simulate-ext
  * 
  * Copyright (c) 2013 Jochen Ulrich

@@ -1,6 +1,13 @@
 jQuery Simulate Extended Changelog
 ==================================
 
+Version 1.1.5 - (Released: 2013-05-22)
+-------------
+* key-sequence: Adds a workaround for the bug that spaces are moved to the end
+  of the sequence when simulating on a non-input with delay on certain browsers
+  (Webkit-based browsers).
+* Layout (CSS) improvements in the demo.
+
 Version 1.1.4 - (Released: 2013-01-30)
 -------------
 * Extends the documentation for simulating drag-n-drops within iframes.

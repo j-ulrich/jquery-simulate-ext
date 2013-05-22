@@ -19,6 +19,7 @@ __Note:__ The key-sequence plugin requires bililiteRange.js (can be found in the
 - [Special Sequences](#special-sequences)
 - [Events](#events)
 - [Special Characters and keyCodes](#special-characters-and-keycodes)
+- [Tips & Tricks](#tips--tricks)
 
 
 Usage
@@ -137,3 +138,13 @@ codes like InternetExplorer for all browsers and the support of special characte
 the most common ones (see [the code](https://github.com/j-ulrich/jquery-simulate-ext/tree/master/src/jquery.simulate.key-sequence.js#L172-211)
 for the complete list). However, this might change in future versions.
 For more information about this topic see http://unixpapa.com/js/key.html.
+
+Tips & Tricks
+-------------
+
+#### Simulating a text cursor ####
+When simulating a key-sequence in a non-input element (e.g. a `div` or `p` element), it is possible
+to simulate a text cursor like this:
+```javascript
+$('div#myDiv').simulate("key-sequence", {sequence: "|{leftarrow}This is a test!{del}", delay: 100});
+```
