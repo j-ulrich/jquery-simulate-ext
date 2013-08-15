@@ -1,6 +1,12 @@
 jQuery Simulate Extended Changelog
 ==================================
 
+Version 1.1.6 - (Released: 2013-08-15)
+-------------
+* Updates to the latest version of jquery.simulate.js to achieve compatibility with jQuery 1.9.x
+  and above.
+* Replaces libs/jquery-1.7.2.js with libs/jquery-1.10.2.js and updated demo accordingly.
+
 Version 1.1.5 - (Released: 2013-05-22)
 -------------
 * key-sequence: Adds a workaround for the bug that spaces are moved to the end

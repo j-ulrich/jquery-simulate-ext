@@ -345,7 +345,7 @@
 		function _disable_user_select() {
 			$("*").css("-webkit-user-select", "none");
 			$("*").css("-moz-user-select", "none");
-			if (jQuery.browser.msie) {
+			if (!!/msie [\w.]+/.exec( navigator.userAgent.toLowerCase() )) {
 				$("body").attr("onselectstart", "return false;");
 			}
 		}
@@ -353,7 +353,7 @@
 		function _enable_user_select() {
 			$("*").css("-webkit-user-select", "text");
 			$("*").css("-moz-user-select", "text");
-			if (jQuery.browser.msie) {
+			if (!!/msie [\w.]+/.exec( navigator.userAgent.toLowerCase() )) {
 				$("body").removeAttr("onselectstart");
 			}
 		}

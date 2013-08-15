@@ -1,4 +1,4 @@
-jQuery Simulate Extended Plugin 1.1.5
+jQuery Simulate Extended Plugin 1.1.6
 =====================================
 
 The simulate extended plugin provides methods for simulating complex user interactions based on the
