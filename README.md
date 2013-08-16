@@ -2,8 +2,7 @@ jQuery Simulate Extended Plugin 1.1.6
 =====================================
 
 The simulate extended plugin provides methods for simulating complex user interactions based on the
-[jQuery.simulate.js](https://github.com/jquery/jquery-ui/blob/master/tests/jquery.simulate.js) plugin
-from [jQuery UI](http://jqueryui.com).
+[jQuery.simulate()](https://github.com/jquery/jquery-simulate) plugin.
 The plugin provides simulation of:
 
 * Drag & Drop
@@ -83,8 +82,9 @@ The plugin requires
 
 Compatibility
 ------------
-The plugins have been successfully tested with jQuery 1.7.2 and [jQuery Simulate @485ca7192a](https://github.com/jquery/jquery-ui/blob/485ca7192ac57d018b8ce4f03e7dec6e694a53b7/tests/jquery.simulate.js).
-However, they should be compatible with future versions.
+The plugins have been successfully tested with jQuery 1.7.2, 1.10.2 and jQuery Simulate [@485ca7192a](https://github.com/jquery/jquery-ui/blob/485ca7192ac57d018b8ce4f03e7dec6e694a53b7/tests/jquery.simulate.js),
+[@25938de206](https://github.com/jquery/jquery-simulate/blob/25938de20622a6c127a7082bd751f6d2f88eabd4/jquery.simulate.js).
+However, they should be compatible with other/future versions as well.
 
 
 Licensing
