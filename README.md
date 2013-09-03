@@ -101,7 +101,7 @@ any jQuery simulate extended plugin is loaded. For example:
 <script type="text/javascript" src="../src/jquery.simulate.key-sequence.js"></script>
 <!-- ... -->
 ```
-For more information, see issue #9.
+For more information, see [issue #9](https://github.com/j-ulrich/jquery-simulate-ext/issues/9).
 
 Licensing
 ---------
