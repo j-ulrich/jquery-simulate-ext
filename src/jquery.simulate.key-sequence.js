@@ -2,7 +2,7 @@
 /*jslint white: true vars: true browser: true todo: true */
 /*global jQuery:true $:true bililiteRange:true */
 
-/* jQuery Simulate Key-Sequence Plugin 1.1.6
+/* jQuery Simulate Key-Sequence Plugin 1.2.0
  * http://github.com/j-ulrich/jquery-simulate-ext
  * 
  * Copyright (c) 2013 Jochen Ulrich
@@ -42,15 +42,24 @@
 ;(function($, undefined){
 	"use strict";
 	
-	var quirks = {
+	$.simulate.prototype.quirks = $.simulate.prototype.quirks || {};
+	
+	$.extend($.simulate.prototype.quirks, 
+
+	/**
+	 * @lends $.simulate.prototype.quirks
+	 */		
+	{
 		/**
 		 * When simulating with delay in non-input elements,
 		 * all spaces are simulated at the end of the sequence instead
 		 * of the correct position.
+		 * @see {@link https://github.com/j-ulrich/jquery-simulate-ext/issues/6|issues #6}
 		 */
-		delayedSpacesInNonInputGlitchToEnd: false
-	};
+		delayedSpacesInNonInputGlitchToEnd: undefined
 
+	});
+	
 	$.extend($.simulate.prototype,
 			
 	/**
@@ -82,10 +91,7 @@
 			var localkeys = {};
 
 			// Fix for #6 (https://github.com/j-ulrich/jquery-simulate-ext/issues/6)
-			/* Since feature detection would be too complicated Although using browser detection instead of feature detection is bad,
-			 * it 
-			 */
-			if (quirks.delayedSpacesInNonInputGlitchToEnd && !$target.is('input,textarea')) {
+			if ($.simulate.prototype.quirks.delayedSpacesInNonInputGlitchToEnd && !$target.is('input,textarea')) {
 				$.extend(localkeys, {
 					' ': function(rng, s, opts) {
 						var internalOpts = $.extend({}, opts, {
@@ -420,16 +426,19 @@
 		
 	
 	//####### Quirk detection #######
-	// delayedSpacesInNonInputGlitchToEnd
-	$(document).ready(function() {
-		/* Append a div to the document (bililiteRange needs the element to be in the document), simulate
-		 * a delayed sequence containing a space in the middle and check if the space moves to the end.
-		 */
-		var testDiv = $('<div/>').css({height: 1, width: 1, position: 'absolute', left: -1000, top: -1000}).appendTo('body');
-		testDiv.simulate('key-sequence', {sequence: '\xA0 \xA0', delay:1, callback: function() {
-			quirks.delayedSpacesInNonInputGlitchToEnd = (testDiv.text().indexOf(' ') > 1);
-			testDiv.remove();
-		}});
-	});
+	if ($.simulate.ext_disableQuirkDetection !== true) { // Fixes issue #9 (https://github.com/j-ulrich/jquery-simulate-ext/issues/9)
+		$(document).ready(function() {
+			// delayedSpacesInNonInputGlitchToEnd
+			// See issues #6 (https://github.com/j-ulrich/jquery-simulate-ext/issues/6)
+			/* Append a div to the document (bililiteRange needs the element to be in the document), simulate
+			 * a delayed sequence containing a space in the middle and check if the space moves to the end.
+			 */
+			var testDiv = $('<div/>').css({height: 1, width: 1, position: 'absolute', left: -1000, top: -1000}).appendTo('body');
+			testDiv.simulate('key-sequence', {sequence: '\xA0 \xA0', delay:1, callback: function() {
+				$.simulate.prototype.quirks.delayedSpacesInNonInputGlitchToEnd = (testDiv.text().indexOf(' ') > 1);
+				testDiv.remove();
+			}});
+		});
+	}
 
 })(jQuery);

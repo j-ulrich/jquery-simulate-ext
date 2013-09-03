@@ -1,4 +1,4 @@
-jQuery Simulate Extended Plugin 1.1.6
+jQuery Simulate Extended Plugin 1.2.0
 =====================================
 
 The simulate extended plugin provides methods for simulating complex user interactions based on the
@@ -18,6 +18,7 @@ Additionally, the extended plugin includes documentation and fixes for the jQuer
 - [Documentation](#documentation)
 - [Requirements](#requirements)
 - [Compatibility](#compatibility)
+	- [Quirk Detection](#quirk-detection)
 - [Licensing](#licensing)
 
 
@@ -86,10 +87,25 @@ The plugins have been successfully tested with jQuery 1.7.2, 1.10.2 and jQuery S
 [@25938de206](https://github.com/jquery/jquery-simulate/blob/25938de20622a6c127a7082bd751f6d2f88eabd4/jquery.simulate.js).
 However, they should be compatible with other/future versions as well.
 
+### Quirk Detection ###
+There are some issues with bililiteRange and some browsers. To workaround these issues, jQuery simulate extended
+performs some quirk detections when the document is ready. Those quirk detections also contain temporary DOM manipulations.
+If you don't want those DOM manipulations to take place, you can disable the quirk detection by setting the flag
+`ext_disableQuirkDetection` in the `jQuery.simulate` object **after** `jquery.simulate.js` has been loaded but **before**
+any jQuery simulate extended plugin is loaded. For example:
+```html
+<!-- ... -->
+<script type="text/javascript" src="../libs/jquery.simulate.js"></script>
+<script type="text/javascript">$.simulate.ext_disableQuirkDetection = true;</script>
+<script type="text/javascript" src="../src/jquery.simulate.ext.js"></script>
+<script type="text/javascript" src="../src/jquery.simulate.key-sequence.js"></script>
+<!-- ... -->
+```
+For more information, see issue #9.
 
 Licensing
 ---------
-Copyright &copy; 2012 Jochen Ulrich
+Copyright &copy; 2013 Jochen Ulrich
 https://github.com/j-ulrich/jquery-simulate-ext
 
 Licensed under the [MIT license](http://opensource.org/licenses/MIT).

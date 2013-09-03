@@ -1,6 +1,12 @@
 jQuery Simulate Extended Changelog
 ==================================
 
+Version 1.2.0 - (Released: 2013-09-03)
+-------------
+* Adds flag `jQuery.simulate.ext_disableQuirkDetection` to disable quirk detections.
+* Allows enabling/disabling specific quirk fixes manually by settings the corresponding
+  flag in the `jQuery.simulate.prototype.quirks` object.
+
 Version 1.1.6 - (Released: 2013-08-15)
 -------------
 * Updates to the latest version of jquery.simulate.js to achieve compatibility with jQuery 1.9.x
