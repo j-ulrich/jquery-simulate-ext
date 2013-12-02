@@ -140,6 +140,22 @@ $(document).ready(function() {
 		
 		strictEqual(testElement.val(), "foo\nbar", "Verify result of sequence (this is known to fail in Opera on Windows)");
 	});
+
+	test("form submit with enter", function() {
+		stop();
+		var testForm = $('<form method="post"><input type="submit"></form>');
+		var testElement = $('#textInput').appendTo(testForm);
+		var testSequence = 'foo{enter}';
+
+		testForm.on('submit', function (event) {
+			ok(event.type);
+			event.preventDefault();
+			start();
+			return false;
+		});
+
+		testElement.simulate("key-sequence", {sequence: testSequence});
+	});
 	
 	test("delay", function() {
 		var testElement = $('#textInput');
