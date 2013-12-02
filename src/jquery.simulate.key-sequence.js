@@ -333,16 +333,22 @@
 		'{enter}': function (rng, s, opts){
 			rng.insertEOL();
 			rng.select();
+
+			if (opts.triggerFormEvents === true) {
+				var $_form = $(rng._el).parents('form');
+				if ($_form.length && $_form.find('[type=submit]').length) {
+					$(rng._el).on('keydown', function (event) {
+						if (event.keyCode === 13 && !event.isDefaultPrevented()) {
+							$_form.trigger('submit');
+						}
+					});
+				}
+			}
+
 			if (opts.triggerKeyEvents === true) {
 				$(rng._el).simulate('keydown', {keyCode: 13});
 				$(rng._el).simulate('keypress', {keyCode: 13, which: 13, charCode: 13});
 				$(rng._el).simulate('keyup', {keyCode: 13});
-			}
-			if (opts.triggerFormEvents === true) {
-				var $_form = $(rng._el).parents('form');
-				if ($_form.length && $_form.find('[type=submit]').length) {
-					$_form.trigger('submit');
-				}
 			}
 		},
 		
