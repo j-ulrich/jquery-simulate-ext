@@ -140,6 +140,50 @@ $(document).ready(function() {
 		
 		strictEqual(testElement.val(), "foo\nbar", "Verify result of sequence (this is known to fail in Opera on Windows)");
 	});
+
+	test("form submit with enter", function() {
+		stop();
+		var testForm = $('<form method="post"><input type="submit"></form>');
+		var testElement = $('#textInput').appendTo(testForm);
+		var testSequence = 'foo{enter}';
+		var submitted = false;
+
+		testForm.on('submit', function (event) {
+			submitted = true;
+			return false;
+		});
+
+		testElement.simulate("key-sequence", {sequence: testSequence});
+
+		setTimeout(function() {
+			strictEqual(submitted, true);
+			start();
+		}, 10);		
+	});
+
+	test("form submit with enter when keydown event is default prevented", function() {
+		stop();
+		var testForm = $('<form method="post"><input type="submit"></form>');
+		var testElement = $('#textInput').appendTo(testForm);
+		var testSequence = 'foo{enter}';
+		var submitted = false;
+
+		testElement.on('keydown', function (event) {
+			event.preventDefault();
+		});
+
+		testForm.on('submit', function (event) {
+			submitted = true;
+			return false;
+		});
+
+		testElement.simulate("key-sequence", {sequence: testSequence});
+
+		setTimeout(function() {
+			strictEqual(submitted, false);
+			start();
+		}, 10);
+	});
 	
 	test("delay", function() {
 		var testElement = $('#textInput');
