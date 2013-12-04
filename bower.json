@@ -1,0 +1,31 @@
+{
+	"name": "jquery-simulate-ext",
+	"description": "jQuery Simulate - extended. Simulating complex user interaction based on the jQuery Simulate plugin.",
+	"version": "1.2.0",
+	"keywords": ["jquery", "simulate", "key", "mouse", "press", "move", "drag", "drop", "user-interaction"],
+	"authors": [{
+		"name": "Jochen Ulrich",
+		"email": "jochenulrich@t-online.de",
+		"homepage": "https://github.com/j-ulrich"
+	}],
+	"main": [
+		"src/jquery.simulate.ext.js",
+		"src/jquery.simulate.drag-n-drop.js",
+		"src/jquery.simulate.key-sequence.js",
+		"src/jquery.simulate.key-combo.js"
+	],
+	"ignore": [
+		"**/.*",
+		"*.md",
+		"demo",
+		"doc",
+		"tests",
+		"bower.json",
+		"grunt.js",
+		"package.json",
+		"simulate-ext.jquery.json"
+	],
+	"dependencies": {
+		"jquery": ">=1.7.0"
+	}
+}
