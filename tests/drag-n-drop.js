@@ -458,7 +458,7 @@ $(document).ready(function() {
 		for (var i=1; i <= stepCount; i+=1) {
 			eventX = Math.round(dragStartX+i*dragX/(stepCount+1));
 			eventY = Math.round(dragStartY+i*dragY/(stepCount+1));
-			if (eventX >= dragTarget.offset().left && eventY >= dragTarget.offset().top) {
+			if (eventX >= Math.round($dragTarget.offset().left) && eventY >= Math.round($dragTarget.offset().top)) {
 				eventTarget = dragTarget[0];
 			}
 			tests.expectedEvents.push({type: "mousemove", pageX: eventX, pageY: eventY, target: eventTarget});

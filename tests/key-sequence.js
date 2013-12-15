@@ -218,68 +218,99 @@ $(document).ready(function() {
 	
 	asyncTest("quirk detection", 1, function() {
 		setTimeout(function() {
-			var iFrameDoc = window.frames[0].document;
-	
-			var jquery = iFrameDoc.createElement('script');
-			jquery.src = "../libs/jquery-1.10.2.js";
-			iFrameDoc.body.appendChild(jquery);
-	
-			var bililiteRange = iFrameDoc.createElement('script');
-			bililiteRange.src = "../libs/bililiteRange.js";
-			iFrameDoc.body.appendChild(bililiteRange);
+			var iFrameWin = window.frames[0],
+				iFrameDoc = iFrameWin.document,
+				scriptLoadTimeout = 100;
 			
-			var jquerySimulate = iFrameDoc.createElement('script');
-			jquerySimulate.src = "../libs/jquery.simulate.js";
-			iFrameDoc.body.appendChild(jquerySimulate);
-			
-			var simulateExt = iFrameDoc.createElement('script');
-			simulateExt.src = "../src/jquery.simulate.ext.js";
-			iFrameDoc.body.appendChild(simulateExt);
-	
-			var simulateExtKeySequence = iFrameDoc.createElement('script');
-			simulateExtKeySequence.src = "../src/jquery.simulate.key-sequence.js";
-			iFrameDoc.body.appendChild(simulateExtKeySequence);
-			
-			setTimeout(function() {
+			$.Deferred(function(dfd) {
+				var jquery = iFrameDoc.createElement('script');
+				jquery.src = "../libs/jquery-1.10.2.js";
+				iFrameDoc.body.appendChild(jquery);
+				setTimeout(dfd.resolve, scriptLoadTimeout);
+			}).pipe(function() {
+				return $.Deferred(function(dfd) {
+					var bililiteRange = iFrameDoc.createElement('script');
+					bililiteRange.src = "../libs/bililiteRange.js";
+					iFrameDoc.body.appendChild(bililiteRange);
+					setTimeout(dfd.resolve, scriptLoadTimeout);
+				});
+			}).pipe(function() {
+				return $.Deferred(function(dfd) {
+					var jquerySimulate = iFrameDoc.createElement('script');
+					jquerySimulate.src = "../libs/jquery.simulate.js";
+					iFrameDoc.body.appendChild(jquerySimulate);
+					setTimeout(dfd.resolve, scriptLoadTimeout);
+				});
+			}).pipe(function() {
+				return $.Deferred(function(dfd) {
+					var simulateExt = iFrameDoc.createElement('script');
+					simulateExt.src = "../src/jquery.simulate.ext.js";
+					iFrameDoc.body.appendChild(simulateExt);
+					setTimeout(dfd.resolve, scriptLoadTimeout);
+				});
+			}).pipe(function() {
+				return $.Deferred(function(dfd) {
+					var simulateExtKeySequence = iFrameDoc.createElement('script');
+					simulateExtKeySequence.src = "../src/jquery.simulate.key-sequence.js";
+					iFrameDoc.body.appendChild(simulateExtKeySequence);
+					setTimeout(dfd.resolve, scriptLoadTimeout);
+				});
+			}).pipe(function() {
+
 				notStrictEqual(window.frames[0].jQuery.simulate.prototype.quirks.delayedSpacesInNonInputGlitchToEnd, undefined, "Quirk detection was executed");
 				start();
-			}, 2000);
+			});
+			
 		}, 1000);
 	});
 	
 	// See issue #9 (https://github.com/j-ulrich/jquery-simulate-ext/issues/9)
 	asyncTest("disable quirk detection", 1, function() {
 		setTimeout(function() {
-			var iFrameDoc = window.frames[0].document;
-	
-			var jquery = iFrameDoc.createElement('script');
-			jquery.src = "../libs/jquery-1.10.2.js";
-			iFrameDoc.body.appendChild(jquery);
-	
-			var bililiteRange = iFrameDoc.createElement('script');
-			bililiteRange.src = "../libs/bililiteRange.js";
-			iFrameDoc.body.appendChild(bililiteRange);
-			
-			var jquerySimulate = iFrameDoc.createElement('script');
-			jquerySimulate.src = "../libs/jquery.simulate.js";
-			iFrameDoc.body.appendChild(jquerySimulate);
-			
-			setTimeout(function() {
+			var iFrameWin = window.frames[0],
+			iFrameDoc = iFrameWin.document,
+			scriptLoadTimeout = 100;
+		
+			$.Deferred(function(dfd) {
+				var jquery = iFrameDoc.createElement('script');
+				jquery.src = "../libs/jquery-1.10.2.js";
+				iFrameDoc.body.appendChild(jquery);
+				setTimeout(dfd.resolve, scriptLoadTimeout);
+			}).pipe(function() {
+				return $.Deferred(function(dfd) {
+					var bililiteRange = iFrameDoc.createElement('script');
+					bililiteRange.src = "../libs/bililiteRange.js";
+					iFrameDoc.body.appendChild(bililiteRange);
+					setTimeout(dfd.resolve, scriptLoadTimeout);
+				});
+			}).pipe(function() {
+				return $.Deferred(function(dfd) {
+					var jquerySimulate = iFrameDoc.createElement('script');
+					jquerySimulate.src = "../libs/jquery.simulate.js";
+					iFrameDoc.body.appendChild(jquerySimulate);
+					setTimeout(dfd.resolve, scriptLoadTimeout);
+				});
+			}).pipe(function() {
 				window.frames[0].jQuery.simulate.ext_disableQuirkDetection = true;
 	
-				var simulateExt = iFrameDoc.createElement('script');
-				simulateExt.src = "../src/jquery.simulate.ext.js";
-				iFrameDoc.body.appendChild(simulateExt);
+				return $.Deferred(function(dfd) {
+					var simulateExt = iFrameDoc.createElement('script');
+					simulateExt.src = "../src/jquery.simulate.ext.js";
+					iFrameDoc.body.appendChild(simulateExt);
+					setTimeout(dfd.resolve, scriptLoadTimeout);
+				});
+			}).pipe(function() {
+				return $.Deferred(function(dfd) {
+					var simulateExtKeySequence = iFrameDoc.createElement('script');
+					simulateExtKeySequence.src = "../src/jquery.simulate.key-sequence.js";
+					iFrameDoc.body.appendChild(simulateExtKeySequence);
+					setTimeout(dfd.resolve, scriptLoadTimeout);
+				});
+			}).pipe(function() {
 	
-				var simulateExtKeySequence = iFrameDoc.createElement('script');
-				simulateExtKeySequence.src = "../src/jquery.simulate.key-sequence.js";
-				iFrameDoc.body.appendChild(simulateExtKeySequence);
-				
-				setTimeout(function() {
-					strictEqual(window.frames[0].jQuery.simulate.prototype.quirks.delayedSpacesInNonInputGlitchToEnd, undefined, "Quirk detection was disabled");
-					start();
-				}, 2000);
-			}, 2000);
+				strictEqual(window.frames[0].jQuery.simulate.prototype.quirks.delayedSpacesInNonInputGlitchToEnd, undefined, "Quirk detection was disabled");
+				start();
+			});
 		}, 1000);
 	});
 
