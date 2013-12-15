@@ -6,6 +6,7 @@ Version 1.3.0 - (Released: 2013-??-??)
 * Adds bower.json and registers the package at bower.
 * Corrects jQuery naming conventions ($varible).
 * Updates demo to jQuery UI 1.10.3 to make it work with jQuery 1.10.2.
+* __key-combo__: Adds support of special keys (`"left-arrow"`, etc.).
 
 Version 1.2.0 - (Released: 2013-09-03)
 -------------
@@ -21,10 +22,10 @@ Version 1.1.6 - (Released: 2013-08-15)
 
 Version 1.1.5 - (Released: 2013-05-22)
 -------------
-* key-sequence: Adds a workaround for the bug that spaces are moved to the end
+* Layout (CSS) improvements in the demo.
+* __key-sequence__: Adds a workaround for the bug that spaces are moved to the end
   of the sequence when simulating on a non-input with delay on certain browsers
   (Webkit-based browsers).
-* Layout (CSS) improvements in the demo.
 
 Version 1.1.4 - (Released: 2013-01-30)
 -------------
@@ -51,7 +52,6 @@ Version 1.1.1 - (Released: 2012-10-08)
 
 Version 1.1 - (Released: 2012-09-12)
 -----------
-#### `drag-n-drop` ####
-* Adds support for simulation of drag-n-drop within child-iframes
-* `mousemove` events are now triggered on the element at the position of the event instead of
+* __drag-n-drop__: Adds support for simulation of drag-n-drop within child-iframes
+* __drag-n-drop__: `mousemove` events are now triggered on the element at the position of the event instead of
 	the dragged element (for exceptions, see [doc/drag-n-drop.md#events](https://github.com/j-ulrich/jquery-simulate-ext/tree/master/doc/drag-n-drop.md#events))

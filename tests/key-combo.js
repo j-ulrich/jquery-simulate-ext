@@ -122,6 +122,22 @@ $(document).ready(function() {
 		
 		strictEqual($testElement.val(), "", "Verify result of sequence");
 	});
+	
+	test("special key combo", function() {
+		var $testElement = $('#textInput');
+		
+		tests.expectedEvents = [
+			/* ctrl */			{type: "keydown", keyCode: 17, ctrlKey: true, shiftKey: false, altKey: false, metaKey: false},
+			/* left-arrow */	{type: "keydown", keyCode: 37, ctrlKey: true, shiftKey: false, altKey: false, metaKey: false},
+			/* left-arrow */	{type: "keyup", keyCode: 37, ctrlKey: true, shiftKey: false, altKey: false, metaKey: false},
+			/* ctrl */			{type: "keyup", keyCode: 17, ctrlKey: false, shiftKey: false, altKey: false, metaKey: false}
+		];
+		
+		$testElement.simulate("key-combo", {combo: "ctrl+left-arrow"});
+		
+		strictEqual($testElement.val(), "", "Verify result of sequence");
+		
+	});
 
 });
 	

@@ -18,17 +18,56 @@
 	"use strict";
 
 	/**
-	 * Key codes of the modifier keys.
+	 * Key codes of special keys.
 	 * @private
 	 * @author julrich
-	 * @since 1.0
+	 * @since 1.3.0
 	 */
-	var ModifierKeyCodes = {
-		SHIFT:		16,
-		CONTROL:	17,
-		ALT:		18,
-		COMMAND:	91
+	var SpecialKeyCodes = {
+		// Modifier Keys
+		SHIFT:			16,
+		CONTROL:		17,
+		ALTERNATIVE:	18,
+		META:			91,
+		// Arrow Keys
+		LEFT_ARROW:		37,
+		UP_ARROW:		38,
+		RIGHT_ARROW:	39,
+		DOWN_ARROW:		40,
+		// Function Keys
+		F1:				112,
+		F2:				113,
+		F3:				114,
+		F4:				115,
+		F5:				116,
+		F6:				117,
+		F7:				118,
+		F8:				119,
+		F9:				120,
+		F10:			121,
+		F11:			122,
+		F12:			123,
+		// Other
+		ENTER:			13,
+		TABULATOR:		 9,
+		ESCAPE:			27,
+		BACKSPACE:		 8,
+		INSERT:			45,
+		DELETE:			46,
+		HOME:			36,
+		END:			35,
+		PAGE_UP:		33,
+		PAGE_DOWN:		34,
+
 	};
+	
+	// SpecialKeyCode aliases
+	SpecialKeyCodes.CTRL 	= SpecialKeyCodes.CONTROL;
+	SpecialKeyCodes.ALT		= SpecialKeyCodes.ALTERNATIVE;
+	SpecialKeyCodes.COMMAND	= SpecialKeyCodes.META;
+	SpecialKeyCodes.TAB		= SpecialKeyCodes.TABULATOR;
+	SpecialKeyCodes.ESC		= SpecialKeyCodes.ESCAPE;
+	
 
 	$.extend( $.simulate.prototype,
 			
@@ -70,58 +109,63 @@
 			
 			for (i=0; i < comboSplit.length; i+=1) {
 				var key = comboSplit[i],
-					keyLowered = key.toLowerCase();
+					keyLowered = key.toLowerCase(),
+					keySpecial = key.toUpperCase().replace('-','_');
 				
 				if (plusExpected) {
 					if (key !== "+") {
 						throw 'Syntax error: expected "+"';
 					}
-				}
-				else {
-					var keyCode;
-					switch (keyLowered) {
-					case "ctrl":
-					case "alt":
-					case "shift":
-					case "meta":
-						switch (keyLowered) {
-						case "ctrl":	keyCode = ModifierKeyCodes.CONTROL; break;
-						case "alt":		keyCode = ModifierKeyCodes.ALT; break;
-						case "shift":	keyCode = ModifierKeyCodes.SHIFT; break;
-						case "meta":	keyCode = ModifierKeyCodes.COMMAND; break;
-						}
-						eventOptions[keyLowered+"Key"] = true;
-						holdKeys.unshift(keyCode);
-						eventOptions.keyCode = keyCode;
-						$target.simulate("keydown", eventOptions);
-						break;
-					default:
-						if (key.length > 1) {
-							throw 'Syntax error: expecting "+" between each key';
-						}
-						else {
-							keyCode = $.simulate.prototype.simulateKeySequence.prototype.charToKeyCode(key);
-							holdKeys.unshift(keyCode);
-							eventOptions.keyCode = keyCode;
-							eventOptions.which = keyCode;
-							eventOptions.charCode = undefined;
-							$target.simulate("keydown", eventOptions);
-							if (eventOptions.shiftKey) {
-								key = key.toUpperCase();
-							}
-							eventOptions.keyCode = key.charCodeAt(0);
-							eventOptions.charCode = eventOptions.keyCode;
-							eventOptions.which = eventOptions.keyCode;
-							$target.simulate("keypress", eventOptions);
-							if (options.eventsOnly !== true && !eventOptions.ctrlKey && !eventOptions.altKey && !eventOptions.metaKey) {
-								$target.simulate('key-sequence', {sequence: key, triggerKeyEvents: false});
-							}
-						}
-						break;
+					else {
+						plusExpected = false;
 					}
 				}
+				else {
+					if ( key.length > 1) {
+						// Assume a special key
+						var keyCode = SpecialKeyCodes[keySpecial];
+						
+						if (keyCode == undefined) {
+							throw 'Syntax error: unknown special key "'+key+'" (forgot "+" between keys?)';
+						}
+						
+						switch (keyCode) {
+						case SpecialKeyCodes.CONTROL:
+						case SpecialKeyCodes.ALT:
+						case SpecialKeyCodes.SHIFT:
+						case SpecialKeyCodes.META:
+							eventOptions[keyLowered+"Key"] = true;
+							break;
+						}
+						holdKeys.unshift(keyCode);
+						eventOptions.keyCode = keyCode;
+						eventOptions.which = keyCode;
+						eventOptions.charCode = 0;
+						$target.simulate("keydown", eventOptions);
+						
+					}
+					else {
+						// "Normal" key
+						var keyCode = $.simulate.prototype.simulateKeySequence.prototype.charToKeyCode(key);
+						holdKeys.unshift(keyCode);
+						eventOptions.keyCode = keyCode;
+						eventOptions.which = keyCode;
+						eventOptions.charCode = undefined;
+						$target.simulate("keydown", eventOptions);
+						if (eventOptions.shiftKey) {
+							key = key.toUpperCase();
+						}
+						eventOptions.keyCode = key.charCodeAt(0);
+						eventOptions.charCode = eventOptions.keyCode;
+						eventOptions.which = eventOptions.keyCode;
+						$target.simulate("keypress", eventOptions);
+						if (eventsOnly !== true && !eventOptions.ctrlKey && !eventOptions.altKey && !eventOptions.metaKey) {
+							$target.simulate('key-sequence', {sequence: key, triggerKeyEvents: false});
+						}
+					}
 					
-				plusExpected = !plusExpected;
+					plusExpected = true;
+				}
 			}
 			
 			if (!plusExpected) {
@@ -134,18 +178,10 @@
 				eventOptions.keyCode = holdKeys[i];
 				eventOptions.which = holdKeys[i];
 				switch (eventOptions.keyCode) {
-				case ModifierKeyCodes.ALT:
-					eventOptions.altKey = false;
-					break;
-				case ModifierKeyCodes.SHIFT:
-					eventOptions.shiftKey = false;
-					break;
-				case ModifierKeyCodes.CONTROL:
-					eventOptions.ctrlKey = false;
-					break;
-				case ModifierKeyCodes.COMMAND:
-					eventOptions.metaKey = false;
-					break;
+				case SpecialKeyCodes.ALT:		eventOptions.altKey = false; break;
+				case SpecialKeyCodes.SHIFT:		eventOptions.shiftKey = false; break;
+				case SpecialKeyCodes.CONTROL:	eventOptions.ctrlKey = false; break;
+				case SpecialKeyCodes.META:		eventOptions.metaKey = false; break;
 				default:
 					break;
 				}

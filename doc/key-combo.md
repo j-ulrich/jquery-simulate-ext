@@ -42,17 +42,44 @@ The syntax of the combo string is simple: the keys to be pressed are concatenate
 in between. The key presses are simulated in the order they appear within the string.
 For example: `"ctrl+alt+a+b+c"`
 
-As already seen in the example, the plugin supports some modifier keys:
-- `"ctrl"`: Control key
-- `"alt"`: Alt key (or option key)
-- `"shift"`: Shift key
-- `"meta"`: Command key on Apple keyboards
+There is no need to escape the plus character if you want to write a combo which includes the plus as a key.
+For example: `"ctrl++"` is the syntax for the combo of control and plus.
 
 The plugin is case-sensitive which means that the `which` property of the `keypress` events is different
 for lowercase characters (e.g.: `"a"` gives a value of `97` while `"A"` gives a value of `65`). `keydown`
 and `keyup` events are not affected by the case-sensitivity, i.e. they always contain the keycode of
 the uppercase character. The only exception from this behavior is when the combo contains the `"shift"`
 modifier. In that case, the `which` property always contains the charCode of the uppercase character.
+
+As already seen in the examples above, the plugin supports some modifier keys:
+- `"ctrl"` or `"control"`: Control key
+- `"alt"`: Alt key (or option key)
+- `"shift"`: Shift key
+- `"meta"` or `"command"`: Command key on Apple keyboards
+
+Since version 1.3.0, the plugin also supports some special keys:
+- the arrow keys:
+	- `"left-arrow"`
+	- `"right-arrow"`
+	- `"up-arrow"`
+	- `"down-arrow"`
+- the function keys: `"F1"`, ..., `"F12"`
+- other special keys:
+	- `"enter"`
+	- `"tab"` or `"tabulator"`
+	- `"esc"` or `"escape"`
+	- `"backspace"`
+	- `"insert"`
+	- `"delete"`
+	- `"home"`
+	- `"end"`
+	- `"page-up"`
+	- `"page-down"`
+
+
+**Tip:** In contrast to "normal" key, the modifier keys and the special keys are case insensitive and
+dashes can be replaced with underscores. Therefore, `"ctrl+left-arrow"` is the same as
+`"Ctrl+Left-Arrow"` and `"CTRL+LEFT_ARROW"` and so on.
 
 Events
 ------
