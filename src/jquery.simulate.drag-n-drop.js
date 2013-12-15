@@ -88,18 +88,18 @@
 	 * @since 1.0
 	 */
 	function findCenter( elem ) {
-		var offset;
-		elem = $( elem );
-		if ( isDocument(elem[0]) ) {
+		var offset,
+			$elem = $( elem );
+		if ( isDocument($elem[0]) ) {
 			offset = {left: 0, top: 0}; 
 		}
 		else {
-			offset = elem.offset();
+			offset = $elem.offset();
 		}
 			
 		return {
-			x: offset.left + elem.outerWidth() / 2,
-			y: offset.top + elem.outerHeight() / 2
+			x: offset.left + $elem.outerWidth() / 2,
+			y: offset.top + $elem.outerHeight() / 2
 		};
 	}
 	
@@ -123,23 +123,23 @@
 	 * @since 1.0
 	 */
 	function pageToClientPos(x, y, docRel) {
-		var jDocument;
+		var $document;
 		if ( isDocument(y) ) {
-			jDocument = $(y);
+			$document = $(y);
 		} else {
-			jDocument = $(docRel || document);
+			$document = $(docRel || document);
 		}
 		
 		if (typeof x === "number" && typeof y === "number") {
 			return {
-				x: x - jDocument.scrollLeft(),
-				y: y - jDocument.scrollTop()
+				x: x - $document.scrollLeft(),
+				y: y - $document.scrollTop()
 			};
 		}
 		else if (typeof x === "object" && x.pageX && x.pageY) {
 			return {
-				clientX: x.pageX - jDocument.scrollLeft(),
-				clientY: x.pageY - jDocument.scrollTop()
+				clientX: x.pageX - $document.scrollLeft(),
+				clientY: x.pageY - $document.scrollTop()
 			};
 		}
 	}

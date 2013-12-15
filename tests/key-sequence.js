@@ -21,7 +21,7 @@ $(document).ready(function() {
 	
 	//####### Test Functions #######
 	test("simple sequence", function() {
-		var testElement = $('#textInput');
+		var $testElement = $('#textInput');
 		
 		var testSequence = "fO0BaR1";
 		
@@ -36,13 +36,13 @@ $(document).ready(function() {
 			{type: "simulate-keySequence", sequence: testSequence}
 		];
 		
-		testElement.simulate("key-sequence", {sequence: testSequence});
+		$testElement.simulate("key-sequence", {sequence: testSequence});
 		
-		strictEqual(testElement.val(), testSequence, "Verify result of sequence");
+		strictEqual($testElement.val(), testSequence, "Verify result of sequence");
 	});
 	
 	test("sequence callback", function() {
-		var testElement = $('#textInput');
+		var $testElement = $('#textInput');
 		
 		var testSequence = "test";
 		
@@ -55,7 +55,7 @@ $(document).ready(function() {
 			{type: "callback"}
 		];
 		
-		testElement.simulate("key-sequence", {sequence: testSequence, callback: function() {
+		$testElement.simulate("key-sequence", {sequence: testSequence, callback: function() {
 			tests.assertExpectedEvent({type: "callback"});
 		}});
 		
@@ -63,7 +63,7 @@ $(document).ready(function() {
 
 
 	test("no events", function() {
-		var testElement = $('#textInput');
+		var $testElement = $('#textInput');
 		
 		var testSequence = "fO0BaR1";
 		
@@ -71,13 +71,13 @@ $(document).ready(function() {
 			{type: "simulate-keySequence", sequence: testSequence}
 		];
 		
-		testElement.simulate("key-sequence", {sequence: testSequence, triggerKeyEvents: false});
+		$testElement.simulate("key-sequence", {sequence: testSequence, triggerKeyEvents: false});
 		
-		strictEqual(testElement.val(), testSequence, "Verify result of sequence");
+		strictEqual($testElement.val(), testSequence, "Verify result of sequence");
 	});
 
 	test("special characters", function() {
-		var testElement = $('#textInput');
+		var $testElement = $('#textInput');
 		
 		var testSequence = "_-.,;:+!?";
 		
@@ -94,55 +94,55 @@ $(document).ready(function() {
 			{type: "simulate-keySequence", sequence: testSequence}
 		];
 		
-		testElement.simulate("key-sequence", {sequence: testSequence});
+		$testElement.simulate("key-sequence", {sequence: testSequence});
 	});
 	
 	test("special sequences", function() {
-		var testElement = $('#textInput');
+		var $testElement = $('#textInput');
 		
 		var testSequence = "as{selectall}{del}f{leftarrow}{{}b{rightarrow}{backspace}";
 		
 		tests.expectedEvents = [
-			/* a */ {type: "keydown", keyCode: 65}, {type: "keypress", which: "a".charCodeAt(0)}, {type: "keyup", keyCode: 65},
-			/* s */ {type: "keydown", keyCode: 83}, {type: "keypress", which: "s".charCodeAt(0)}, {type: "keyup", keyCode: 83},
-			/* {del} */ {type: "keydown", keyCode: 46}, {type: "keyup", keyCode: 46},
-			/* f */ {type: "keydown", keyCode: 70}, {type: "keypress", which: "f".charCodeAt(0)}, {type: "keyup", keyCode: 70},
-			/* {leftarrow} */ {type: "keydown", keyCode: 37}, {type: "keyup", keyCode: 37},
-			/* { */ {type: "keydown", keyCode: 219}, {type: "keypress", which: "{".charCodeAt(0)}, {type: "keyup", keyCode: 219},
-			/* b */ {type: "keydown", keyCode: 66}, {type: "keypress", which: "b".charCodeAt(0)}, {type: "keyup", keyCode: 66},
-			/* {rightarrow} */ {type: "keydown", keyCode: 39}, {type: "keyup", keyCode: 39},
-			/* {backspace} */ {type: "keydown", keyCode: 8}, {type: "keyup", keyCode: 8},
+			/* a */				{type: "keydown", keyCode: 65}, {type: "keypress", which: "a".charCodeAt(0)}, {type: "keyup", keyCode: 65},
+			/* s */				{type: "keydown", keyCode: 83}, {type: "keypress", which: "s".charCodeAt(0)}, {type: "keyup", keyCode: 83},
+			/* {del} */			{type: "keydown", keyCode: 46}, {type: "keyup", keyCode: 46},
+			/* f */				{type: "keydown", keyCode: 70}, {type: "keypress", which: "f".charCodeAt(0)}, {type: "keyup", keyCode: 70},
+			/* {leftarrow} */	{type: "keydown", keyCode: 37}, {type: "keyup", keyCode: 37},
+			/* { */				{type: "keydown", keyCode: 219}, {type: "keypress", which: "{".charCodeAt(0)}, {type: "keyup", keyCode: 219},
+			/* b */				{type: "keydown", keyCode: 66}, {type: "keypress", which: "b".charCodeAt(0)}, {type: "keyup", keyCode: 66},
+			/* {rightarrow} */	{type: "keydown", keyCode: 39}, {type: "keyup", keyCode: 39},
+			/* {backspace} */	{type: "keydown", keyCode: 8}, {type: "keyup", keyCode: 8},
 			{type: "simulate-keySequence", sequence: testSequence}
 		];
 		
-		testElement.simulate("key-sequence", {sequence: testSequence});
+		$testElement.simulate("key-sequence", {sequence: testSequence});
 		
-		strictEqual(testElement.val(), "{b", "Verify result of sequence (this is known to fail in IE)");
+		strictEqual($testElement.val(), "{b", "Verify result of sequence (this is known to fail in IE)");
 	});
 	
 	test("line break", function() {
-		var testElement = $('#textInput');
+		var $testElement = $('#textInput');
 		
 		var testSequence = "foo{enter}bar";
 		
 		tests.expectedEvents = [
-			/* f */ {type: "keydown", keyCode: 70}, {type: "keypress", which: "f".charCodeAt(0)}, {type: "keyup", keyCode: 70},
-			/* o */ {type: "keydown", keyCode: 79}, {type: "keypress", which: "o".charCodeAt(0)}, {type: "keyup", keyCode: 79},
-			/* o */ {type: "keydown", keyCode: 79}, {type: "keypress", which: "o".charCodeAt(0)}, {type: "keyup", keyCode: 79},
-			/* {enter} */ {type: "keydown", keyCode: 13}, {type: "keypress", which: 13}, {type: "keyup", keyCode: 13},
-			/* b */ {type: "keydown", keyCode: 66}, {type: "keypress", which: "b".charCodeAt(0)}, {type: "keyup", keyCode: 66},
-			/* a */ {type: "keydown", keyCode: 65}, {type: "keypress", which: "a".charCodeAt(0)}, {type: "keyup", keyCode: 65},
-			/* r */ {type: "keydown", keyCode: 82}, {type: "keypress", which: "r".charCodeAt(0)}, {type: "keyup", keyCode: 82},
+			/* f */			{type: "keydown", keyCode: 70}, {type: "keypress", which: "f".charCodeAt(0)}, {type: "keyup", keyCode: 70},
+			/* o */			{type: "keydown", keyCode: 79}, {type: "keypress", which: "o".charCodeAt(0)}, {type: "keyup", keyCode: 79},
+			/* o */			{type: "keydown", keyCode: 79}, {type: "keypress", which: "o".charCodeAt(0)}, {type: "keyup", keyCode: 79},
+			/* {enter} */	{type: "keydown", keyCode: 13}, {type: "keypress", which: 13}, {type: "keyup", keyCode: 13},
+			/* b */			{type: "keydown", keyCode: 66}, {type: "keypress", which: "b".charCodeAt(0)}, {type: "keyup", keyCode: 66},
+			/* a */			{type: "keydown", keyCode: 65}, {type: "keypress", which: "a".charCodeAt(0)}, {type: "keyup", keyCode: 65},
+			/* r */			{type: "keydown", keyCode: 82}, {type: "keypress", which: "r".charCodeAt(0)}, {type: "keyup", keyCode: 82},
 			{type: "simulate-keySequence", sequence: testSequence}
 		];
 		
-		testElement.simulate("key-sequence", {sequence: testSequence});
+		$testElement.simulate("key-sequence", {sequence: testSequence});
 		
-		strictEqual(testElement.val(), "foo\nbar", "Verify result of sequence (this is known to fail in Opera on Windows)");
+		strictEqual($testElement.val(), "foo\nbar", "Verify result of sequence (this is known to fail in Opera on Windows)");
 	});
 	
 	test("delay", function() {
-		var testElement = $('#textInput');
+		var $testElement = $('#textInput');
 		
 		var keyDelay = 100,
 			testSequence = "test",
@@ -176,7 +176,7 @@ $(document).ready(function() {
 		stop();
 		lastEventOccurrence = Date.now()-keyDelay; // The first key simulated without delay
 		
-		testElement.simulate("key-sequence", {sequence: testSequence, delay: keyDelay});
+		$testElement.simulate("key-sequence", {sequence: testSequence, delay: keyDelay});
 		
 		setTimeout(function() {
 			start();
@@ -186,7 +186,7 @@ $(document).ready(function() {
 	
 	// See issue #6 (https://github.com/j-ulrich/jquery-simulate-ext/issues/6)
 	test("delay, spaces in sequence, non-input element", function() {
-		var testElement = $('#emptyDiv');
+		var $testElement = $('#emptyDiv');
 		
 		var keyDelay = 5,
 			testSequence = "a b c";
@@ -201,14 +201,12 @@ $(document).ready(function() {
 		];
 
 		stop();
-		testElement.simulate("key-sequence", {sequence: testSequence, delay: keyDelay,
+		$testElement.simulate("key-sequence", {sequence: testSequence, delay: keyDelay,
 			callback: function() {
-			strictEqual(testElement.text(), testSequence, "Verify result of sequence");
-			start();
-		}
+				strictEqual($testElement.text(), testSequence, "Verify result of sequence");
+				start();
+			}
 		});
-		
-
 
 	});
 

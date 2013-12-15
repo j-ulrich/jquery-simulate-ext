@@ -47,7 +47,7 @@
 		 * @since 1.0
 		 */
 		simulateKeyCombo: function() {
-			var target = $(this.target),
+			var $target = $(this.target),
 				options = $.extend({
 					combo: "",
 					eventsOnly: false
@@ -62,7 +62,6 @@
 			if (combo.length === 0) {
 				return;
 			}
-				
 			
 			// Remove empty parts
 			comboSplit = $.grep(comboSplit, function(part) {
@@ -94,7 +93,7 @@
 						eventOptions[keyLowered+"Key"] = true;
 						holdKeys.unshift(keyCode);
 						eventOptions.keyCode = keyCode;
-						target.simulate("keydown", eventOptions);
+						$target.simulate("keydown", eventOptions);
 						break;
 					default:
 						if (key.length > 1) {
@@ -106,16 +105,16 @@
 							eventOptions.keyCode = keyCode;
 							eventOptions.which = keyCode;
 							eventOptions.charCode = undefined;
-							target.simulate("keydown", eventOptions);
+							$target.simulate("keydown", eventOptions);
 							if (eventOptions.shiftKey) {
 								key = key.toUpperCase();
 							}
 							eventOptions.keyCode = key.charCodeAt(0);
 							eventOptions.charCode = eventOptions.keyCode;
 							eventOptions.which = eventOptions.keyCode;
-							target.simulate("keypress", eventOptions);
+							$target.simulate("keypress", eventOptions);
 							if (options.eventsOnly !== true && !eventOptions.ctrlKey && !eventOptions.altKey && !eventOptions.metaKey) {
-								target.simulate('key-sequence', {sequence: key, triggerKeyEvents: false});
+								$target.simulate('key-sequence', {sequence: key, triggerKeyEvents: false});
 							}
 						}
 						break;
@@ -150,7 +149,7 @@
 				default:
 					break;
 				}
-				target.simulate("keyup", eventOptions);				
+				$target.simulate("keyup", eventOptions);				
 			}
 		}
 		

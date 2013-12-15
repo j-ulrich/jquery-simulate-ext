@@ -19,7 +19,7 @@ $(document).ready(function() {
 	
 	//####### Test Functions #######
 	test("simple combo", function() {
-		var testElement = $('#textInput');
+		var $testElement = $('#textInput');
 		
 		tests.expectedEvents = [
 			/* a */ {type: "keydown", keyCode: 65}, {type: "keypress", which: "a".charCodeAt(0)},
@@ -32,13 +32,13 @@ $(document).ready(function() {
 			/* a */ {type: "keyup", keyCode: 65}
 		];
 		
-		testElement.simulate("key-combo", {combo: "a+S+d+F"});
+		$testElement.simulate("key-combo", {combo: "a+S+d+F"});
 		
-		strictEqual(testElement.val(), "aSdF", "Verify result of sequence");
+		strictEqual($testElement.val(), "aSdF", "Verify result of sequence");
 	});
 
 	test("events only", function() {
-		var testElement = $('#textInput');
+		var $testElement = $('#textInput');
 		
 		tests.expectedEvents = [
 			/* a */ {type: "keydown", keyCode: 65}, {type: "keypress", which: "a".charCodeAt(0)},
@@ -51,13 +51,13 @@ $(document).ready(function() {
 			/* a */ {type: "keyup", keyCode: 65}
 		];
 		
-		testElement.simulate("key-combo", {combo: "a+S+d+F", eventsOnly: true});
+		$testElement.simulate("key-combo", {combo: "a+S+d+F", eventsOnly: true});
 		
-		strictEqual(testElement.val(), "", "Verify result of sequence");
+		strictEqual($testElement.val(), "", "Verify result of sequence");
 	});
 
 	test("modifiers", function() {
-		var testElement = $('#textInput');
+		var $testElement = $('#textInput');
 		
 		tests.expectedEvents = [
 			/* ctrl */	{type: "keydown", keyCode: 17, ctrlKey: true, shiftKey: false, altKey: false, metaKey: false},
@@ -72,14 +72,14 @@ $(document).ready(function() {
 			/* ctrl */	{type: "keyup", keyCode: 17, ctrlKey: false, shiftKey: false, altKey: false, metaKey: false}
 		];
 		
-		testElement.simulate("key-combo", {combo: "ctrl+shift+alt+meta+a"});
+		$testElement.simulate("key-combo", {combo: "ctrl+shift+alt+meta+a"});
 		
-		strictEqual(testElement.val(), "", "Verify result of sequence");
+		strictEqual($testElement.val(), "", "Verify result of sequence");
 	});
 	
 	
 	test("shift", function() {
-		var testElement = $('#textInput');
+		var $testElement = $('#textInput');
 		
 		tests.expectedEvents = [
 			/* shift */	{type: "keydown", keyCode: 16, ctrlKey: false, shiftKey: true, altKey: false, metaKey: false},
@@ -88,13 +88,13 @@ $(document).ready(function() {
 			/* shift */	{type: "keyup", keyCode: 16, ctrlKey: false, shiftKey: false, altKey: false, metaKey: false}
 		];
 		
-		testElement.simulate("key-combo", {combo: "shift+a"});
+		$testElement.simulate("key-combo", {combo: "shift+a"});
 		
-		strictEqual(testElement.val(), "A", "Verify result of sequence");
+		strictEqual($testElement.val(), "A", "Verify result of sequence");
 	});
 
 	test("modifier without shift", function() {
-		var testElement = $('#textInput');
+		var $testElement = $('#textInput');
 		
 		tests.expectedEvents = [
 			/* ctrl */	{type: "keydown", keyCode: 17, ctrlKey: true, shiftKey: false, altKey: false, metaKey: false},
@@ -103,13 +103,13 @@ $(document).ready(function() {
 			/* ctrl */	{type: "keyup", keyCode: 17, ctrlKey: false, shiftKey: false, altKey: false, metaKey: false}
 		];
 		
-		testElement.simulate("key-combo", {combo: "ctrl+a"});
+		$testElement.simulate("key-combo", {combo: "ctrl+a"});
 		
-		strictEqual(testElement.val(), "", "Verify result of sequence");
+		strictEqual($testElement.val(), "", "Verify result of sequence");
 	});
 
 	test("special character combo", function() {
-		var testElement = $('#textInput');
+		var $testElement = $('#textInput');
 		
 		tests.expectedEvents = [
 			/* ctrl */	{type: "keydown", keyCode: 17, ctrlKey: true, shiftKey: false, altKey: false, metaKey: false},
@@ -118,9 +118,9 @@ $(document).ready(function() {
 			/* ctrl */	{type: "keyup", keyCode: 17, ctrlKey: false, shiftKey: false, altKey: false, metaKey: false}
 		];
 		
-		testElement.simulate("key-combo", {combo: "ctrl++"});
+		$testElement.simulate("key-combo", {combo: "ctrl++"});
 		
-		strictEqual(testElement.val(), "", "Verify result of sequence");
+		strictEqual($testElement.val(), "", "Verify result of sequence");
 	});
 
 });

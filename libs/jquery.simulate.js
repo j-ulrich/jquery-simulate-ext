@@ -235,41 +235,41 @@ $.extend( $.simulate.prototype, {
 	simulateFocus: function() {
 		var focusinEvent,
 			triggered = false,
-			element = $( this.target );
+			$element = $( this.target );
 
 		function trigger() {
 			triggered = true;
 		}
 
-		element.bind( "focus", trigger );
-		element[ 0 ].focus();
+		$element.bind( "focus", trigger );
+		$element[ 0 ].focus();
 
 		if ( !triggered ) {
 			focusinEvent = $.Event( "focusin" );
 			focusinEvent.preventDefault();
-			element.trigger( focusinEvent );
-			element.triggerHandler( "focus" );
+			$element.trigger( focusinEvent );
+			$element.triggerHandler( "focus" );
 		}
-		element.unbind( "focus", trigger );
+		$element.unbind( "focus", trigger );
 	},
 
 	simulateBlur: function() {
 		var focusoutEvent,
 			triggered = false,
-			element = $( this.target );
+			$element = $( this.target );
 
 		function trigger() {
 			triggered = true;
 		}
 
-		element.bind( "blur", trigger );
-		element[ 0 ].blur();
+		$element.bind( "blur", trigger );
+		$element[ 0 ].blur();
 
 		// blur events are async in IE
 		setTimeout(function() {
 			// IE won't let the blur occur if the window is inactive
-			if ( element[ 0 ].ownerDocument.activeElement === element[ 0 ] ) {
-				element[ 0 ].ownerDocument.body.focus();
+			if ( $element[ 0 ].ownerDocument.activeElement === $element[ 0 ] ) {
+				$element[ 0 ].ownerDocument.body.focus();
 			}
 
 			// Firefox won't trigger events if the window is inactive
@@ -277,10 +277,10 @@ $.extend( $.simulate.prototype, {
 			if ( !triggered ) {
 				focusoutEvent = $.Event( "focusout" );
 				focusoutEvent.preventDefault();
-				element.trigger( focusoutEvent );
-				element.triggerHandler( "blur" );
+				$element.trigger( focusoutEvent );
+				$element.triggerHandler( "blur" );
 			}
-			element.unbind( "blur", trigger );
+			$element.unbind( "blur", trigger );
 		}, 1 );
 	}
 });
@@ -291,35 +291,36 @@ $.extend( $.simulate.prototype, {
 
 function findCenter( elem ) {
 	var offset,
-		$document;
+		$document,
+		$elem = $( elem );
 	
-	elem = $( elem );
-	if ( isDocument(elem[0]) ) {
-		$document = elem;
+	if ( isDocument($elem[0]) ) {
+		$document = $elem;
 		offset = { left: 0, top: 0 };
 	}
 	else {
-		$document = $( elem[0].ownerDocument || document );
-		offset = elem.offset();
+		$document = $( $elem[0].ownerDocument || document );
+		offset = $elem.offset();
 	}
 	
 	return {
-		x: offset.left + elem.outerWidth() / 2 - $document.scrollLeft(),
-		y: offset.top + elem.outerHeight() / 2 - $document.scrollTop()
+		x: offset.left + $elem.outerWidth() / 2 - $document.scrollLeft(),
+		y: offset.top + $elem.outerHeight() / 2 - $document.scrollTop()
 	};
 }
 
 function findCorner( elem ) {
 	var offset,
-		$document;
-	elem = $( elem );
-	if ( isDocument(elem[0]) ) {
-		$document = elem;
+		$document,
+		$elem = $( elem );
+	
+	if ( isDocument($elem[0]) ) {
+		$document = $elem;
 		offset = { left: 0, top: 0 };
 	}
 	else {
-		$document = $( elem[0].ownerDocument || document );
-		offset = elem.offset();
+		$document = $( $elem[0].ownerDocument || document );
+		offset = $elem.offset();
 	}
 
 	return {

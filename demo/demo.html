@@ -3,9 +3,9 @@
 <head>
 	<meta charset="UTF-8">
 	<title>jquery-simulate-ext Demo</title>
-	<link rel="stylesheet" href="jquery-ui-1.8.22.custom.css" />
+	<link rel="stylesheet" href="jquery-ui-1.10.3.custom.min.css" />
 	<script type="text/javascript" src="../libs/jquery-1.10.2.js"></script>
-	<script type="text/javascript" src="jquery-ui-1.8.22.custom.min.js"></script>
+	<script type="text/javascript" src="jquery-ui-1.10.3.custom.min.js"></script>
 	<script type="text/javascript" src="raphael-min.js"></script>
 	<script type="text/javascript" src="raphael.sketchpad.js"></script>
 	<script type="text/javascript" src="../libs/bililiteRange.js"></script>
@@ -16,22 +16,22 @@
 	<script type="text/javascript" src="../src/jquery.simulate.key-combo.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			eventLog = $('#eventLog'); // Global variable
-			eventLog.indentation = "";
-			eventLog.incIndentation = function() {
-				eventLog.indentation += "    ";
+			$eventLog = $('#eventLog'); // Global variable
+			$eventLog.indentation = "";
+			$eventLog.incIndentation = function() {
+				$eventLog.indentation += "    ";
 			}
-			eventLog.decIndentation = function() {
-				if (eventLog.indentation.length <= 4)
-					eventLog.indentation = "";
+			$eventLog.decIndentation = function() {
+				if ($eventLog.indentation.length <= 4)
+					$eventLog.indentation = "";
 				else
-					eventLog.indentation = eventLog.indentation.substr(-4);
+					$eventLog.indentation = $eventLog.indentation.substr(-4);
 			}
-			eventLog.append = function(str, indent) {
+			$eventLog.append = function(str, indent) {
 				if (indent === true || indent === undefined)
-					eventLog.val(eventLog.val()+eventLog.indentation+str+"\n");
+					$eventLog.val($eventLog.val()+$eventLog.indentation+str+"\n");
 				else
-					eventLog.val(eventLog.val()+str+"\n");
+					$eventLog.val($eventLog.val()+str+"\n");
 			}
 			logMouseMove = false; // Global variable
 			
@@ -49,7 +49,7 @@
 					for (var i=0; i < indentLength; i+=1) {
 						indent += " ";
 					}
-					eventLog.append(event.type+indent+"(x: "+event.pageX+", y: "+event.pageY+")");
+					$eventLog.append(event.type+indent+"(x: "+event.pageX+", y: "+event.pageY+")");
 				}
 			}
 			
@@ -71,7 +71,7 @@
 					activeModStr = ", modifiers: " + activeMods.join("+");
 				}
 
-				eventLog.append(event.type+indent+"(which: "+event.which/*+", target: "+event.target+", keyCode: "+event.keyCode+", charCode: "+event.charCode*/+activeModStr+")");
+				$eventLog.append(event.type+indent+"(which: "+event.which/*+", target: "+event.target+", keyCode: "+event.keyCode+", charCode: "+event.charCode*/+activeModStr+")");
 			}
 			
 			$(document).bind({
@@ -285,13 +285,13 @@
 			break;
 		}
 	
-		eventLog.append("####### Simulating "+type+" #######");
-		eventLog.incIndentation();
+		$eventLog.append("####### Simulating "+type+" #######");
+		$eventLog.incIndentation();
 		
 		function simulationEnd() {
 			logMouseMove = false;
-			eventLog.decIndentation();
-			eventLog.append("################################");
+			$eventLog.decIndentation();
+			$eventLog.append("################################");
 		}
 		
 		switch (type) {
@@ -320,7 +320,7 @@
 		// Bind 'd' to simulate a drop
 		$(document).bind('keyup', function(event) {
 			if (event.which === 68) {
-				eventLog.append("'d' pressed!");
+				$eventLog.append("'d' pressed!");
 				simulateWrapper(handle, 'drop');
 			}
 		});
@@ -346,40 +346,40 @@
 			simulateWrapper('#textInput', 'key-sequence', {sequence: sequence});
 		});
 	
-		var handle = $('#slider .ui-slider-handle');
+		var $handle = $('#slider .ui-slider-handle');
 		$('#drag-50r').bind('click', function() {
-			simulateWrapper(handle, 'drag', {dx: 50});
+			simulateWrapper($handle, 'drag', {dx: 50});
 		});
 		$('#dnd-50l').bind('click', function() {
-			simulateWrapper(handle, 'drag-n-drop', {dx: -50});
+			simulateWrapper($handle, 'drag-n-drop', {dx: -50});
 		});
 		$('#dnd-50r').bind('click', function() {
-			simulateWrapper(handle, 'drag-n-drop', {dx: 50});
+			simulateWrapper($handle, 'drag-n-drop', {dx: 50});
 		});
 		$('#drag-350r').bind('click', function() {
-			simulateWrapper(handle, 'drag', {dx: 350});
+			simulateWrapper($handle, 'drag', {dx: 350});
 		});
 		$('#dnd-350l').bind('click', function() {
-			simulateWrapper(handle, 'drag-n-drop', {dx: -350});
+			simulateWrapper($handle, 'drag-n-drop', {dx: -350});
 		});
 		$('#dnd-350r').bind('click', function() {
-			simulateWrapper(handle, 'drag-n-drop', {dx: 350});
+			simulateWrapper($handle, 'drag-n-drop', {dx: 350});
 		});
 		
-		var drawingArea = $('#drawing-area');
+		var $drawingArea = $('#drawing-area');
 		$('#drawing-dnd-100r').bind('click', function() {
-			simulateWrapper(drawingArea, 'drag-n-drop', {dx: 100});
+			simulateWrapper($drawingArea, 'drag-n-drop', {dx: 100});
 		});
 		$('#drawing-dnd-100u').bind('click', function() {
-			simulateWrapper(drawingArea, 'drag-n-drop', {dy: -100});
+			simulateWrapper($drawingArea, 'drag-n-drop', {dy: -100});
 		});
 		$('#drawing-dnd-100bl').bind('click', function() {
-			simulateWrapper(drawingArea, 'drag-n-drop', {dx: -71, dy: 71});
+			simulateWrapper($drawingArea, 'drag-n-drop', {dx: -71, dy: 71});
 		});
 		$('#drawing-custom').bind('click', function() {
 			var dx = parseInt($('#drawing-dx').val()),
 				dy = parseInt($('#drawing-dy').val());
-			simulateWrapper(drawingArea, 'drag-n-drop', {dx: dx, dy: dy});
+			simulateWrapper($drawingArea, 'drag-n-drop', {dx: dx, dy: dy});
 		});
 		
 	}

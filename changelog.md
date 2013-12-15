@@ -1,6 +1,12 @@
 jQuery Simulate Extended Changelog
 ==================================
 
+Version 1.3.0 - (Released: 2013-??-??)
+-------------
+* Adds bower.json and registers the package at bower.
+* Corrects jQuery naming conventions ($varible).
+* Updates demo to jQuery UI 1.10.3 to make it work with jQuery 1.10.2.
+
 Version 1.2.0 - (Released: 2013-09-03)
 -------------
 * Adds flag `jQuery.simulate.ext_disableQuirkDetection` to disable quirk detections.
