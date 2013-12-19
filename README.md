@@ -1,8 +1,8 @@
-jQuery Simulate Extended Plugin 1.2.0
+jQuery Simulate Extended Plugin 1.3.0
 =====================================
 
-The simulate extended plugin provides methods for simulating complex user interactions based on the
-[jQuery.simulate()](https://github.com/jquery/jquery-simulate) plugin.
+The jQuery Simulate Extended plugin (a.k.a. jquery-simulate-ext) provides methods for simulating complex
+user interactions based on the [jQuery.simulate()](https://github.com/jquery/jquery-simulate) plugin.
 The plugin provides simulation of:
 
 * Drag & Drop
@@ -24,8 +24,16 @@ Additionally, the extended plugin includes documentation and fixes for the jQuer
 
 Usage
 -----
-To use the jQuery simulate extended plugins, include `jquery.simulate.js`, `jquery.simulate.ext.js`
-and then the desired plugins (in that order).
+To use the jquery-simulate-ext plugin, you need to include (in the given order):
+
+1. `bililiteRange.js`
+  [if you want to use `jquery.simulate.key-sequence.js` or `jquery.simulate.key-combo.js`]
+1. `jquery-x.y.z.js`
+1. `jquery.simulate.js`
+1. `jquery.simulate.ext.js`
+1. `jquery.simulate.drag-n-drop.js` [if you want to simulate drag & drop]
+1. `jquery.simulate.key-sequence.js` [if you want to simulate key sequences]
+1. `jquery.simulate.key-combo.js` [if you want to simulate key combos]
 
 The simulations are executed by calling the `.simulate()` function on a jQuery object. The simulation
 is then executed on all elements in the collection of the jQuery object (unless otherwise noted).
@@ -37,13 +45,13 @@ is then executed on all elements in the collection of the jQuery object (unless 
 
 The types of simulated actions are:
 
-- From the simulate plugin:
+- From the jquery-simulate plugin:
 	- Mouse Events: `"mousemove"`, `"mousedown"`, `"mouseup"`, `"click"`, `dblclick"`,
 		`"mouseover"`, `"mouseout"`, `"mouseenter"`, `"mouseleave"`, `"contextmenu"`
 	- Key Events: `"keydown"`, `"keyup"`, `"keypress"`
 	- `"focus"`
 	- `"blur"`
-- From the simulate-ext plugins:
+- From the jquery-simulate-ext plugin:
 	- Drag & Drop: `"drag-n-drop"`, `"drag"`, `"drop"`
 	- `"key-sequence"`
 	- `"key-combo"`
@@ -73,11 +81,43 @@ The options and events for the different interactions are described in the files
 * [Key Sequence](https://github.com/j-ulrich/jquery-simulate-ext/tree/master/doc/key-sequence.md)
 * [Key Combination](https://github.com/j-ulrich/jquery-simulate-ext/tree/master/doc/key-combo.md)
 
+### Global Options: ###
+Options recognized by all jquery-simulate-ext plugins:
+
+* __eventProps__ _{Object}_: Defines custom properties which will be attached to the simulated events.   
+	__Note:__ Trying to define default properties of events (e.g. `type`, `bubbles`, `altKey`, etc.) using this option
+	might not work since those properties are typically read-only.   
+	__Note:__ The `dispatchEvent()` function of all major browsers will remove custom properties from the event.
+	Therefore, the [`jquery.simulate.js`](https://github.com/j-ulrich/jquery-simulate-ext/tree/master/libs/jquery.simulate.js)
+	from the jquery-simulate-ext repository contains an option to use `jQuery.trigger()` instead of the
+	native `dispatchEvent()`. This makes the simulation of the events less "real", but allows the custom
+	properties to be used in the event handlers. To active this option, define `jQueryTrigger: true`
+	in the `eventProps` option object. For example:
+	
+	```javascript
+	$('#mySimulateTarget').simulate('key-sequence', {
+		sequence: "my simulated text",
+		eventProps: {
+			jQueryTrigger: true,
+			simulatedEvent: true
+		}
+	});
+	```
+	__Tip:__ As the example shows, this allows to flag the simulated events, which allows to
+	distinguish the simulated events from real events in the event handlers.
+	See [issue #12](https://github.com/j-ulrich/jquery-simulate-ext/issues/12) for more information.
+
+
 Requirements
 ------------
 The plugin requires
 * [jQuery 1.7.0+](http://jquery.com)
-* [jQuery Simulate](https://github.com/jquery/jquery-ui/blob/master/tests/jquery.simulate.js)
+* [jQuery Simulate](https://github.com/jquery/jquery-ui/blob/master/tests/jquery.simulate.js)   
+  __Note:__ With the [current version](https://github.com/jquery/jquery-ui/blob/485ca7192ac57d018b8ce4f03e7dec6e694a53b7/tests/jquery.simulate.js)
+  of `jquery.simulate.js`, not all features of jquery-simulate-ext work correctly (see for example
+  [Drag & Drop within iframes](https://github.com/j-ulrich/jquery-simulate-ext/tree/master/doc/drag-n-drop.md#iframes)).
+  Therefore, the jquery-simulate-ext repository contains a fixed version of `jquery.simulate.js` at
+  [`libs/jquery.simulate.js`](https://github.com/j-ulrich/jquery-simulate-ext/tree/master/libs/jquery.simulate.js).
 * [bililiteRange](http://bililite.com/blog/2011/01/17/cross-browser-text-ranges-and-selections) for
 	the key-sequence and key-combo plugins
 
@@ -88,11 +128,11 @@ The plugins have been successfully tested with jQuery 1.7.2, 1.10.2 and jQuery S
 However, they should be compatible with other/future versions as well.
 
 ### Quirk Detection ###
-There are some issues with bililiteRange and some browsers. To workaround these issues, jQuery simulate extended
+There are some issues with bililiteRange and some browsers. To workaround these issues, jquery-simulate-ext
 performs some quirk detections when the document is ready. Those quirk detections also contain temporary DOM manipulations.
 If you don't want those DOM manipulations to take place, you can disable the quirk detection by setting the flag
 `ext_disableQuirkDetection` in the `jQuery.simulate` object **after** `jquery.simulate.js` has been loaded but **before**
-any jQuery simulate extended plugin is loaded. For example:
+any jquery-simulate-ext plugin is loaded. For example:
 ```html
 <!-- ... -->
 <script type="text/javascript" src="../libs/jquery.simulate.js"></script>

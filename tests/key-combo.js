@@ -136,7 +136,55 @@ $(document).ready(function() {
 		$testElement.simulate("key-combo", {combo: "ctrl+left-arrow"});
 		
 		strictEqual($testElement.val(), "", "Verify result of sequence");
+	});
+
+	
+	test("simple combo with eventProps", function() {
+		var $testElement = $('#textInput'),
+			customProp = "test!";
 		
+		tests.expectedEvents = [
+			/* a */ {type: "keydown", keyCode: 65, my_custom_prop: customProp},
+					{type: "keypress", which: "a".charCodeAt(0), my_custom_prop: customProp},
+			/* S */ {type: "keydown", keyCode: 83, my_custom_prop: customProp},
+					{type: "keypress", which: "S".charCodeAt(0), my_custom_prop: customProp},
+			/* d */ {type: "keydown", keyCode: 68, my_custom_prop: customProp},
+					{type: "keypress", which: "d".charCodeAt(0), my_custom_prop: customProp},
+			/* F */ {type: "keydown", keyCode: 70, my_custom_prop: customProp},
+					{type: "keypress", which: "F".charCodeAt(0), my_custom_prop: customProp},
+			/* F */ {type: "keyup", keyCode: 70, my_custom_prop: customProp},
+			/* d */ {type: "keyup", keyCode: 68, my_custom_prop: customProp},
+			/* S */ {type: "keyup", keyCode: 83, my_custom_prop: customProp},
+			/* a */ {type: "keyup", keyCode: 65, my_custom_prop: customProp}
+		];
+		
+		$testElement.simulate("key-combo", {combo: "a+S+d+F", eventProps: {jQueryTrigger: true, my_custom_prop: customProp}});
+		
+		strictEqual($testElement.val(), "aSdF", "Verify result of sequence");
+	});
+
+	test("simple combo with eventProps without jQueryTrigger", function() {
+		var $testElement = $('#textInput'),
+			customProp = "test!";
+		
+		tests.expectedEvents = [
+		/* a */ {type: "keydown", keyCode: 65, my_custom_prop: undefined},
+				{type: "keypress", which: "a".charCodeAt(0), my_custom_prop: undefined},
+		/* S */ {type: "keydown", keyCode: 83, my_custom_prop: undefined},
+				{type: "keypress", which: "S".charCodeAt(0), my_custom_prop: undefined},
+		/* d */ {type: "keydown", keyCode: 68, my_custom_prop: undefined},
+				{type: "keypress", which: "d".charCodeAt(0), my_custom_prop: undefined},
+		/* F */ {type: "keydown", keyCode: 70, my_custom_prop: undefined},
+				{type: "keypress", which: "F".charCodeAt(0), my_custom_prop: undefined},
+		/* F */ {type: "keyup", keyCode: 70, my_custom_prop: undefined},
+		/* d */ {type: "keyup", keyCode: 68, my_custom_prop: undefined},
+		/* S */ {type: "keyup", keyCode: 83, my_custom_prop: undefined},
+		/* a */ {type: "keyup", keyCode: 65, my_custom_prop: undefined}
+		];
+		
+		$testElement.simulate("key-combo", {combo: "a+S+d+F", eventProps: {jQueryTrigger: false, my_custom_prop: customProp}});
+		
+		strictEqual($testElement.val(), "aSdF", "Verify result of sequence");
 	});
 
 });

@@ -224,8 +224,11 @@ $.extend( $.simulate.prototype, {
 		return event;
 	},
 
-	dispatchEvent: function( elem, type, event ) {
-		if ( elem.dispatchEvent ) {
+	dispatchEvent: function( elem, type, event, options ) {
+		if (options.jQueryTrigger === true) {
+			$(elem).trigger($.extend({}, event, options, {type: type}));
+		}
+		else if ( elem.dispatchEvent ) {
 			elem.dispatchEvent( event );
 		} else if ( elem.fireEvent ) {
 			elem.fireEvent( "on" + type, event );

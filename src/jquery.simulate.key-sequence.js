@@ -2,7 +2,7 @@
 /*jslint white: true vars: true browser: true todo: true */
 /*global jQuery:true $:true bililiteRange:true */
 
-/* jQuery Simulate Key-Sequence Plugin 1.2.0
+/* jQuery Simulate Key-Sequence Plugin 1.3.0
  * http://github.com/j-ulrich/jquery-simulate-ext
  * 
  * Copyright (c) 2013 Jochen Ulrich
@@ -81,11 +81,12 @@
 				opts = $.extend({
 					sequence: "",
 					triggerKeyEvents: true,
+					eventProps: {},
 					delay: 0,
 					callback: undefined
 				}, this.options),
 				sequence = opts.sequence;
-				
+			
 			opts.delay = parseInt(opts.delay,10);
 
 			var localkeys = {};
@@ -302,9 +303,9 @@
 					var charCode = s.charCodeAt(i);
 					var keyCode = $.simulate.prototype.simulateKeySequence.prototype.charToKeyCode(s.charAt(i));
 					// a bit of cheating: rng._el is the element associated with rng.
-					$(rng._el).simulate('keydown', {keyCode: keyCode});
-					$(rng._el).simulate('keypress', {keyCode: charCode, which: charCode, charCode: charCode});
-					$(rng._el).simulate('keyup', {keyCode: keyCode});
+					$(rng._el).simulate('keydown', $.extend({}, opts.eventProps, {keyCode: keyCode}));
+					$(rng._el).simulate('keypress', $.extend({}, opts.eventProps,{keyCode: charCode, which: charCode, charCode: charCode}));
+					$(rng._el).simulate('keyup', $.extend({}, opts.eventProps, {keyCode: keyCode}));
 				}
 			}
 		},
@@ -333,9 +334,9 @@
 			rng.insertEOL();
 			rng.select();
 			if (opts.triggerKeyEvents === true) {
-				$(rng._el).simulate('keydown', {keyCode: 13});
-				$(rng._el).simulate('keypress', {keyCode: 13, which: 13, charCode: 13});
-				$(rng._el).simulate('keyup', {keyCode: 13});
+				$(rng._el).simulate('keydown', $.extend({}, opts.eventProps, {keyCode: 13}));
+				$(rng._el).simulate('keypress', $.extend({}, opts.eventProps, {keyCode: 13, which: 13, charCode: 13}));
+				$(rng._el).simulate('keyup', $.extend({}, opts.eventProps, {keyCode: 13}));
 			}
 		},
 		
@@ -352,8 +353,8 @@
 			if (b[0] === b[1]) { rng.bounds([b[0]-1, b[0]]); } // no characters selected; it's just an insertion point. Remove the previous character
 			rng.text('', 'end'); // delete the characters and update the selection
 			if (opts.triggerKeyEvents === true) {
-				$(rng._el).simulate('keydown', {keyCode: 8});
-				$(rng._el).simulate('keyup', {keyCode: 8});
+				$(rng._el).simulate('keydown', $.extend({}, opts.eventProps, {keyCode: 8}));
+				$(rng._el).simulate('keyup', $.extend({}, opts.eventProps, {keyCode: 8}));
 			}
 		},
 		
@@ -370,8 +371,8 @@
 			if (b[0] === b[1]) { rng.bounds([b[0], b[0]+1]); } // no characters selected; it's just an insertion point. Remove the next character
 			rng.text('', 'end'); // delete the characters and update the selection
 			if (opts.triggerKeyEvents === true) {
-				$(rng._el).simulate('keydown', {keyCode: 46});
-				$(rng._el).simulate('keyup', {keyCode: 46});
+				$(rng._el).simulate('keydown', $.extend({}, opts.eventProps, {keyCode: 46}));
+				$(rng._el).simulate('keyup', $.extend({}, opts.eventProps, {keyCode: 46}));
 			}
 		},
 		
@@ -388,8 +389,8 @@
 			if (b[0] === b[1]) { b[1] += 1; } // no characters selected; it's just an insertion point. Move to the right
 			rng.bounds([b[1], b[1]]).select();
 			if (opts.triggerKeyEvents === true) {
-				$(rng._el).simulate('keydown', {keyCode: 39});
-				$(rng._el).simulate('keyup', {keyCode: 39});
+				$(rng._el).simulate('keydown', $.extend({}, opts.eventProps, {keyCode: 39}));
+				$(rng._el).simulate('keyup', $.extend({}, opts.eventProps, {keyCode: 39}));
 			}
 		},
 		
@@ -406,8 +407,8 @@
 			if (b[0] === b[1]) { b[0] -= 1; } // no characters selected; it's just an insertion point. Move to the left
 			rng.bounds([b[0], b[0]]).select();
 			if (opts.triggerKeyEvents === true) {
-				$(rng._el).simulate('keydown', {keyCode: 37});
-				$(rng._el).simulate('keyup', {keyCode: 37});
+				$(rng._el).simulate('keydown', $.extend({}, opts.eventProps, {keyCode: 37}));
+				$(rng._el).simulate('keyup', $.extend({}, opts.eventProps, {keyCode: 37}));
 			}
 		},
 		
@@ -433,10 +434,10 @@
 			/* Append a div to the document (bililiteRange needs the element to be in the document), simulate
 			 * a delayed sequence containing a space in the middle and check if the space moves to the end.
 			 */
-			var testDiv = $('<div/>').css({height: 1, width: 1, position: 'absolute', left: -1000, top: -1000}).appendTo('body');
-			testDiv.simulate('key-sequence', {sequence: '\xA0 \xA0', delay:1, callback: function() {
-				$.simulate.prototype.quirks.delayedSpacesInNonInputGlitchToEnd = (testDiv.text().indexOf(' ') > 1);
-				testDiv.remove();
+			var $testDiv = $('<div/>').css({height: 1, width: 1, position: 'absolute', left: -1000, top: -1000}).appendTo('body');
+			$testDiv.simulate('key-sequence', {sequence: '\xA0 \xA0', delay:1, callback: function() {
+				$.simulate.prototype.quirks.delayedSpacesInNonInputGlitchToEnd = ($testDiv.text() === '\xA0\xA0 ');
+				$testDiv.remove();
 			}});
 		});
 	}

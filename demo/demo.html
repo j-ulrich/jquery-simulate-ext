@@ -71,7 +71,7 @@
 					activeModStr = ", modifiers: " + activeMods.join("+");
 				}
 
-				$eventLog.append(event.type+indent+"(which: "+event.which/*+", target: "+event.target+", keyCode: "+event.keyCode+", charCode: "+event.charCode*/+activeModStr+")");
+				$eventLog.append(event.type+indent+"(which: "+event.which/*+", target: "+event.target*//*+", keyCode: "+event.keyCode*//*+", charCode: "+event.charCode*/+activeModStr+")");
 			}
 			
 			$(document).bind({

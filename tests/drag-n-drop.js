@@ -847,6 +847,46 @@ $(document).ready(function() {
 		
 		$testElement.simulate("drag-n-drop", {dx: dragX, dy: dragY, clickToDrag: true, clickToDrop: true});
 	});
+	
+	test("drag-n-drop with eventProps", function() {
+		var $testElement = $('#dragArea');
+		
+		var dragX = 50,
+			dragY = 10,
+			customProp = "test!";
+		var expectedX = Math.round($testElement.offset().left+$testElement.outerWidth()/2)+dragX,
+			expectedY = Math.round($testElement.offset().top+$testElement.outerHeight()/2)+dragY;
+
+		tests.expectedEvents = [
+			{type: "mousedown", my_custom_prop: customProp},
+			{type: "mousemove", pageX: expectedX, pageY: expectedY, my_custom_prop: customProp},
+			{type: "simulate-drag"},
+			{type: "mouseup", pageX: expectedX, pageY: expectedY, my_custom_prop: customProp},
+			{type: "simulate-drop"}
+		];
+		
+		$testElement.simulate("drag-n-drop", {dx: dragX, dy: dragY, eventProps: {jQueryTrigger: true, my_custom_prop: customProp}});
+	});
+	
+	test("drag-n-drop with eventProps without jQueryTrigger", function() {
+		var $testElement = $('#dragArea');
+		
+		var dragX = 50,
+			dragY = 10,
+			customProp = "test!";
+		var expectedX = Math.round($testElement.offset().left+$testElement.outerWidth()/2)+dragX,
+			expectedY = Math.round($testElement.offset().top+$testElement.outerHeight()/2)+dragY;
+
+		tests.expectedEvents = [
+			{type: "mousedown", my_custom_prop: undefined},
+			{type: "mousemove", pageX: expectedX, pageY: expectedY, my_custom_prop: undefined},
+			{type: "simulate-drag"},
+			{type: "mouseup", pageX: expectedX, pageY: expectedY, my_custom_prop: undefined},
+			{type: "simulate-drop"}
+		];
+		
+		$testElement.simulate("drag-n-drop", {dx: dragX, dy: dragY, eventProps: {jQueryTrigger: false, my_custom_prop: customProp}});
+	});
 
 
 });

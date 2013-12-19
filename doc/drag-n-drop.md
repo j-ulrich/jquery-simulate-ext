@@ -74,11 +74,17 @@ Options
 	option of the `drop` simulation. Default: `false`
 * __interpolation__ _{Object}_: Defines the properties for an interpolated drag, i.e. a drag where multiple
 	`mousemove` events are generated between the start and the end of the drag. Interpolation allows
-	to simulate a more human-like drag. For the interpolation to work, the object needs to define either
-	`stepWidth` or `stepCount`. If both are given, `stepCount` is ignored.
+	to simulate a more human-like drag. For the interpolation option to work, it needs to define either
+	`stepWidth` or `stepCount`. If both are given, `stepCount` is ignored. The recognized properties
+	for the interpolation option object are:
 	* __stepCount__ _{Numeric}_: Defines the number of steps (interpolation points) to be generated
 		between the start and the end of the drag. The width between two interpolation points will
 		be calculated based on the total distance of the drag. Default: `0`
+		__Note:__ The number of generated `mousemove` events will be one higher as the `stepCount`.
+		the following picture illustrates this:
+		
+		![The `mousemove` takes place between start, interpolation steps and end.](https://github.com/j-ulrich/jquery-simulate-ext/raw/master/doc/interpolation_stepCount.png)
+		
 	* __stepWidth__ _{Numeric}_: Defines the width in pixels between two interpolation points. 
 		When `stepWidth` is given, `stepCount` will be ignored. The number of interpolation points
 		will be calculated based on the total distance of the drag. Default: `0`
@@ -113,7 +119,7 @@ the simulation is finished, use either the `callback` option or trigger on the `
 The `drag-n-drop` simulation accepts all options of both the `drag` and `drop` simulations. However,
 the `callback` option behaves like the one from the `drop` simulation and there is one additional option: 
 * __dropTarget__ _{DOM Element}_: Additionally to the `dragTarget` option (or `dx` and `dy` options) to
-	define an end position of the drag, the `dropTarget` position allows to define an element on whose
+	define an end position of the drag, the `dropTarget` allows to define an element on whose
 	center the drop will be simulated. Basically, this produces the same behavior like this:
 	```
 	$(dragElement).simulate('drag', {dragTarget: dragTarget});
@@ -151,7 +157,7 @@ drag & drop:
 	With a real drag, the target would be the topmost, visible element at the position of the `mousedown`.
 	To see the difference, imagine the following example of two `div` elements:
 
-	![Two nested divs. The inner div covers the center of the outer div.](https://raw.github.com/j-ulrich/jquery-simulate-ext/master/doc/divs.png)
+	![Two nested divs. The inner div covers the center of the outer div.](https://github.com/j-ulrich/jquery-simulate-ext/raw/master/doc/divs.png)
 	
 	When a drag is _simulated_ on the `#outerDiv`, the events will target `#outerDiv` while a real drag
 	on the center of the `#outerDiv` (black cross in the image) would target the `#innerDiv`. The
@@ -167,14 +173,22 @@ drag & drop:
 	on the dragged element. However, this should be a rare use case.
 * The same applies to the target of the drop events if the center of the drop target (or the end
 	of the drag) lies outside of the viewport. In such a case, the drop is simulated on either the dragged
-	element (if one exists) or the element on which the drop is simulated. Again, this should
+	element (if there is a drag going on) or the element on which the drop is simulated. Again, this should
 	be a rare use case.
 
 
 #### Example: ####
-The plugin generates the following events for the call `$('#myDiv').simulate("drag-n-drop", {dx: -71, dy: 71,interpolation: {stepCount: 2}})`
-where center of `#myDiv` is at `(299, 1229)`.
-
+The call
+```javascript
+$('#myDiv').simulate("drag-n-drop", {
+	dx: -71,
+	dy: 71,
+	interpolation: {
+		stepCount: 2
+	}
+});
+````
+generates the following events (assuming the center of `#myDiv` is at `(299, 1229)`):
 ```
 mousedown (which: 1)
 mousemove (pageX: 275, pageY: 1253)
@@ -190,7 +204,7 @@ iframes
 -------
 __Note:__ With the [current version](https://github.com/jquery/jquery-ui/blob/485ca7192ac57d018b8ce4f03e7dec6e694a53b7/tests/jquery.simulate.js)
 of `jquery.simulate.js`, drag & drop simulation within child-iframes does not work correctly when the parent page is scrolled.
-Therefore, the jQuery simulate extended repository contains a fixed version of `jquery.simulate.js` at
+Therefore, the jquery-simulate-ext repository contains a fixed version of `jquery.simulate.js` at
 [`libs/jquery.simulate.js`](https://github.com/j-ulrich/jquery-simulate-ext/tree/master/libs/jquery.simulate.js).
 
 The plugin supports simulation of drag & drop within child-iframes since version 1.1. For the simulation to work,

@@ -1,12 +1,18 @@
-jQuery Simulate Extended Changelog
-==================================
+jquery-simulate-ext Changelog
+=============================
 
 Version 1.3.0 - (Released: 2013-??-??)
 -------------
+* Adds the `eventParams` option to allow custom data in the simulated events (see #12).
 * Adds bower.json and registers the package at bower.
 * Corrects jQuery naming conventions ($varible).
 * Updates demo to jQuery UI 1.10.3 to make it work with jQuery 1.10.2.
+* Improves documentation here and there.
+* Adds an alert message before running the test suite to warn about mouse movement
+  during testing.
 * __key-combo__: Adds support of special keys (`"left-arrow"`, etc.).
+* __jquery.simulate.js__: Adds the `jQueryTrigger` option to use `jQuery.trigger()`
+  instead of `disptachEvent()`.
 
 Version 1.2.0 - (Released: 2013-09-03)
 -------------

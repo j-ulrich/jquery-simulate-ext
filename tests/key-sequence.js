@@ -184,6 +184,62 @@ $(document).ready(function() {
 
 	});
 	
+	test("simple sequence with eventProps", function() {
+		var $testElement = $('#textInput');
+		
+		var testSequence = "test",
+			customProp = "test!";
+		
+		tests.expectedEvents = [
+			/* t */ {type: "keydown", keyCode: 84, my_custom_prop: customProp},
+					{type: "keypress", which: "t".charCodeAt(0), my_custom_prop: customProp},
+					{type: "keyup", keyCode: 84, my_custom_prop: customProp},
+			/* e */ {type: "keydown", keyCode: 69, my_custom_prop: customProp},
+					{type: "keypress", which: "e".charCodeAt(0), my_custom_prop: customProp},
+					{type: "keyup", keyCode: 69, my_custom_prop: customProp},
+			/* s */ {type: "keydown", keyCode: 83, my_custom_prop: customProp},
+					{type: "keypress", which: "s".charCodeAt(0), my_custom_prop: customProp},
+					{type: "keyup", keyCode: 83, my_custom_prop: customProp},
+			/* t */ {type: "keydown", keyCode: 84, my_custom_prop: customProp},
+					{type: "keypress", which: "t".charCodeAt(0), my_custom_prop: customProp},
+					{type: "keyup", keyCode: 84, my_custom_prop: customProp},
+			{type: "simulate-keySequence", sequence: testSequence}
+		];
+		
+		$testElement.simulate("key-sequence", {sequence: testSequence, eventProps: {jQueryTrigger: true, my_custom_prop: customProp}});
+		
+		strictEqual($testElement.val(), testSequence, "Verify result of sequence");
+	});
+
+	
+	test("simple sequence with eventProps without jQueryTrigger", function() {
+		var $testElement = $('#textInput');
+		
+		var testSequence = "test",
+			customProp = "test!";
+		
+		tests.expectedEvents = [
+			/* t */ {type: "keydown", keyCode: 84, my_custom_prop: undefined},
+					{type: "keypress", which: "t".charCodeAt(0), my_custom_prop: undefined},
+					{type: "keyup", keyCode: 84, my_custom_prop: undefined},
+			/* e */ {type: "keydown", keyCode: 69, my_custom_prop: undefined},
+					{type: "keypress", which: "e".charCodeAt(0), my_custom_prop: undefined},
+					{type: "keyup", keyCode: 69, my_custom_prop: undefined},
+			/* s */ {type: "keydown", keyCode: 83, my_custom_prop: undefined},
+					{type: "keypress", which: "s".charCodeAt(0), my_custom_prop: undefined},
+					{type: "keyup", keyCode: 83, my_custom_prop: undefined},
+			/* t */ {type: "keydown", keyCode: 84, my_custom_prop: undefined},
+					{type: "keypress", which: "t".charCodeAt(0), my_custom_prop: undefined},
+					{type: "keyup", keyCode: 84, my_custom_prop: undefined},
+			{type: "simulate-keySequence", sequence: testSequence}
+		];
+		
+		$testElement.simulate("key-sequence", {sequence: testSequence, eventProps: {jQueryTrigger: false, my_custom_prop: customProp}});
+		
+		strictEqual($testElement.val(), testSequence, "Verify result of sequence");
+	});
+
+	
 	// See issue #6 (https://github.com/j-ulrich/jquery-simulate-ext/issues/6)
 	test("delay, spaces in sequence, non-input element", function() {
 		var $testElement = $('#emptyDiv');
@@ -210,6 +266,7 @@ $(document).ready(function() {
 
 	});
 
+	//####### Quirk Detection Tests #######
 	module("quirk-detection", {
 		
 	});

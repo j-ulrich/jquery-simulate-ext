@@ -1,7 +1,7 @@
 {
 	"name": "jquery-simulate-ext",
 	"description": "jQuery Simulate - extended. Simulating complex user interaction based on the jQuery Simulate plugin.",
-	"version": "1.2.0",
+	"version": "1.3.0",
 	"keywords": ["jquery", "simulate", "key", "mouse", "press", "move", "drag", "drop", "user-interaction"],
 	"maintainers": [{
 		"name": "Jochen Ulrich",

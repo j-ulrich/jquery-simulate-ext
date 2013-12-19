@@ -2,7 +2,7 @@
 /*jslint white: true vars: true browser: true todo: true */
 /*global jQuery:true $:true */
 
-/* jQuery Simulate Drag-n-Drop Plugin 1.2.0
+/* jQuery Simulate Drag-n-Drop Plugin 1.3.0
  * http://github.com/j-ulrich/jquery-simulate-ext
  * 
  * Copyright (c) 2013 Jochen Ulrich
@@ -399,6 +399,7 @@
 					dy: 0,
 					dragTarget: undefined,
 					clickToDrag: false,
+					eventProps: {},
 					interpolation: {
 						stepWidth: 0,
 						stepCount: 0,
@@ -448,10 +449,11 @@
 				}
 				
 				// We start a new drag
-				self.simulateEvent( ele, "mousedown", coord );
+				$.extend(options.eventProps, coord);
+				self.simulateEvent( ele, "mousedown", options.eventProps );
 				if (options.clickToDrag === true) {
-					self.simulateEvent( ele, "mouseup", coord );
-					self.simulateEvent( ele, "click", coord );
+					self.simulateEvent( ele, "mouseup", options.eventProps );
+					self.simulateEvent( ele, "click", options.eventProps );
 				}
 				$(ele).add(ele.ownerDocument).one('mouseup', function() {
 					$.simulate._activeDrag = undefined;
@@ -477,7 +479,8 @@
 						clientCoord = pageToClientPos(coord, targetDoc),
 						eventTarget = elementAtPosition(clientCoord, targetDoc) || ele;
 
-					self.simulateEvent( eventTarget, "mousemove", coord );
+					$.extend(options.eventProps, coord);
+					self.simulateEvent( eventTarget, "mousemove", options.eventProps );
 					dragFinished(ele, options);
 				}
 			}
@@ -500,6 +503,7 @@
 				activeDrag = $.simulate._activeDrag,
 				options = $.extend({
 					clickToDrop: false,
+					eventProps: {},
 					callback: undefined
 				}, self.options),
 				moveBeforeDrop = true,
@@ -524,18 +528,20 @@
 			if (!eventTarget) {
 				eventTarget = (activeDrag)? activeDrag.dragElement : ele;
 			}
+			
+			$.extend(options.eventProps, coord);
 
 			if (moveBeforeDrop === true) {
 				// Else we assume the drop should happen on target, so we move there
-				self.simulateEvent( eventTarget, "mousemove", coord );
+				self.simulateEvent( eventTarget, "mousemove", options.eventProps );
 			}
 
 			if (options.clickToDrop) {
-				self.simulateEvent( eventTarget, "mousedown", coord );
+				self.simulateEvent( eventTarget, "mousedown", options.eventProps );
 			}
-			this.simulateEvent( eventTarget, "mouseup", coord );
+			this.simulateEvent( eventTarget, "mouseup", options.eventProps );
 			if (options.clickToDrop) {
-				self.simulateEvent( eventTarget, "click", coord );
+				self.simulateEvent( eventTarget, "click", options.eventProps );
 			}
 			
 			$.simulate._activeDrag = undefined;
