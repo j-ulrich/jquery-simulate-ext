@@ -1,5 +1,4 @@
 /*jshint camelcase:true, plusplus:true, forin:true, noarg:true, noempty:true, eqeqeq:true, bitwise:true, strict:true, undef:true, unused:true, curly:true, browser:true, devel:true, maxerr:100, white:false, onevar:false */
-/*jslint white: true vars: true browser: true todo: true */
 /*global jQuery:true $:true */
 
 /* jQuery Simulate Key-Combo Plugin 1.3.0
@@ -49,9 +48,9 @@
 		F12:			123,
 		// Other
 		ENTER:			13,
-		TABULATOR:		 9,
+		TABULATOR:		9,
 		ESCAPE:			27,
-		BACKSPACE:		 8,
+		BACKSPACE:		8,
 		INSERT:			45,
 		DELETE:			46,
 		HOME:			36,
@@ -62,7 +61,7 @@
 	};
 	
 	// SpecialKeyCode aliases
-	SpecialKeyCodes.CTRL 	= SpecialKeyCodes.CONTROL;
+	SpecialKeyCodes.CTRL	= SpecialKeyCodes.CONTROL;
 	SpecialKeyCodes.ALT		= SpecialKeyCodes.ALTERNATIVE;
 	SpecialKeyCodes.COMMAND	= SpecialKeyCodes.META;
 	SpecialKeyCodes.TAB		= SpecialKeyCodes.TABULATOR;
@@ -121,11 +120,12 @@
 					}
 				}
 				else {
+					var keyCode;
 					if ( key.length > 1) {
 						// Assume a special key
-						var keyCode = SpecialKeyCodes[keySpecial];
+						keyCode = SpecialKeyCodes[keySpecial];
 						
-						if (keyCode == undefined) {
+						if (keyCode === undefined) {
 							throw 'Syntax error: unknown special key "'+key+'" (forgot "+" between keys?)';
 						}
 						
@@ -146,7 +146,7 @@
 					}
 					else {
 						// "Normal" key
-						var keyCode = $.simulate.prototype.simulateKeySequence.prototype.charToKeyCode(key);
+						keyCode = $.simulate.prototype.simulateKeySequence.prototype.charToKeyCode(key);
 						holdKeys.unshift(keyCode);
 						options.eventProps.keyCode = keyCode;
 						options.eventProps.which = keyCode;

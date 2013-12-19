@@ -1,4 +1,3 @@
-/*jslint white: true vars: true browser: true todo: true */
 /*jshint camelcase:true, plusplus:true, forin:true, noarg:true, noempty:true, eqeqeq:true, bitwise:true, strict:true, undef:true, unused:true, curly:true, browser:true, devel:true, maxerr:100, white:false, onevar:false */
 /*global jQuery:true $:true */
 
@@ -191,22 +190,22 @@ $(document).ready(function() {
 			customProp = "test!";
 		
 		tests.expectedEvents = [
-			/* t */ {type: "keydown", keyCode: 84, my_custom_prop: customProp},
-					{type: "keypress", which: "t".charCodeAt(0), my_custom_prop: customProp},
-					{type: "keyup", keyCode: 84, my_custom_prop: customProp},
-			/* e */ {type: "keydown", keyCode: 69, my_custom_prop: customProp},
-					{type: "keypress", which: "e".charCodeAt(0), my_custom_prop: customProp},
-					{type: "keyup", keyCode: 69, my_custom_prop: customProp},
-			/* s */ {type: "keydown", keyCode: 83, my_custom_prop: customProp},
-					{type: "keypress", which: "s".charCodeAt(0), my_custom_prop: customProp},
-					{type: "keyup", keyCode: 83, my_custom_prop: customProp},
-			/* t */ {type: "keydown", keyCode: 84, my_custom_prop: customProp},
-					{type: "keypress", which: "t".charCodeAt(0), my_custom_prop: customProp},
-					{type: "keyup", keyCode: 84, my_custom_prop: customProp},
+			/* t */ {type: "keydown", keyCode: 84, myCustomProp: customProp},
+					{type: "keypress", which: "t".charCodeAt(0), myCustomProp: customProp},
+					{type: "keyup", keyCode: 84, myCustomProp: customProp},
+			/* e */ {type: "keydown", keyCode: 69, myCustomProp: customProp},
+					{type: "keypress", which: "e".charCodeAt(0), myCustomProp: customProp},
+					{type: "keyup", keyCode: 69, myCustomProp: customProp},
+			/* s */ {type: "keydown", keyCode: 83, myCustomProp: customProp},
+					{type: "keypress", which: "s".charCodeAt(0), myCustomProp: customProp},
+					{type: "keyup", keyCode: 83, myCustomProp: customProp},
+			/* t */ {type: "keydown", keyCode: 84, myCustomProp: customProp},
+					{type: "keypress", which: "t".charCodeAt(0), myCustomProp: customProp},
+					{type: "keyup", keyCode: 84, myCustomProp: customProp},
 			{type: "simulate-keySequence", sequence: testSequence}
 		];
 		
-		$testElement.simulate("key-sequence", {sequence: testSequence, eventProps: {jQueryTrigger: true, my_custom_prop: customProp}});
+		$testElement.simulate("key-sequence", {sequence: testSequence, eventProps: {jQueryTrigger: true, myCustomProp: customProp}});
 		
 		strictEqual($testElement.val(), testSequence, "Verify result of sequence");
 	});
@@ -219,22 +218,22 @@ $(document).ready(function() {
 			customProp = "test!";
 		
 		tests.expectedEvents = [
-			/* t */ {type: "keydown", keyCode: 84, my_custom_prop: undefined},
-					{type: "keypress", which: "t".charCodeAt(0), my_custom_prop: undefined},
-					{type: "keyup", keyCode: 84, my_custom_prop: undefined},
-			/* e */ {type: "keydown", keyCode: 69, my_custom_prop: undefined},
-					{type: "keypress", which: "e".charCodeAt(0), my_custom_prop: undefined},
-					{type: "keyup", keyCode: 69, my_custom_prop: undefined},
-			/* s */ {type: "keydown", keyCode: 83, my_custom_prop: undefined},
-					{type: "keypress", which: "s".charCodeAt(0), my_custom_prop: undefined},
-					{type: "keyup", keyCode: 83, my_custom_prop: undefined},
-			/* t */ {type: "keydown", keyCode: 84, my_custom_prop: undefined},
-					{type: "keypress", which: "t".charCodeAt(0), my_custom_prop: undefined},
-					{type: "keyup", keyCode: 84, my_custom_prop: undefined},
+			/* t */ {type: "keydown", keyCode: 84, myCustomProp: undefined},
+					{type: "keypress", which: "t".charCodeAt(0), myCustomProp: undefined},
+					{type: "keyup", keyCode: 84, myCustomProp: undefined},
+			/* e */ {type: "keydown", keyCode: 69, myCustomProp: undefined},
+					{type: "keypress", which: "e".charCodeAt(0), myCustomProp: undefined},
+					{type: "keyup", keyCode: 69, myCustomProp: undefined},
+			/* s */ {type: "keydown", keyCode: 83, myCustomProp: undefined},
+					{type: "keypress", which: "s".charCodeAt(0), myCustomProp: undefined},
+					{type: "keyup", keyCode: 83, myCustomProp: undefined},
+			/* t */ {type: "keydown", keyCode: 84, myCustomProp: undefined},
+					{type: "keypress", which: "t".charCodeAt(0), myCustomProp: undefined},
+					{type: "keyup", keyCode: 84, myCustomProp: undefined},
 			{type: "simulate-keySequence", sequence: testSequence}
 		];
 		
-		$testElement.simulate("key-sequence", {sequence: testSequence, eventProps: {jQueryTrigger: false, my_custom_prop: customProp}});
+		$testElement.simulate("key-sequence", {sequence: testSequence, eventProps: {jQueryTrigger: false, myCustomProp: customProp}});
 		
 		strictEqual($testElement.val(), testSequence, "Verify result of sequence");
 	});

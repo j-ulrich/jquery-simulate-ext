@@ -9,6 +9,8 @@
 		"homepage": "https://github.com/j-ulrich"
 	}],
 	"main": [
+		"libs/bililiteRange.js",
+		"libs/jquery.simulate.js",
 		"src/jquery.simulate.ext.js",
 		"src/jquery.simulate.drag-n-drop.js",
 		"src/jquery.simulate.key-sequence.js",
@@ -20,6 +22,7 @@
 		"demo",
 		"doc",
 		"tests",
+		"libs/jquery-*.js",
 		"bower.json",
 		"grunt.js",
 		"package.json",

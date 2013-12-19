@@ -1,4 +1,3 @@
-/*jslint white: true vars: true browser: true todo: true */
 /*jshint camelcase:true, plusplus:true, forin:true, noarg:true, noempty:true, eqeqeq:true, bitwise:true, strict:true, undef:true, unused:true, curly:true, browser:true, devel:true, maxerr:100, white:false, onevar:false */
 /*global jQuery:true $:true */
 
@@ -858,14 +857,14 @@ $(document).ready(function() {
 			expectedY = Math.round($testElement.offset().top+$testElement.outerHeight()/2)+dragY;
 
 		tests.expectedEvents = [
-			{type: "mousedown", my_custom_prop: customProp},
-			{type: "mousemove", pageX: expectedX, pageY: expectedY, my_custom_prop: customProp},
+			{type: "mousedown", myCustomProp: customProp},
+			{type: "mousemove", pageX: expectedX, pageY: expectedY, myCustomProp: customProp},
 			{type: "simulate-drag"},
-			{type: "mouseup", pageX: expectedX, pageY: expectedY, my_custom_prop: customProp},
+			{type: "mouseup", pageX: expectedX, pageY: expectedY, myCustomProp: customProp},
 			{type: "simulate-drop"}
 		];
 		
-		$testElement.simulate("drag-n-drop", {dx: dragX, dy: dragY, eventProps: {jQueryTrigger: true, my_custom_prop: customProp}});
+		$testElement.simulate("drag-n-drop", {dx: dragX, dy: dragY, eventProps: {jQueryTrigger: true, myCustomProp: customProp}});
 	});
 	
 	test("drag-n-drop with eventProps without jQueryTrigger", function() {
@@ -878,14 +877,14 @@ $(document).ready(function() {
 			expectedY = Math.round($testElement.offset().top+$testElement.outerHeight()/2)+dragY;
 
 		tests.expectedEvents = [
-			{type: "mousedown", my_custom_prop: undefined},
-			{type: "mousemove", pageX: expectedX, pageY: expectedY, my_custom_prop: undefined},
+			{type: "mousedown", myCustomProp: undefined},
+			{type: "mousemove", pageX: expectedX, pageY: expectedY, myCustomProp: undefined},
 			{type: "simulate-drag"},
-			{type: "mouseup", pageX: expectedX, pageY: expectedY, my_custom_prop: undefined},
+			{type: "mouseup", pageX: expectedX, pageY: expectedY, myCustomProp: undefined},
 			{type: "simulate-drop"}
 		];
 		
-		$testElement.simulate("drag-n-drop", {dx: dragX, dy: dragY, eventProps: {jQueryTrigger: false, my_custom_prop: customProp}});
+		$testElement.simulate("drag-n-drop", {dx: dragX, dy: dragY, eventProps: {jQueryTrigger: false, myCustomProp: customProp}});
 	});
 
 

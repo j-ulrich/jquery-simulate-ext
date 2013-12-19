@@ -10,6 +10,7 @@ Version 1.3.0 - (Released: 2013-??-??)
 * Improves documentation here and there.
 * Adds an alert message before running the test suite to warn about mouse movement
   during testing.
+* Updated grunt file to grunt 0.4.x.
 * __key-combo__: Adds support of special keys (`"left-arrow"`, etc.).
 * __jquery.simulate.js__: Adds the `jQueryTrigger` option to use `jQuery.trigger()`
   instead of `disptachEvent()`.
