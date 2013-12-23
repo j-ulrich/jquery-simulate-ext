@@ -90,8 +90,10 @@ Options recognized by all jquery-simulate-ext plugins:
 	__Note:__ The `dispatchEvent()` function of all major browsers will remove custom properties from the event.
 	Therefore, the [`jquery.simulate.js`](https://github.com/j-ulrich/jquery-simulate-ext/tree/master/libs/jquery.simulate.js)
 	from the jquery-simulate-ext repository contains an option to use `jQuery.trigger()` instead of the
-	native `dispatchEvent()`. This makes the simulation of the events less "real", but allows the custom
-	properties to be used in the event handlers. To active this option, define `jQueryTrigger: true`
+	native `dispatchEvent()`. This causes that the simulated event will only trigger event handlers attached using the same
+	jQuery instance and not handlers attached using [`addEventListener()`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget.addEventListener)
+	or using another versions of jQuery (see http://bugs.jquery.com/ticket/11047 for more information), but it's the only way
+	to allow the custom properties to be used in the event handlers. To activate this option, define `jQueryTrigger: true`
 	in the `eventProps` option object. For example:
 	
 	```javascript
