@@ -127,7 +127,7 @@
 					}	
 				});
 			}
-			target.focus();
+			$target.focus();
 			if (typeof sequence === 'undefined') { // no string, so we just set up the event handlers
 				return;
 			}
