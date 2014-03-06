@@ -125,7 +125,8 @@ The plugin requires
 
 Compatibility
 ------------
-The plugins have been successfully tested with jQuery 1.7.2, 1.10.2 and jQuery Simulate [@485ca7192a](https://github.com/jquery/jquery-ui/blob/485ca7192ac57d018b8ce4f03e7dec6e694a53b7/tests/jquery.simulate.js),
+The plugins have been successfully tested with jQuery 1.7.2, 1.10.2, 2.1.0 and jQuery Simulate
+[@485ca7192a](https://github.com/jquery/jquery-ui/blob/485ca7192ac57d018b8ce4f03e7dec6e694a53b7/tests/jquery.simulate.js),
 [@25938de206](https://github.com/jquery/jquery-simulate/blob/25938de20622a6c127a7082bd751f6d2f88eabd4/jquery.simulate.js).
 However, they should be compatible with other/future versions as well.
 
@@ -147,7 +148,7 @@ For more information, see [issue #9](https://github.com/j-ulrich/jquery-simulate
 
 Licensing
 ---------
-Copyright &copy; 2013 Jochen Ulrich
+Copyright &copy; 2014 Jochen Ulrich
 https://github.com/j-ulrich/jquery-simulate-ext
 
 Licensed under the [MIT license](http://opensource.org/licenses/MIT).

@@ -4,7 +4,7 @@
 /* jQuery Simulate Extended Plugin 1.3.0
  * http://github.com/j-ulrich/jquery-simulate-ext
  * 
- * Copyright (c) 2013 Jochen Ulrich
+ * Copyright (c) 2014 Jochen Ulrich
  * Licensed under the MIT license (MIT-LICENSE.txt).
  */
 
