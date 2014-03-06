@@ -6,12 +6,12 @@
 
 $(document).ready(function() {
 	
-	//#################################################################
-	//#######                                                   #######
-	//#######  NOTE: DO NOT MOVE THE MOUSE DURING THE TESTS !!! #######
-	//#######                                                   #######
-	//#################################################################
-	alert('Do not move the mouse during the tests or some of the tests might fail!');
+	//####################################################################
+	//#######                                                      #######
+	//#######  WARNING: DO NOT MOVE THE MOUSE DURING THE TESTS !!! #######
+	//#######                                                      #######
+	//####################################################################
+	console.warn('!!! WARNING: Do not move the mouse during the tests or some of the tests might fail !!!');
 
 	module("drag-n-drop", {
 		setup: function() {

@@ -278,7 +278,7 @@ $(document).ready(function() {
 			
 			$.Deferred(function(dfd) {
 				var jquery = iFrameDoc.createElement('script');
-				jquery.src = "../libs/jquery-1.10.2.js";
+				jquery.src = "../bower_components/jquery/dist/jquery.min.js";
 				iFrameDoc.body.appendChild(jquery);
 				setTimeout(dfd.resolve, scriptLoadTimeout);
 			}).pipe(function() {
@@ -327,7 +327,7 @@ $(document).ready(function() {
 		
 			$.Deferred(function(dfd) {
 				var jquery = iFrameDoc.createElement('script');
-				jquery.src = "../libs/jquery-1.10.2.js";
+				jquery.src = "../bower_components/jquery/dist/jquery.min.js";
 				iFrameDoc.body.appendChild(jquery);
 				setTimeout(dfd.resolve, scriptLoadTimeout);
 			}).pipe(function() {

@@ -1,14 +1,15 @@
 jquery-simulate-ext Changelog
 =============================
 
-Version 1.3.0 - (Released: 2013-??-??)
+Version 1.3.0 - (Released: 2014-??-??)
 -------------
 * Adds the `eventParams` option to allow custom data in the simulated events (see #12).
 * Adds bower.json and registers the package at bower.
+* Registers the package at npm.
 * Corrects jQuery naming conventions ($varible).
 * Updates demo to jQuery UI 1.10.3 to make it work with jQuery 1.10.2.
 * Improves documentation here and there.
-* Adds an alert message before running the test suite to warn about mouse movement
+* Logs a warning message before running the test suite to warn about mouse movement
   during testing.
 * Updated grunt file to grunt 0.4.x.
 * __key-combo__: Adds support of special keys (`"left-arrow"`, etc.).
