@@ -21,7 +21,7 @@ function isDocument(ele) {
 }
 
 function windowOfDocument(doc) {
-	for (var i=0; i < window.frames.length; i+=1) {
+	for (var i=1; i < window.frames.length; i+=1) {
 		if (window.frames[i].document === doc) {
 			return window.frames[i];
 		}
