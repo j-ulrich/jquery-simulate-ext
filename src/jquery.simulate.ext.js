@@ -18,6 +18,7 @@
 		rdocument = /\[object (?:HTML)?Document\]/;
 	
 	$.simulate.prototype.mouseEvent = function(type, options) {
+		options = options || {};
 		if (options.pageX || options.pageY) {
 			var doc = rdocument.test(Object.prototype.toString.call(this.target))? this.target : (this.target.ownerDocument || document);
 			options.clientX = (options.pageX || 0) - $(doc).scrollLeft();
