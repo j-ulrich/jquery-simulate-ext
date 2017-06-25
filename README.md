@@ -1,4 +1,4 @@
-[![Project Status: Abandoned](https://img.shields.io/badge/projec%20status-abandoned-red.svg)](https://github.com/j-ulrich/jquery-simulate-ext/issues/39)    
+[![Project Status: Abandoned](https://img.shields.io/badge/project%20status-abandoned-red.svg)](https://github.com/j-ulrich/jquery-simulate-ext/issues/39)    
 **NOTE:** jQuery Simulate Extended is also not actively developed anymore. It may still work but chances are high that some features are broken in recent browsers. For more information, see [issue #39](https://github.com/j-ulrich/jquery-simulate-ext/issues/39).
 
 
