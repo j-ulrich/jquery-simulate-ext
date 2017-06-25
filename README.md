@@ -1,6 +1,5 @@
-![Project Status: Abandoned](https://img.shields.io/badge/projec%20status-abandoned-red.svg)    
-**NOTE:** jQuery Simulate Extended is not actively developed anymore. It may still work but chances are high that some features are broken in recent browsers.
-If you are interessted in taking over the project, open an issue to discuss it.
+[![Project Status: Abandoned](https://img.shields.io/badge/projec%20status-abandoned-red.svg)](https://github.com/j-ulrich/jquery-simulate-ext/issues/39)
+**NOTE:** jQuery Simulate Extended is also not actively developed anymore. It may still work but chances are high that some features are broken in recent browsers. For more information, see [issue #39](https://github.com/j-ulrich/jquery-simulate-ext/issues/39).
 
 
 jQuery Simulate Extended Plugin 1.3.0
