@@ -297,6 +297,7 @@
 		 */
 		simplechar: function (rng, s, opts){
 			rng.text(s, 'end');
+			rng.select();
 			if (opts.triggerKeyEvents) {
 				for (var i =0; i < s.length; i += 1){
 					var charCode = s.charCodeAt(i);
